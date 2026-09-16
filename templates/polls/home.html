@@ -5,6 +5,37 @@
 {% block content %}
 <section class="hero">
   <h1>Almadan önce topluluğa sor. ⚖️</h1>
-  <p>Anket akışı yakında burada olacak.</p>
+  <p>Aday ürünleri topluluğa sor, oylarla en değerlisini bul.</p>
+  <a href="{% url 'polls:poll_create' %}" class="btn btn--primary">Anket Oluştur</a>
 </section>
+
+<form method="get" class="filters">
+  <input type="search" name="q" value="{{ query }}" placeholder="🔍 Ara...">
+  <select name="kategori">
+    <option value="">Tüm kategoriler</option>
+    {% for value, label in categories %}
+      <option value="{{ value }}" {% if value == selected_category %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="sirala">
+    <option value="yeni" {% if sort == "yeni" %}selected{% endif %}>Yeni</option>
+    <option value="populer" {% if sort == "populer" %}selected{% endif %}>Popüler</option>
+  </select>
+  <label>
+    <input type="checkbox" name="durum" value="acik" {% if status == "acik" %}checked{% endif %}>
+    Yalnızca açık anketler
+  </label>
+  <button type="submit" class="btn">Filtrele</button>
+</form>
+
+{% if page_obj.object_list %}
+  <div class="poll-grid">
+    {% for poll in page_obj %}
+      {% include "polls/poll_card.html" with poll=poll %}
+    {% endfor %}
+  </div>
+  {% include "partials/pagination.html" %}
+{% else %}
+  <p class="empty-state">Henüz anket yok. İlk anketi sen oluştur! 🚀</p>
+{% endif %}
 {% endblock %}

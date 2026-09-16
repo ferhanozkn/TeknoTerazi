@@ -1,10 +1,47 @@
 {% extends "base.html" %}
+{% load tt_filters %}
 
 {% block title %}{{ poll.title }} · TeknoTerazi{% endblock %}
 
 {% block content %}
-<section>
+<a href="{% url 'polls:home' %}">← Tüm anketler</a>
+
+<header class="poll-detail__header">
+  <div class="poll-card__badges">
+    <span class="badge badge--category">{{ poll.category|category_icon }} {{ poll.get_category_display }}</span>
+    {% if not poll.is_active %}<span class="badge badge--closed">Kapandı</span>{% endif %}
+  </div>
   <h1>{{ poll.title }}</h1>
-  <p>Anket detay sayfası yakında burada olacak.</p>
-</section>
+  <p>@{{ poll.author.username }} · {{ poll.created_at|timesince }} önce</p>
+  {% if poll.description %}<p>{{ poll.description }}</p>{% endif %}
+
+  {% if request.user == poll.author %}
+    <div class="poll-detail__owner-actions">
+      <form method="post" action="{% url 'polls:poll_toggle_active' poll.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn">{% if poll.is_active %}Kapat{% else %}Yeniden Aç{% endif %}</button>
+      </form>
+      <a href="{% url 'polls:poll_delete' poll.pk %}" class="btn btn--ghost">Sil</a>
+    </div>
+  {% endif %}
+
+  <button type="button" id="share-button" class="btn" data-url="{{ request.build_absolute_uri }}">Bu anketi paylaş</button>
+</header>
+
+<div class="product-grid">
+  {% for product in products %}
+    {% include "polls/product_card.html" with product=product favorite_product=favorite_product cheapest_product=cheapest_product %}
+  {% endfor %}
+</div>
+
+<script>
+  (function () {
+    var button = document.getElementById("share-button");
+    if (!button) return;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(button.dataset.url);
+      button.textContent = "Bağlantı kopyalandı!";
+    });
+  })();
+</script>
 {% endblock %}

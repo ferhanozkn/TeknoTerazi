@@ -216,3 +216,173 @@ a {
   color: #5b6384;
   font-size: 0.85rem;
 }
+
+.hero {
+  text-align: center;
+  padding: 2rem 0 3rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.filters input,
+.filters select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e4e7f0;
+  border-radius: 10px;
+  font: inherit;
+}
+
+.poll-grid,
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.poll-card,
+.product-card-view {
+  background: #fff;
+  border: 1px solid #e4e7f0;
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.poll-card__badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge--category {
+  background: #f1edff;
+  color: #6c3bff;
+}
+
+.badge--closed {
+  background: #e4e7f0;
+  color: #5b6384;
+}
+
+.badge--favorite {
+  background: linear-gradient(135deg, #ff4fa3, #6c3bff);
+  color: #fff;
+}
+
+.badge--cheap {
+  background: #e3faf1;
+  color: #12c98a;
+}
+
+.poll-card__products {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+  color: #5b6384;
+  font-size: 0.9rem;
+}
+
+.poll-card__price {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.poll-card__votes,
+.poll-card__author {
+  font-size: 0.85rem;
+  color: #5b6384;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.pagination a,
+.pagination__current {
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.pagination__current {
+  background: #6c3bff;
+  color: #fff;
+}
+
+.empty-state {
+  text-align: center;
+  color: #5b6384;
+  padding: 3rem 0;
+}
+
+.product-card-view img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.features {
+  padding-left: 1.2rem;
+  color: #5b6384;
+  font-size: 0.9rem;
+}
+
+.vote-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #ffe8ec;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.vote-bar__worth {
+  height: 100%;
+  background: #12c98a;
+}
+
+.vote-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.poll-detail__header {
+  margin-bottom: 2rem;
+}
+
+.poll-detail__owner-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.my-poll-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e4e7f0;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.error-page {
+  text-align: center;
+  padding: 4rem 0;
+}

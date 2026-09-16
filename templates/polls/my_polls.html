@@ -3,8 +3,24 @@
 {% block title %}Anketlerim · TeknoTerazi{% endblock %}
 
 {% block content %}
-<section>
-  <h1>Anketlerim</h1>
+<h1>Anketlerim</h1>
+{% if polls %}
+  <div class="my-polls-list">
+    {% for poll in polls %}
+      <div class="my-poll-row">
+        <a href="{% url 'polls:poll_detail' poll.pk %}">{{ poll.title }}</a>
+        <span>{{ poll.total_votes }} oy</span>
+        <span>{% if poll.is_active %}Açık{% else %}Kapalı{% endif %}</span>
+        <a href="{% url 'polls:poll_detail' poll.pk %}" class="btn">Görüntüle</a>
+        <form method="post" action="{% url 'polls:poll_toggle_active' poll.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn">{% if poll.is_active %}Kapat{% else %}Aç{% endif %}</button>
+        </form>
+        <a href="{% url 'polls:poll_delete' poll.pk %}" class="btn btn--ghost">Sil</a>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
   <p>Henüz anket oluşturmadın.</p>
-</section>
+{% endif %}
 {% endblock %}

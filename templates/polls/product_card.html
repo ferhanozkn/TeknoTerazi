@@ -1,0 +1,29 @@
+{% load tt_filters %}
+<article class="product-card-view">
+  {% if product == favorite_product %}<span class="badge badge--favorite">🏆 Topluluğun Favorisi</span>{% endif %}
+  {% if product.image_url %}
+    <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
+  {% endif %}
+  <h3>{{ product.name }}</h3>
+  <p class="price">
+    {{ product.price|tl }}
+    {% if product == cheapest_product %}<span class="badge badge--cheap">En uygun fiyat</span>{% endif %}
+  </p>
+  <ul class="features">
+    {% for feature in product.features_list %}
+      <li>{{ feature }}</li>
+    {% endfor %}
+  </ul>
+  {% if product.product_url %}
+    <a href="{{ product.product_url }}" target="_blank" rel="noopener noreferrer nofollow">Ürüne git ↗</a>
+  {% endif %}
+  <div class="vote-bar">
+    <div class="vote-bar__worth" style="width: {{ product.worth_ratio|default:0 }}%"></div>
+  </div>
+  <p>{{ product.worth_ratio|percent }}</p>
+  <p>👍 {{ product.worth_count }} 👎 {{ product.not_worth_count }}</p>
+  <div class="vote-buttons">
+    <button type="button" class="btn" disabled>👍 Buna değer</button>
+    <button type="button" class="btn" disabled>👎 Buna değmez</button>
+  </div>
+</article>

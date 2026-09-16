@@ -76,6 +76,17 @@ class Product(models.Model):
     def features_list(self):
         return [line.strip() for line in self.features.splitlines() if line.strip()]
 
+    @property
+    def total_votes(self):
+        return getattr(self, "worth_count", 0) + getattr(self, "not_worth_count", 0)
+
+    @property
+    def worth_ratio(self):
+        total = self.total_votes
+        if total == 0:
+            return None
+        return round(self.worth_count / total * 100, 1)
+
 
 class Vote(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="votes")

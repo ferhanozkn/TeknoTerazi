@@ -1,0 +1,22 @@
+{% load tt_filters %}
+<article class="poll-card">
+  <div class="poll-card__badges">
+    <span class="badge badge--category">{{ poll.category|category_icon }} {{ poll.get_category_display }}</span>
+    {% if not poll.is_active %}<span class="badge badge--closed">Kapandı</span>{% endif %}
+  </div>
+  <h3><a href="{% url 'polls:poll_detail' poll.pk %}">{{ poll.title }}</a></h3>
+  <p class="poll-card__meta">{{ poll.products.all|length }} ürün</p>
+  <ul class="poll-card__products">
+    {% for product in poll.products.all|slice:":3" %}
+      <li>{{ product.name }}</li>
+    {% endfor %}
+    {% if poll.products.all|length > 3 %}
+      <li>+{{ poll.products.all|length|add:"-3" }}</li>
+    {% endif %}
+  </ul>
+  {% if poll.min_price is not None %}
+    <p class="poll-card__price">{{ poll.min_price|tl }} – {{ poll.max_price|tl }}</p>
+  {% endif %}
+  <p class="poll-card__votes">{{ poll.total_votes }} oy</p>
+  <p class="poll-card__author">@{{ poll.author.username }} · {{ poll.created_at|timesince }} önce</p>
+</article>

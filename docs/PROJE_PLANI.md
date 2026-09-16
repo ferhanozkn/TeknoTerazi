@@ -24,7 +24,7 @@
 | 1 | Veri modeli ve admin | ✅ Tamamlandı |
 | 2 | Kimlik doğrulama | ✅ Tamamlandı |
 | 3 | Anket oluşturma | ✅ Tamamlandı |
-| 4 | Listeleme ve detay | ⬜ |
+| 4 | Listeleme ve detay | ✅ Tamamlandı |
 | 5 | Oylama sistemi | ⬜ |
 | 6 | Tasarım sistemi ve arayüz cilası | ⬜ |
 | 7 | Güvenlik, testler, demo verisi | ⬜ |
@@ -724,18 +724,18 @@ if not DEBUG:
 ### Faz 4 — Listeleme ve Detay
 **Amaç:** Herkesin anketleri görebilmesi.
 
-- [ ] `home` view'ı: arama, kategori filtresi, sıralama, durum filtresi, 12'li sayfalama (Bölüm 6).
-- [ ] `poll_card.html`, `pagination.html` parçaları.
-- [ ] `poll_detail` view'ı: ürünler + istatistikler tek sorguda (`services.get_poll_with_stats`), favori ürün hesaplaması (Bölüm 5.4).
-- [ ] `product_card.html` (oy butonları bu fazda görünür ama pasif olabilir).
-- [ ] `my_polls`, `poll_toggle_active`, `poll_delete` view'ları (sahiplik kontrolü → 404).
-- [ ] `tt_filters.py` şablon filtreleri.
-- [ ] 404/500 şablonları.
-- [ ] Testler: misafir listeyi ve detayı görebiliyor; arama ve filtre doğru sonuç veriyor; başkası silemiyor/kapatamıyor (404); sayfalama çalışıyor.
+- [x] `home` view'ı: arama, kategori filtresi, sıralama, durum filtresi, 12'li sayfalama (Bölüm 6).
+- [x] `poll_card.html`, `pagination.html` parçaları.
+- [x] `poll_detail` view'ı: ürünler + istatistikler tek sorguda (`services.get_poll_with_stats`), favori ürün hesaplaması (Bölüm 5.4).
+- [x] `product_card.html` (oy butonları bu fazda görünür ama pasif).
+- [x] `my_polls`, `poll_toggle_active`, `poll_delete` view'ları (sahiplik kontrolü → 404).
+- [x] `tt_filters.py` şablon filtreleri.
+- [x] 404/500 şablonları. (500.html bilinçli olarak `base.html`'i extend etmiyor — Django'nun 500 handler'ı RequestContext/context processor çalıştırmadığı için tamamen bağımsız/sade tutuldu.)
+- [x] Testler: misafir listeyi ve detayı görebiliyor; arama ve filtre doğru sonuç veriyor; başkası silemiyor/kapatamıyor (404); sayfalama çalışıyor. 20 yeni test, toplam 52/52 yeşil.
 
 **Kabul kriterleri:**
-- Ana sayfa ve detay sayfası üye olmadan açılıyor.
-- Ana sayfa sorgu sayısı, anket sayısından bağımsız ve sabit (`assertNumQueries` ile doğrula).
+- [x] Ana sayfa ve detay sayfası üye olmadan açılıyor.
+- [x] Ana sayfa sorgu sayısı, anket sayısından bağımsız ve sabit (`CaptureQueriesContext` ile 3 anket / 15 anket senaryoları karşılaştırılarak doğrulandı — sorgu sayısı birebir aynı).
 
 ---
 
