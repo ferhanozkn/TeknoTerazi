@@ -22,7 +22,7 @@
 |-----|--------|-------|
 | 0 | Kurulum ve ortam | ✅ Tamamlandı |
 | 1 | Veri modeli ve admin | ✅ Tamamlandı |
-| 2 | Kimlik doğrulama | ⬜ |
+| 2 | Kimlik doğrulama | ✅ Tamamlandı |
 | 3 | Anket oluşturma | ⬜ |
 | 4 | Listeleme ve detay | ⬜ |
 | 5 | Oylama sistemi | ⬜ |
@@ -692,16 +692,16 @@ if not DEBUG:
 ### Faz 2 — Kimlik Doğrulama
 **Amaç:** Kayıt, giriş, çıkış.
 
-- [ ] `SignUpForm` (Bölüm 7.1) ve e-posta ile giriş formu.
-- [ ] Kayıt, giriş, çıkış view'ları ve URL'leri (`accounts` namespace).
-- [ ] `base.html`, navbar, mesaj bileşeni (ham ama işlevsel stil yeterli; tasarım Faz 6'da cilalanır).
-- [ ] Giriş yapmış kullanıcı kayıt/giriş sayfasına gelirse ana sayfaya yönlendir.
-- [ ] Çıkış POST formu ile yapılır.
-- [ ] Testler: başarılı kayıt, tekrar eden e-posta/kullanıcı adı, hatalı giriş, çıkış.
+- [x] `SignUpForm` (Bölüm 7.1) ve e-posta ile giriş formu.
+- [x] Kayıt, giriş, çıkış view'ları ve URL'leri (`accounts` namespace).
+- [x] `base.html`, navbar, mesaj bileşeni (ham ama işlevsel stil yeterli; tasarım Faz 6'da cilalanır). Navbar'ın referans verdiği `poll_create`/`my_polls` için de küçük stub view+template eklendi (NoReverseMatch olmasın diye); gerçek içerikleri Faz 3/4'te dolacak.
+- [x] Giriş yapmış kullanıcı kayıt/giriş sayfasına gelirse ana sayfaya yönlendir.
+- [x] Çıkış POST formu ile yapılır (GET → 405).
+- [x] Testler: başarılı kayıt, tekrar eden e-posta/kullanıcı adı, hatalı giriş, çıkış. 19/19 yeşil.
 
 **Kabul kriterleri:**
-- Kullanıcı kayıt olup otomatik giriş yapıyor; navbar'da `@kullaniciadi` görünüyor.
-- E-posta hiçbir sayfada görünmüyor.
+- [x] Kullanıcı kayıt olup otomatik giriş yapıyor; navbar'da `@kullaniciadi` görünüyor.
+- [x] E-posta hiçbir sayfada görünmüyor.
 
 ---
 

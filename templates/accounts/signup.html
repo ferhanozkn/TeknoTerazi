@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Kayıt Ol · TeknoTerazi{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+  <h1>Kayıt Ol</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="form-row">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="help-text">{{ field.help_text }}</p>{% endif %}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn--primary">Kayıt Ol</button>
+  </form>
+  <p>Zaten hesabın var mı? <a href="{% url 'accounts:login' %}">Giriş yap</a></p>
+</section>
+{% endblock %}

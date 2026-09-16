@@ -1,0 +1,17 @@
+<header class="navbar">
+  <a href="{% url 'polls:home' %}" class="navbar__brand">⚖️ TeknoTerazi</a>
+  <nav class="navbar__links">
+    <a href="{% url 'polls:poll_create' %}" class="btn btn--primary">Anket Oluştur</a>
+    {% if user.is_authenticated %}
+      <span class="navbar__user">@{{ user.username }}</span>
+      <a href="{% url 'polls:my_polls' %}">Anketlerim</a>
+      <form method="post" action="{% url 'accounts:logout' %}" class="navbar__logout">
+        {% csrf_token %}
+        <button type="submit" class="link-button">Çıkış</button>
+      </form>
+    {% else %}
+      <a href="{% url 'accounts:login' %}">Giriş Yap</a>
+      <a href="{% url 'accounts:signup' %}">Kayıt Ol</a>
+    {% endif %}
+  </nav>
+</header>
