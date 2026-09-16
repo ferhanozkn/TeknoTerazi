@@ -5,12 +5,14 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, Max, Min, Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from .forms import PollForm, ProductFormSet
-from .models import Category, Poll
-from .services import get_favorite_product, get_poll_with_stats
+from .models import Category, Poll, Product, Vote, VoteValue
+from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats
+from .voter import attach_voter_cookie, get_voter
 
 
 def home(request):
@@ -97,6 +99,20 @@ def poll_detail(request, pk):
     products = list(poll.products.all())
     favorite_product = get_favorite_product(products)
     cheapest_product = min(products, key=lambda p: p.price) if products else None
+
+    user, anon_id, _ = get_voter(request)
+    if products:
+        vote_lookup = {"product__poll_id": poll.pk}
+        vote_lookup.update({"user": user} if user is not None else {"anon_id": anon_id})
+        user_votes = {
+            v.product_id: "worth" if v.value == VoteValue.WORTH else "not_worth"
+            for v in Vote.objects.filter(**vote_lookup).only("product_id", "value")
+        }
+        for product in products:
+            product.user_vote = user_votes.get(product.pk)
+
+    can_vote = poll.is_active and not (user is not None and user.pk == poll.author_id)
+
     return render(
         request,
         "polls/poll_detail.html",
@@ -105,8 +121,43 @@ def poll_detail(request, pk):
             "products": products,
             "favorite_product": favorite_product,
             "cheapest_product": cheapest_product,
+            "can_vote": can_vote,
         },
     )
+
+
+@require_POST
+def vote(request, pk):
+    product = get_object_or_404(Product.objects.select_related("poll"), pk=pk)
+    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+    value_map = {"worth": VoteValue.WORTH, "not_worth": VoteValue.NOT_WORTH}
+    value = value_map.get(request.POST.get("value"))
+    if value is None:
+        if is_ajax:
+            return JsonResponse({"error": "Geçersiz oy değeri."}, status=400)
+        messages.error(request, "Geçersiz oy değeri.")
+        return redirect("polls:poll_detail", pk=product.poll_id)
+
+    user, anon_id, is_new_anon = get_voter(request)
+
+    try:
+        result = cast_vote(product, user, anon_id, value)
+    except VoteError as exc:
+        if is_ajax:
+            return JsonResponse({"error": exc.message}, status=exc.status)
+        messages.error(request, exc.message)
+        return redirect("polls:poll_detail", pk=product.poll_id)
+
+    if is_ajax:
+        response = JsonResponse(result)
+    else:
+        response = redirect("polls:poll_detail", pk=product.poll_id)
+
+    if user is None and is_new_anon:
+        attach_voter_cookie(response, anon_id)
+
+    return response
 
 
 @login_required

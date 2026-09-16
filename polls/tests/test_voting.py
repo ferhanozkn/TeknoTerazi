@@ -1,0 +1,111 @@
+from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
+from django.urls import reverse
+
+from polls.models import Poll, Product, Vote
+
+User = get_user_model()
+
+AJAX_HEADERS = {"HTTP_X_REQUESTED_WITH": "XMLHttpRequest"}
+
+
+def make_poll_with_product(author, **overrides):
+    poll = Poll.objects.create(author=author, title="Hangi telefonu almalıyım?", category="phone", **overrides)
+    product = Product.objects.create(poll=poll, name="Telefon A", price=1000, features="x", position=0)
+    return poll, product
+
+
+class VoteViewTests(TestCase):
+    def setUp(self):
+        self.author = User.objects.create_user(username="ahmet", email="ahmet@example.com", password="x")
+        self.poll, self.product = make_poll_with_product(self.author)
+        self.vote_url = reverse("polls:vote", kwargs={"pk": self.product.pk})
+
+    def test_guest_votes_cookie_is_set_and_toggling_same_value_removes_vote(self):
+        response = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["worth_count"], 1)
+        self.assertEqual(response.json()["user_vote"], "worth")
+        self.assertIn("tt_voter", response.cookies)
+        self.assertEqual(Vote.objects.count(), 1)
+
+        response2 = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response2.json()["worth_count"], 0)
+        self.assertIsNone(response2.json()["user_vote"])
+        self.assertEqual(Vote.objects.count(), 0)
+
+    def test_member_changes_vote_keeps_single_record(self):
+        voter = User.objects.create_user(username="ece", email="ece@example.com", password="x")
+        self.client.force_login(voter)
+
+        self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        response = self.client.post(self.vote_url, {"value": "not_worth"}, **AJAX_HEADERS)
+
+        self.assertEqual(Vote.objects.count(), 1)
+        self.assertEqual(Vote.objects.get().value, -1)
+        self.assertEqual(response.json()["user_vote"], "not_worth")
+        self.assertEqual(response.json()["worth_count"], 0)
+        self.assertEqual(response.json()["not_worth_count"], 1)
+
+    def test_closed_poll_returns_403(self):
+        self.poll.is_active = False
+        self.poll.save(update_fields=["is_active"])
+        response = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], "Bu anket oylamaya kapalı.")
+        self.assertEqual(Vote.objects.count(), 0)
+
+    def test_owner_cannot_vote_on_own_poll(self):
+        self.client.force_login(self.author)
+        response = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], "Kendi anketine oy veremezsin.")
+        self.assertEqual(Vote.objects.count(), 0)
+
+    def test_tampered_cookie_gets_new_identity_without_error(self):
+        self.client.cookies["tt_voter"] = "not-a-valid-signed-value"
+        response = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Vote.objects.count(), 1)
+        self.assertIn("tt_voter", response.cookies)
+        self.assertNotEqual(response.cookies["tt_voter"].value, "not-a-valid-signed-value")
+
+    def test_get_is_not_allowed(self):
+        response = self.client.get(self.vote_url)
+        self.assertEqual(response.status_code, 405)
+
+    def test_request_without_csrf_token_is_rejected(self):
+        csrf_client = Client(enforce_csrf_checks=True)
+        response = csrf_client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(Vote.objects.count(), 0)
+
+    def test_non_ajax_request_redirects_to_poll_detail(self):
+        response = self.client.post(self.vote_url, {"value": "worth"})
+        self.assertRedirects(response, reverse("polls:poll_detail", kwargs={"pk": self.poll.pk}))
+        self.assertEqual(Vote.objects.count(), 1)
+
+    def test_invalid_value_is_rejected(self):
+        response = self.client.post(self.vote_url, {"value": "garbage"}, **AJAX_HEADERS)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(Vote.objects.count(), 0)
+
+    def test_nonexistent_product_returns_404(self):
+        url = reverse("polls:vote", kwargs={"pk": 9999})
+        response = self.client.post(url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response.status_code, 404)
+
+
+class PollDetailUserVoteTests(TestCase):
+    def test_existing_vote_is_reflected_as_pressed(self):
+        author = User.objects.create_user(username="ahmet", email="ahmet@example.com", password="x")
+        poll, product = make_poll_with_product(author)
+        voter = User.objects.create_user(username="ece", email="ece@example.com", password="x")
+        self.client.force_login(voter)
+
+        vote_url = reverse("polls:vote", kwargs={"pk": product.pk})
+        self.client.post(vote_url, {"value": "worth"}, **AJAX_HEADERS)
+
+        response = self.client.get(reverse("polls:poll_detail", kwargs={"pk": poll.pk}))
+        self.assertContains(response, 'aria-pressed="true"', count=1)
+        self.assertContains(response, 'aria-pressed="false"', count=1)

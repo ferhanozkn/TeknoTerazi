@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load tt_filters %}
+{% load static tt_filters %}
 
 {% block title %}{{ poll.title }} · TeknoTerazi{% endblock %}
 
@@ -30,7 +30,7 @@
 
 <div class="product-grid">
   {% for product in products %}
-    {% include "polls/product_card.html" with product=product favorite_product=favorite_product cheapest_product=cheapest_product %}
+    {% include "polls/product_card.html" with product=product favorite_product=favorite_product cheapest_product=cheapest_product can_vote=can_vote %}
   {% endfor %}
 </div>
 
@@ -44,4 +44,5 @@
     });
   })();
 </script>
+<script src="{% static 'js/vote.js' %}" defer></script>
 {% endblock %}

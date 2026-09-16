@@ -25,7 +25,7 @@
 | 2 | Kimlik doğrulama | ✅ Tamamlandı |
 | 3 | Anket oluşturma | ✅ Tamamlandı |
 | 4 | Listeleme ve detay | ✅ Tamamlandı |
-| 5 | Oylama sistemi | ⬜ |
+| 5 | Oylama sistemi | ✅ Tamamlandı |
 | 6 | Tasarım sistemi ve arayüz cilası | ⬜ |
 | 7 | Güvenlik, testler, demo verisi | ⬜ |
 | 8 | Vercel'e dağıtım | ⬜ |
@@ -742,12 +742,12 @@ if not DEBUG:
 ### Faz 5 — Oylama Sistemi
 **Amaç:** Üyeli ve üyesiz oylama.
 
-- [ ] `polls/voter.py`: `get_voter(request)` → `(user, anon_id, is_new_anon)`; `attach_voter_cookie(response, anon_id)`.
-- [ ] `services.cast_vote()` (Bölüm 8, toggle ve eşzamanlılık dahil).
-- [ ] `vote` view'ı: `@require_POST`, JSON ve JSON olmayan istek desteği.
-- [ ] Detay sayfasında kullanıcının mevcut oylarını tek sorguda getirip butonlara yansıt.
-- [ ] `vote.js` (Bölüm 8, İstemci).
-- [ ] Testler:
+- [x] `polls/voter.py`: `get_voter(request)` → `(user, anon_id, is_new_anon)`; `attach_voter_cookie(response, anon_id)`.
+- [x] `services.cast_vote()` (Bölüm 8, toggle ve eşzamanlılık dahil).
+- [x] `vote` view'ı: `@require_POST`, JSON ve JSON olmayan istek desteği.
+- [x] Detay sayfasında kullanıcının mevcut oylarını tek sorguda getirip butonlara yansıt.
+- [x] `vote.js` (Bölüm 8, İstemci).
+- [x] Testler:
   - Misafir oy verir → çerez oluşur → aynı çerezle ikinci kez aynı oy → oy silinir.
   - Üye oyunu `worth`'ten `not_worth`'e değiştirir → tek kayıt kalır.
   - Kapalı ankete oy → 403.
@@ -755,11 +755,12 @@ if not DEBUG:
   - Oynanmış/geçersiz imzalı çerez → yeni kimlik atanır, hata oluşmaz.
   - GET isteği → 405.
   - CSRF token olmadan istek reddedilir (`Client(enforce_csrf_checks=True)`).
+  - 11 yeni test, toplam 63/63 yeşil.
 
 **Kabul kriterleri:**
-- Sayfa yenilenmeden oy verilebiliyor, sayılar ve çubuklar anında güncelleniyor.
-- JS kapalıyken de oy verilebiliyor.
-- Sayfa yenilendiğinde verilen oy seçili görünüyor.
+- [x] Sayfa yenilenmeden oy verilebiliyor, sayılar ve çubuklar anında güncelleniyor. (Gerçek HTTP üzerinden fetch akışı doğrulandı.)
+- [x] JS kapalıyken de oy verilebiliyor. (Plain `<form method="post">` fallback, view AJAX olmayan isteklerde detay sayfasına yönlendiriyor.)
+- [x] Sayfa yenilendiğinde verilen oy seçili görünüyor. (`aria-pressed` gerçek sunucu üzerinden doğrulandı.)
 
 ---
 
