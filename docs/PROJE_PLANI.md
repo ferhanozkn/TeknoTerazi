@@ -23,7 +23,7 @@
 | 0 | Kurulum ve ortam | ✅ Tamamlandı |
 | 1 | Veri modeli ve admin | ✅ Tamamlandı |
 | 2 | Kimlik doğrulama | ✅ Tamamlandı |
-| 3 | Anket oluşturma | ⬜ |
+| 3 | Anket oluşturma | ✅ Tamamlandı |
 | 4 | Listeleme ve detay | ⬜ |
 | 5 | Oylama sistemi | ⬜ |
 | 6 | Tasarım sistemi ve arayüz cilası | ⬜ |
@@ -708,16 +708,16 @@ if not DEBUG:
 ### Faz 3 — Anket Oluşturma
 **Amaç:** Üyelerin 2–5 ürünlü anket oluşturabilmesi.
 
-- [ ] `PollForm`, `ProductForm`, `ProductFormSet` (Bölüm 7.3).
-- [ ] `poll_create` view'ı (`@login_required`, `transaction.atomic`, `position` ataması).
-- [ ] `poll_create.html` şablonu (Bölüm 9.4), `empty_form` şablonu `<template>` etiketi içinde.
-- [ ] `poll_form.js` (Bölüm 7.4).
-- [ ] Başarı mesajı ve detay sayfasına yönlendirme (detay sayfası bu fazda basit bir iskelet olabilir).
-- [ ] Testler: 1 ürünle reddedilir, 6 ürünle reddedilir, fiyatsız/özelliksiz ürün reddedilir, tekrar eden ad reddedilir, 2 ve 5 ürünle başarılı, misafir giriş sayfasına yönlendirilir.
+- [x] `PollForm`, `ProductForm`, `ProductFormSet` (Bölüm 7.3).
+- [x] `poll_create` view'ı (`@login_required`, `transaction.atomic`, `position` ataması).
+- [x] `poll_create.html` şablonu (Bölüm 9.4), `empty_form` şablonu `<template>` etiketi içinde.
+- [x] `poll_form.js` (Bölüm 7.4).
+- [x] Başarı mesajı ve detay sayfasına yönlendirme (detay sayfası bu fazda basit bir iskelet).
+- [x] Testler: 1 ürünle reddedilir, 6 ürünle reddedilir, fiyatsız/özelliksiz ürün reddedilir, tekrar eden ad reddedilir, 2 ve 5 ürünle başarılı, misafir giriş sayfasına yönlendirilir. 9/9 yeşil.
 
 **Kabul kriterleri:**
-- Tarayıcıda ürün ekleme/çıkarma sorunsuz çalışıyor; sınırlar hem istemci hem sunucu tarafında uygulanıyor.
-- Hatalı gönderimde girilen veriler kaybolmuyor.
+- [x] Tarayıcıda ürün ekleme/çıkarma sorunsuz çalışıyor; sınırlar hem istemci hem sunucu tarafında uygulanıyor. (Gerçek HTTP üzerinden virgüllü/noktalı fiyat, opsiyonel link alanları ve `position` ataması uçtan uca doğrulandı.)
+- [x] Hatalı gönderimde girilen veriler kaybolmuyor.
 
 ---
 
@@ -891,6 +891,7 @@ app = application  # Vercel giriş noktası
 | 11 | Sahibi anonim olarak kendi anketine oy verebilir mi? (çıkış yapıp/farklı oturum) | Evet, engellenmiyor (bilinen MVP sınırlaması — anon_id ile author arasında ilişki kurulmuyor) | Session/IP bazlı ek kontrol (Faz 9) |
 | 12 | Barındırma platformu doğrulaması | Vercel doğrulandı (2026-09-16): zero-config Django desteği çalışıyor, `https://teknoterazi.vercel.app` canlı | Sorun çıksaydı Railway/Render'a geçilecekti — gerek kalmadı |
 | 13 | Test veritabanı yönetimi | `python manage.py test` her zaman `--keepdb` ile çalıştırılır (bkz. Faz 1, 2026-09-16). Bu projede Supabase yalnızca pooler (Supavisor) bağlantısı sunuyor — gerçek "direct connection" IPv6-only ve bu ağda çözülmüyor. Supavisor arka planda bağlantı tuttuğu için normal `DROP DATABASE` teardown'ı güvenilmez şekilde "being accessed by other users" hatası veriyor ve bir sonraki çalıştırmayı da tıkıyor. `--keepdb` bu adımı tamamen atlar. | IPv6 destekleyen bir ağdan gerçek direct connection kullanmak (mümkün olursa) |
+| 14 | "1–15 satır, her satır ≤120 karakter" sınırları aşıldığında hata mesajı | Doküman yalnızca "özellik boş" mesajını tanımlamış; sınır aşımları için "En fazla 15 özellik ekleyebilirsin." ve "Her özellik satırı en fazla 120 karakter olabilir." eklendi (Faz 3, 2026-09-17) | — |
 
 > Yeni kararlar bu tabloya eklenmelidir.
 
