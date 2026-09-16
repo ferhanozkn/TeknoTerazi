@@ -1,8 +1,14 @@
+from datetime import timedelta
+
 from django.db import IntegrityError, transaction
 from django.db.models import Count, Prefetch, Q
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
-from .models import Poll, Product, Vote, VoteValue
+from .models import Poll, Product, Vote, VoteAttempt, VoteValue
+
+VOTE_RATE_LIMIT = 60
+VOTE_RATE_WINDOW = timedelta(minutes=1)
 
 
 class VoteError(Exception):
@@ -41,7 +47,18 @@ def get_favorite_product(products, min_votes=3):
     return best
 
 
+def enforce_vote_rate_limit(user, anon_id):
+    voter_lookup = {"user": user} if user is not None else {"anon_id": anon_id}
+    window_start = timezone.now() - VOTE_RATE_WINDOW
+    recent_count = VoteAttempt.objects.filter(created_at__gte=window_start, **voter_lookup).count()
+    if recent_count >= VOTE_RATE_LIMIT:
+        raise VoteError(429, "Çok fazla oy isteği gönderdin. Lütfen biraz bekle.")
+    VoteAttempt.objects.create(**voter_lookup)
+
+
 def cast_vote(product, user, anon_id, value):
+    enforce_vote_rate_limit(user, anon_id)
+
     poll = product.poll
 
     if not poll.is_active:

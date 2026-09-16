@@ -121,3 +121,13 @@ class Vote(models.Model):
 
     def __str__(self):
         return f"{self.product} — {self.get_value_display()}"
+
+
+class VoteAttempt(models.Model):
+    """Hız sınırlama için oy isteklerinin (başarılı/başarısız) kaydı."""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
+    )
+    anon_id = models.UUIDField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)

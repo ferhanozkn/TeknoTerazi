@@ -25,7 +25,7 @@ All **user-facing text** (UI strings, form/validation error messages, emails) mu
 - Django 5.2 (LTS) + `psycopg[binary]` v3 + `dj-database-url` + `python-dotenv` + `whitenoise`. No other dependencies without updating `requirements.txt` and the plan's Bölüm 2.
 - **No separate frontend framework.** Django templates + plain HTML/CSS/vanilla JS only — no React/Vue/Tailwind build step/HTMX.
 - Database is **Supabase Postgres**, in local dev too — never fall back to SQLite. Some model constraints (partial unique indexes, `CheckConstraint`) are Postgres-specific.
-- `AUTH_USER_MODEL` is not yet set in `config/settings.py`. It must be set to `accounts.CustomUser` in the same change that creates `CustomUser`, before the first `migrate` is ever run (see Faz 1 in the plan) — Django cannot swap the user model after tables exist.
+- `AUTH_USER_MODEL = "accounts.CustomUser"` (set in Faz 1, before the first `migrate` — Django cannot swap the user model after tables exist). Any custom user model field needing a Turkish label needs an explicit `verbose_name` — it does not inherit one from Django's translation catalog since it's our own field, not a built-in one (bit us once: signup form showed "Username"/"Email" until fixed in Faz 6).
 
 ## Commands
 
@@ -59,4 +59,6 @@ If a stray `test_postgres` is ever left over and `--keepdb` still errors, connec
 
 ## Current state
 
-The project is at the end of **Faz 0** (setup): Django project + `accounts`/`polls` app skeletons exist, `settings.py` is fully wired to environment variables and Supabase, and both Vercel deployment and the Supabase connection have been verified live. `accounts` and `polls` still have Django's default stub `models.py`/`views.py`/`admin.py` — no data model, forms, views, or URLs beyond `/admin/` exist yet. That work starts at Faz 1 (data model + admin) per the plan.
+Faz 0–7 are complete (setup, data model/admin, auth, poll creation, listing/detail, voting, design system, security/demo-data hardening). The full MVP feature set is live locally: signup/login/logout, poll creation with 2–5 products, home feed with search/filter/sort/pagination, poll detail with member+anonymous voting (AJAX with a no-JS form fallback), owner-only close/delete, a full design system (`static/css/main.css`), and a `seed_demo` management command. Remaining phases per `docs/PROJE_PLANI.md`: Faz 8 (Vercel deploy — the project itself was already deploy-verified in Faz 0, but production env vars are still placeholders and need real values before going live) and Faz 9 (post-MVP backlog, not started by design).
+
+A `VoteAttempt` model (added Faz 7) backs a simple DB-based rate limit (60 vote requests/minute per voter) — see `polls/services.enforce_vote_rate_limit`.

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from polls.models import Poll, Product, Vote
+from polls.models import Poll, Product, Vote, VoteAttempt
 
 User = get_user_model()
 
@@ -109,3 +109,37 @@ class PollDetailUserVoteTests(TestCase):
         response = self.client.get(reverse("polls:poll_detail", kwargs={"pk": poll.pk}))
         self.assertContains(response, 'aria-pressed="true"', count=1)
         self.assertContains(response, 'aria-pressed="false"', count=1)
+
+
+class VoteRateLimitTests(TestCase):
+    def setUp(self):
+        author = User.objects.create_user(username="ahmet", email="ahmet@example.com", password="x")
+        self.poll, self.product = make_poll_with_product(author)
+        self.vote_url = reverse("polls:vote", kwargs={"pk": self.product.pk})
+
+    def _sign_anon_cookie(self):
+        response = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        return response.cookies["tt_voter"].value
+
+    def test_over_limit_requests_are_rejected_with_429(self):
+        signed = self._sign_anon_cookie()
+        self.client.cookies["tt_voter"] = signed
+        anon_id = Vote.objects.get().anon_id
+
+        VoteAttempt.objects.bulk_create(
+            [VoteAttempt(anon_id=anon_id) for _ in range(59)]
+        )
+
+        response = self.client.post(self.vote_url, {"value": "not_worth"}, **AJAX_HEADERS)
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.json()["error"], "Çok fazla oy isteği gönderdin. Lütfen biraz bekle.")
+
+    def test_different_voters_have_independent_limits(self):
+        signed = self._sign_anon_cookie()
+        self.client.cookies["tt_voter"] = signed
+        anon_id = Vote.objects.get().anon_id
+        VoteAttempt.objects.bulk_create([VoteAttempt(anon_id=anon_id) for _ in range(60)])
+
+        other_client = Client()
+        response = other_client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response.status_code, 200)

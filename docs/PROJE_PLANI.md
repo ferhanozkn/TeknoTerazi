@@ -27,7 +27,7 @@
 | 4 | Listeleme ve detay | ✅ Tamamlandı |
 | 5 | Oylama sistemi | ✅ Tamamlandı |
 | 6 | Tasarım sistemi ve arayüz cilası | ✅ Tamamlandı |
-| 7 | Güvenlik, testler, demo verisi | ⬜ |
+| 7 | Güvenlik, testler, demo verisi | ✅ Tamamlandı |
 | 8 | Vercel'e dağıtım | ⬜ |
 | 9 | MVP sonrası (backlog) | — |
 
@@ -788,19 +788,19 @@ if not DEBUG:
 ### Faz 7 — Güvenlik, Testler ve Demo Verisi
 **Amaç:** Yayına hazır sağlamlık.
 
-- [ ] Tüm POST formlarında `{% csrf_token %}` olduğunu doğrula.
-- [ ] Kullanıcı içeriğinde `|safe` kullanılmadığını doğrula (otomatik kaçış açık).
-- [ ] URL alanlarında yalnızca `http/https` şemasına izin ver (`javascript:` engellenir).
-- [ ] Üretim güvenlik ayarları (Bölüm 11.2), `python manage.py check --deploy` uyarılarını gider.
-- [ ] Basit kötüye kullanım önlemi: aynı oylayıcı 1 dakikada 60'tan fazla oy isteği atarsa 429 döndür (DB tabanlı sayım; bellek içi önbellek sunucusuzda güvenilir değildir). *(Opsiyonel — süre kısıtlıysa Faz 9'a bırak.)*
-- [ ] `seed_demo` yönetim komutu: 3 demo kullanıcı, farklı kategorilerde 8–10 anket, rastgele oylar. `--flush` bayrağı ile yalnızca demo verisini temizler.
-- [ ] Test kapsamını gözden geçir; tüm testler yeşil.
-- [ ] `README.md`'yi güncelle.
+- [x] Tüm POST formlarında `{% csrf_token %}` olduğunu doğrula. (8 form, hepsinde var.)
+- [x] Kullanıcı içeriğinde `|safe` kullanılmadığını doğrula (otomatik kaçış açık). (Hiç kullanılmamış.)
+- [x] URL alanlarında yalnızca `http/https` şemasına izin ver (`javascript:` engellenir). (Faz 1'den beri `URLValidator(schemes=[...])`.)
+- [x] Üretim güvenlik ayarları (Bölüm 11.2), `python manage.py check --deploy` uyarılarını gider. (Yalnızca 2 opsiyonel HSTS subdomain/preload uyarısı kaldı, bilinçli olarak MVP'de açılmadı — bkz. not.)
+- [x] Basit kötüye kullanım önlemi: aynı oylayıcı 1 dakikada 60'tan fazla oy isteği atarsa 429 döndür (DB tabanlı sayım; bellek içi önbellek sunucusuzda güvenilir değildir). `VoteAttempt` modeli + `services.enforce_vote_rate_limit`.
+- [x] `seed_demo` yönetim komutu: 3 demo kullanıcı, farklı kategorilerde 8–10 anket, rastgele oylar. `--flush` bayrağı ile yalnızca demo verisini temizler. (9 anket, 9 farklı kategori.)
+- [x] Test kapsamını gözden geçir; tüm testler yeşil. (68/68.)
+- [x] `README.md`'yi güncelle.
 
 **Kabul kriterleri:**
-- `USE_DIRECT_DB=1 python manage.py test --keepdb` tamamen geçiyor.
-- `check --deploy` kritik uyarı vermiyor.
-- `python manage.py seed_demo` ile uygulama dolu görünüyor.
+- [x] `USE_DIRECT_DB=1 python manage.py test --keepdb` tamamen geçiyor. (68/68.)
+- [x] `check --deploy` kritik uyarı vermiyor. (Yalnızca 2 opsiyonel/isteğe bağlı HSTS uyarısı — preload geri dönüşü zor olduğu için MVP'de bilinçli olarak atlandı.)
+- [x] `python manage.py seed_demo` ile uygulama dolu görünüyor. (Gerçek Supabase veritabanında doğrulandı.)
 
 ---
 
