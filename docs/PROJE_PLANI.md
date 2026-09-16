@@ -9,7 +9,7 @@
 
 1. Her oturumun başında bu dosyayı oku ve hangi fazda olduğumuzu **"İlerleme Durumu"** bölümünden kontrol et.
 2. Bir fazdaki görevleri sırayla yap; tamamlanan maddeleri `- [ ]` → `- [x]` olarak işaretle.
-3. Faz bitince: testleri çalıştır (`python manage.py test`), kabul kriterlerini tek tek doğrula, ardından anlamlı bir commit at (örn. `feat(faz-3): anket oluşturma formu`).
+3. Faz bitince: testleri çalıştır (`USE_DIRECT_DB=1 python manage.py test --keepdb` — bkz. Karar Günlüğü #13), kabul kriterlerini tek tek doğrula, ardından anlamlı bir commit at (örn. `feat(faz-3): anket oluşturma formu`).
 4. **Dil kuralı:** Kullanıcıya görünen tüm metinler (arayüz, hata mesajları, e-postalar) **Türkçe**; kod, değişken, fonksiyon, model ve dosya adları **İngilizce**.
 5. Ayrı bir frontend framework (React, Vue, Tailwind build, HTMX vb.) **kullanma**. Yalnızca Django şablonları + saf HTML, CSS ve JavaScript.
 6. Bu dosyada karar verilmemiş bir konuyla karşılaşırsan en basit çözümü uygula ve **"Açık Sorular / Karar Günlüğü"** bölümüne not düş.
@@ -21,7 +21,7 @@
 | Faz | Başlık | Durum |
 |-----|--------|-------|
 | 0 | Kurulum ve ortam | ✅ Tamamlandı |
-| 1 | Veri modeli ve admin | ⬜ |
+| 1 | Veri modeli ve admin | ✅ Tamamlandı |
 | 2 | Kimlik doğrulama | ⬜ |
 | 3 | Anket oluşturma | ⬜ |
 | 4 | Listeleme ve detay | ⬜ |
@@ -675,17 +675,17 @@ if not DEBUG:
 ### Faz 1 — Veri Modeli ve Admin
 **Amaç:** Tüm modeller, kısıtlar ve yönetim paneli.
 
-- [ ] `CustomUser` modelini oluştur (Bölüm 4.1), `AUTH_USER_MODEL` ayarla.
-- [ ] `Poll`, `Product`, `Vote` modellerini oluştur (Bölüm 4.2–4.4), `Category` ve `VoteValue` için `TextChoices`/`IntegerChoices` kullan.
-- [ ] `Product.features_list` property'sini yaz.
-- [ ] `makemigrations` ve `USE_DIRECT_DB=1 python manage.py migrate`.
-- [ ] Admin: `CustomUserAdmin`; `PollAdmin` (Product inline, liste filtreleri: kategori, aktiflik, tarih; arama: başlık, yazar); `VoteAdmin` (salt okunur liste).
-- [ ] `createsuperuser` ile admin hesabı oluştur.
-- [ ] Model testleri: kısıtların çalıştığını doğrula (aynı kullanıcı aynı ürüne iki oy veremez; hem user hem anon_id boş olamaz).
+- [x] `CustomUser` modelini oluştur (Bölüm 4.1), `AUTH_USER_MODEL` ayarla.
+- [x] `Poll`, `Product`, `Vote` modellerini oluştur (Bölüm 4.2–4.4), `Category` ve `VoteValue` için `TextChoices`/`IntegerChoices` kullan.
+- [x] `Product.features_list` property'sini yaz.
+- [x] `makemigrations` ve `USE_DIRECT_DB=1 python manage.py migrate`. (Supabase'e uygulandı.)
+- [x] Admin: `CustomUserAdmin`; `PollAdmin` (Product inline, liste filtreleri: kategori, aktiflik, tarih; arama: başlık, yazar); `VoteAdmin` (salt okunur liste).
+- [x] `createsuperuser` ile admin hesabı oluştur. (`admin@gmail.com` / kullanıcı adı `admin` — şifre kullanıcı tarafından belirlendi.)
+- [x] Model testleri: kısıtların çalıştığını doğrula (aynı kullanıcı aynı ürüne iki oy veremez; hem user hem anon_id boş olamaz). `polls/tests/test_models.py` + `accounts/tests.py`, 8/8 test yeşil.
 
 **Kabul kriterleri:**
-- Admin panelinden anket + ürün eklenebiliyor.
-- Kısıt testleri geçiyor.
+- [x] Admin panelinden anket + ürün eklenebiliyor. (Gerçek giriş + formset submit ile uçtan uca doğrulandı, ardından test verisi silindi.)
+- [x] Kısıt testleri geçiyor. (8/8, `USE_DIRECT_DB=1 python manage.py test --keepdb`.)
 
 ---
 
@@ -795,7 +795,7 @@ if not DEBUG:
 - [ ] `README.md`'yi güncelle.
 
 **Kabul kriterleri:**
-- `python manage.py test` tamamen geçiyor.
+- `USE_DIRECT_DB=1 python manage.py test --keepdb` tamamen geçiyor.
 - `check --deploy` kritik uyarı vermiyor.
 - `python manage.py seed_demo` ile uygulama dolu görünüyor.
 
@@ -890,6 +890,7 @@ app = application  # Vercel giriş noktası
 | 10 | Favori rozeti eşiği | En az 3 oy | Ayarlanabilir |
 | 11 | Sahibi anonim olarak kendi anketine oy verebilir mi? (çıkış yapıp/farklı oturum) | Evet, engellenmiyor (bilinen MVP sınırlaması — anon_id ile author arasında ilişki kurulmuyor) | Session/IP bazlı ek kontrol (Faz 9) |
 | 12 | Barındırma platformu doğrulaması | Vercel doğrulandı (2026-09-16): zero-config Django desteği çalışıyor, `https://teknoterazi.vercel.app` canlı | Sorun çıksaydı Railway/Render'a geçilecekti — gerek kalmadı |
+| 13 | Test veritabanı yönetimi | `python manage.py test` her zaman `--keepdb` ile çalıştırılır (bkz. Faz 1, 2026-09-16). Bu projede Supabase yalnızca pooler (Supavisor) bağlantısı sunuyor — gerçek "direct connection" IPv6-only ve bu ağda çözülmüyor. Supavisor arka planda bağlantı tuttuğu için normal `DROP DATABASE` teardown'ı güvenilmez şekilde "being accessed by other users" hatası veriyor ve bir sonraki çalıştırmayı da tıkıyor. `--keepdb` bu adımı tamamen atlar. | IPv6 destekleyen bir ağdan gerçek direct connection kullanmak (mümkün olursa) |
 
 > Yeni kararlar bu tabloya eklenmelidir.
 

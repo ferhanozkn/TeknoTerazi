@@ -133,8 +133,7 @@ STORAGES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# Not: AUTH_USER_MODEL, CustomUser modeli oluşturulduğunda Faz 1'de eklenecek
-# (ilk migrate'ten önce tanımlanmış olmalı).
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "polls:home"

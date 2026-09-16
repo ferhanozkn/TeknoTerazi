@@ -1,3 +1,26 @@
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
 
-# Create your models here.
+username_validator = RegexValidator(
+    regex=r"^[a-zA-Z0-9_]{3,30}$",
+    message="Kullanıcı adı 3–30 karakter olmalı ve yalnızca harf, rakam ve alt çizgi içermelidir.",
+)
+
+
+class CustomUser(AbstractUser):
+    first_name = None
+    last_name = None
+
+    username = models.CharField(max_length=30, unique=True, validators=[username_validator])
+    email = models.EmailField(unique=True)
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
+
+    def save(self, *args, **kwargs):
+        self.email = self.email.lower()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.username

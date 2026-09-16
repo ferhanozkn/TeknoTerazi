@@ -32,5 +32,7 @@ USE_DIRECT_DB=1 python manage.py migrate
 ## Testler
 
 ```bash
-python manage.py test
+USE_DIRECT_DB=1 python manage.py test --keepdb
 ```
+
+`--keepdb` şart: Supabase'in yalnızca pooler bağlantısı erişilebilir olduğu için normal test veritabanı silme adımı güvenilir çalışmıyor (bkz. `CLAUDE.md`).

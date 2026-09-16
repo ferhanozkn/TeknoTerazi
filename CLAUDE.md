@@ -40,10 +40,14 @@ python manage.py runserver
 # Django's migrations need.
 USE_DIRECT_DB=1 python manage.py migrate
 
-python manage.py test                                   # full suite
-python manage.py test polls                              # one app
-python manage.py test polls.tests.test_models.SomeTest   # one test case/method
+USE_DIRECT_DB=1 python manage.py test --keepdb                                   # full suite
+USE_DIRECT_DB=1 python manage.py test polls --keepdb                              # one app
+USE_DIRECT_DB=1 python manage.py test polls.tests.test_models.SomeTest --keepdb   # one test case/method
 ```
+
+**Always pass `--keepdb`.** Supabase only exposes pooler connections (Supavisor) to this project — there is no reachable non-pooler "direct connection" (it's IPv6-only and doesn't resolve on this network). Supavisor keeps a background connection to every database it has touched, so Django's normal `DROP DATABASE` teardown after a test run reliably fails with `database "test_postgres" is being accessed by other users`, which then blocks the *next* run too (`--noinput` doesn't help — recreation fails the same way). `--keepdb` sidesteps this by never dropping the test database. Tests also need `USE_DIRECT_DB=1` since the transaction-mode pooler (port 6543) can't run the DDL `manage.py test` needs.
+
+If a stray `test_postgres` is ever left over and `--keepdb` still errors, connect with `DIRECT_DATABASE_URL` and run `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='test_postgres';` then `DROP DATABASE test_postgres;` — this can take one or two tries since Supavisor may reopen a connection immediately.
 
 `config/settings.py` loads config from `.env` via `python-dotenv` (see `.env.example` for the full list of keys). `.env` itself is gitignored and holds real secrets/credentials — never commit it or print its contents.
 
