@@ -4,13 +4,17 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet, inlineformset_factory
 
-from .models import Poll, Product
+from .models import Category, Poll, Product
 
 
 class PollForm(forms.ModelForm):
     class Meta:
         model = Poll
         fields = ["title", "category", "description"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["category"].choices = [("", "Kategori seç")] + list(Category.choices)
 
 
 class CommaDecimalField(forms.DecimalField):

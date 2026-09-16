@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load tt_filters %}
 
 {% block title %}TeknoTerazi{% endblock %}
 
@@ -8,6 +9,13 @@
   <p>Aday ürünleri topluluğa sor, oylarla en değerlisini bul.</p>
   <a href="{% url 'polls:poll_create' %}" class="btn btn--primary">Anket Oluştur</a>
 </section>
+
+<div class="category-chips">
+  <a href="{% url 'polls:home' %}" class="chip {% if not selected_category %}chip--active{% endif %}">Tümü</a>
+  {% for value, label in categories %}
+    <a href="?kategori={{ value }}" class="chip {% if value == selected_category %}chip--active{% endif %}">{{ value|category_icon }} {{ label }}</a>
+  {% endfor %}
+</div>
 
 <form method="get" class="filters">
   <input type="search" name="q" value="{{ query }}" placeholder="🔍 Ara...">

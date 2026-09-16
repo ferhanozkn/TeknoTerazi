@@ -12,8 +12,10 @@ class CustomUser(AbstractUser):
     first_name = None
     last_name = None
 
-    username = models.CharField(max_length=30, unique=True, validators=[username_validator])
-    email = models.EmailField(unique=True)
+    username = models.CharField(
+        "kullanıcı adı", max_length=30, unique=True, validators=[username_validator]
+    )
+    email = models.EmailField("e-posta", unique=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Giriş Yap · TeknoTerazi{% endblock %}
 
@@ -11,7 +12,14 @@
     {% for field in form %}
       <div class="form-row">
         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field }}
+        {% if field.field.widget.input_type == "password" %}
+          <div class="password-field">
+            {{ field }}
+            <button type="button" class="password-toggle" data-target="{{ field.id_for_label }}" aria-label="Parolayı göster">👁</button>
+          </div>
+        {% else %}
+          {{ field }}
+        {% endif %}
         {{ field.errors }}
       </div>
     {% endfor %}
@@ -20,4 +28,5 @@
   </form>
   <p>Hesabın yok mu? <a href="{% url 'accounts:signup' %}">Kayıt ol</a></p>
 </section>
+<script src="{% static 'js/password_toggle.js' %}" defer></script>
 {% endblock %}

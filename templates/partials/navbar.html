@@ -1,6 +1,9 @@
 <header class="navbar">
   <a href="{% url 'polls:home' %}" class="navbar__brand">⚖️ TeknoTerazi</a>
-  <nav class="navbar__links">
+  <button type="button" class="navbar__toggle" id="navbar-toggle" aria-expanded="false" aria-controls="navbar-links" aria-label="Menüyü aç/kapat">
+    <span></span><span></span><span></span>
+  </button>
+  <nav class="navbar__links" id="navbar-links">
     <a href="{% url 'polls:poll_create' %}" class="btn btn--primary">Anket Oluştur</a>
     {% if user.is_authenticated %}
       <span class="navbar__user">@{{ user.username }}</span>

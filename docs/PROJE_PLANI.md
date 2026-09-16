@@ -26,7 +26,7 @@
 | 3 | Anket oluşturma | ✅ Tamamlandı |
 | 4 | Listeleme ve detay | ✅ Tamamlandı |
 | 5 | Oylama sistemi | ✅ Tamamlandı |
-| 6 | Tasarım sistemi ve arayüz cilası | ⬜ |
+| 6 | Tasarım sistemi ve arayüz cilası | ✅ Tamamlandı |
 | 7 | Güvenlik, testler, demo verisi | ⬜ |
 | 8 | Vercel'e dağıtım | ⬜ |
 | 9 | MVP sonrası (backlog) | — |
@@ -767,19 +767,21 @@ if not DEBUG:
 ### Faz 6 — Tasarım Sistemi ve Arayüz Cilası
 **Amaç:** Bölüm 10'daki görsel kimliği tüm sayfalara uygulamak.
 
-- [ ] `main.css`: değişkenler, reset, tipografi, düzen yardımcıları, bileşenler (buton, kart, rozet, form, toast, çubuk, sayfalama).
-- [ ] Arka plan nokta ızgarası ve renk lekeleri (Bölüm 10.2).
-- [ ] Logo (`logo.svg`: terazi ikonu + gradyan) ve favicon.
-- [ ] Hero bölümü, kategori çipleri, boş durumlar.
-- [ ] Mobil navbar (hamburger).
-- [ ] Şifre göster/gizle, karakter sayaçları, panoya kopyala butonu.
-- [ ] Erişilebilirlik kontrolleri (Bölüm 10.5).
-- [ ] 375px, 768px ve 1280px genişliklerde tüm sayfaları gözden geçir.
+- [x] `main.css`: değişkenler, reset, tipografi, düzen yardımcıları, bileşenler (buton, kart, rozet, form, toast, çubuk, sayfalama).
+- [x] Arka plan nokta ızgarası ve renk lekeleri (Bölüm 10.2).
+- [x] Logo (`logo.svg`: terazi ikonu + gradyan) ve favicon (`favicon.svg`).
+- [x] Hero bölümü, kategori çipleri, boş durumlar.
+- [x] Mobil navbar (hamburger) — `static/js/nav.js`.
+- [x] Şifre göster/gizle (`static/js/password_toggle.js`), karakter sayaçları (Faz 3'te vardı), panoya kopyala butonu (Faz 4/5'te vardı).
+- [x] Erişilebilirlik kontrolleri (Bölüm 10.5): `:focus-visible` halkası, `prefers-reduced-motion`, tüm alanlarda `<label>` zaten mevcuttu.
+- [x] 375px, 768px ve 1280px genişliklerde tüm sayfalar Chrome üzerinden gerçek ekran görüntüleriyle gözden geçirildi (ana sayfa, detay, kayıt, anket oluşturma, anketlerim).
 
 **Kabul kriterleri:**
-- Tüm sayfalar tutarlı görünüyor; yatay taşma yok.
-- Klavye ile tüm akışlar (kayıt, anket oluşturma, oylama) tamamlanabiliyor.
-- Harici CSS/JS kütüphanesi yok (yalnızca Google Fonts).
+- [x] Tüm sayfalar tutarlı görünüyor; yatay taşma yok. (375/768/1280px'te gerçek tarayıcıda doğrulandı.)
+- [x] Klavye ile tüm akışlar (kayıt, anket oluşturma, oylama) tamamlanabiliyor. (Oylama: Tab ile odaklanıp Enter ile oy verme, sayfa yenilenmeden sonuç güncellendi — izole test anketiyle doğrulandı.)
+- [x] Harici CSS/JS kütüphanesi yok (yalnızca Google Fonts).
+
+**Faz 6'da bulunan ve düzeltilen hata:** `CustomUser.username`/`email` alanlarında `verbose_name` yoktu, bu yüzden kayıt formu "Username"/"Email" gibi İngilizce etiketler gösteriyordu (dil kuralına aykırı). Model alanlarına Türkçe `verbose_name` eklenip küçük bir migration (`accounts/migrations/0002_...`) ile düzeltildi. Ayrıca `PollForm`'da kategori seçiminin varsayılan "---------" placeholder'ı "Kategori seç" ile değiştirildi.
 
 ---
 

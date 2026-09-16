@@ -6,6 +6,10 @@
   <title>{% block title %}TeknoTerazi{% endblock %}</title>
   <meta property="og:title" content="TeknoTerazi">
   <meta property="og:description" content="Almadan önce topluluğa sor.">
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
@@ -15,5 +19,6 @@
     {% block content %}{% endblock %}
   </main>
   {% include "partials/footer.html" %}
+  <script src="{% static 'js/nav.js' %}" defer></script>
 </body>
 </html>
