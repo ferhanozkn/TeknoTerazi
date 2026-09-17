@@ -855,7 +855,7 @@ app = application  # Vercel giriş noktası
 - E-posta doğrulama ve şifre sıfırlama (SMTP / transactional e-posta servisi) — ⏸️ ertelendi, bkz. Karar Günlüğü #16 (domain gerekiyor)
 - ✅ Google ile giriş — Tamamlandı (2026-09-17). Bkz. Karar Günlüğü #17 (django-allauth seçimi ve teknik detaylar).
 - ✅ Profil sayfası ve kullanıcı adı değiştirme — Tamamlandı (2026-09-17). `accounts:profile` (`/hesap/profil/`), giriş zorunlu. E-posta, katılma tarihi ve anket sayısı salt okunur gösteriliyor; kullanıcı adı `UsernameChangeForm` ile değiştirilebiliyor (kendisi hariç case-insensitive tekillik kontrolü). Navbar'daki `@kullanıcı_adı` artık profile linkliyor. 5 yeni test (`accounts/tests.py::ProfileViewTests`), tüm suite (73 test) geçiyor.
-- Girişte, anonim oyları kullanıcı hesabına birleştirme
+- ✅ Girişte, anonim oyları kullanıcı hesabına birleştirme — Tamamlandı (2026-09-17). `polls.services.merge_anon_votes_into_user(anon_id, user)`: anon_id'ye ait oyları kullanıcıya taşır; kullanıcının kendi anketine ait anonim oy varsa (bkz. karar #11) veya aynı üründe zaten üye oyu varsa anonim oy sessizce silinir. `polls/signals.py`'daki `user_logged_in` sinyali (Django'nun genel giriş sinyali — form girişi, kayıt ve Google girişinin hepsinde tetiklenir) `anon_id`'yi `request.user` değişmeden önceki çerezden okuyup birleştirmeyi tetikler; ayrı ayrı üç entegrasyon noktasına gerek kalmadı. `polls/voter.py`'ye `read_anon_id()` eklendi (oturum durumundan bağımsız çerez okuma). 9 yeni test (`polls/tests/test_vote_merge.py`), tarayıcıdan uçtan uca doğrulandı (anonim oy → kayıt → oy hesaba taşınmış).
 
 **Anket**
 - Ürün görsellerini Supabase Storage'a yükleme

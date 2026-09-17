@@ -92,6 +92,32 @@ def cast_vote(product, user, anon_id, value):
     return get_product_vote_stats(product, user, anon_id)
 
 
+def merge_anon_votes_into_user(anon_id, user):
+    """Girişte, o tarayıcının anon_id ile verdiği oyları kullanıcı hesabına taşır.
+
+    Kullanıcının kendi anketine ait anonim oy (bkz. Karar Günlüğü #11) veya
+    aynı üründe zaten mevcut bir üye oyu varsa, anonim oy sessizce silinir.
+    """
+    if anon_id is None:
+        return
+
+    anon_votes = Vote.objects.filter(anon_id=anon_id).select_related("product__poll")
+    for vote in anon_votes:
+        if vote.product.poll.author_id == user.pk:
+            vote.delete()
+            continue
+        with transaction.atomic():
+            existing = Vote.objects.select_for_update().filter(
+                product=vote.product, user=user
+            ).first()
+            if existing is None:
+                vote.user = user
+                vote.anon_id = None
+                vote.save(update_fields=["user", "anon_id"])
+            else:
+                vote.delete()
+
+
 def get_product_vote_stats(product, user, anon_id):
     stats = (
         Product.objects.filter(pk=product.pk)
