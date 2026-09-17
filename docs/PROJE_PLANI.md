@@ -843,6 +843,9 @@ app = application  # Vercel giriş noktası
 ---
 
 ### Faz 9 — MVP Sonrası (Backlog — birlikte tartışılacak)
+
+> ⏸️ **Durduruldu (2026-09-17).** Şu ana kadar tamamlanan: **Hesap** kategorisinden Google ile giriş, profil sayfası/kullanıcı adı değiştirme, anonim oyları hesaba birleştirme (e-posta doğrulama/şifre sıfırlama domain bekliyor, bkz. #16); **Kalite ve güvenlik** kategorisinin tamamı (Sentry, Cloudflare Turnstile, IP-hash oy kontrolü). Henüz başlanmayan kategoriler: **Topluluk ve etkileşim**, **Anket** (görsel yükleme, süreli anketler vb.), **Deneyim** (karanlık mod, PWA, çoklu dil vb.), ve Kalite ve güvenlik'te kalan **Analitik** maddesi. Devam edilecekse buradan başla.
+
 Önceliklendirme için aday fikirler:
 
 **Topluluk ve etkileşim**
@@ -868,7 +871,7 @@ app = application  # Vercel giriş noktası
 - ✅ Hata izleme (Sentry) — Tamamlandı (2026-09-17). Vercel Marketplace üzerinden Sentry kuruldu (Developer/ücretsiz plan). `SENTRY_DSN` yalnızca Vercel'de (entegrasyon otomatik enjekte ediyor) tanımlı; `config/settings.py` bu değişken varsa `sentry_sdk.init()` çağırır, yoksa (yerel geliştirme) SDK hiç etkinleşmez — DSN'in gerçek değerini bilmemize gerek kalmadı. `send_default_pii=False`, `traces_sample_rate=0.0` (yalnızca hata izleme, performans izleme yok — ücretsiz plan kotasını korumak için). Kurulum sırasında yanlışlıkla ikinci bir Sentry kaynağı oluşturuldu (bkz. Karar Günlüğü #18), temizlendi. Gerçek DSN ile yerelden bir test hatası gönderilerek Sentry panelinde göründüğü doğrulandı.
 - ✅ Cloudflare Turnstile ile bot koruması (kayıt formu) — Tamamlandı (2026-09-17). Ücretsiz Standard plan (sınırsız istek, doğrulandı — bkz. Karar Günlüğü #19). `accounts/turnstile.py`: `verify_turnstile_token()` Cloudflare'in `siteverify` API'sine token gönderir; `TURNSTILE_SECRET_KEY` tanımlı değilse (yerel geliştirme) hep `True` döner ve widget şablonda hiç gösterilmez. `accounts/views.py::signup` formu her zaman `is_valid()` ile temizler, turnstile başarısızsa `form.add_error(None, ...)` ile Türkçe hata eklenir, ikisi de geçerse kayıt tamamlanır. Anonim oylama (AJAX/invisible-mode) koruması kapsam dışı bırakıldı — ayrı bir backlog maddesi olarak bırakıldı (daha karmaşık bir entegrasyon gerektiriyor). 8 yeni test.
 - ✅ IP-hash tabanlı ek oy tekrarı kontrolü — Tamamlandı (2026-09-17). `polls/voter.py`: `get_client_ip()` Vercel'in edge proxy'sinin koyduğu `X-Forwarded-For`'un ilk değerini (yoksa `REMOTE_ADDR`) kullanır; `hash_ip()` ham IP'yi hiç saklamadan `SECRET_KEY` + sabit salt ile SHA-256'lar. `Vote.ip_hash` alanı eklendi (migration `polls/0003_vote_ip_hash`, sadece anonim oylarda doldurulur — üyeler zaten hesapla tekil). `cast_vote()`: bir ürüne **yeni** bir anon_id ilk kez oy vermeye çalıştığında, aynı ürüne aynı ip_hash'ten **başka bir anon_id** zaten oy vermişse 403 ile reddedilir; aynı anon_id kendi oyunu değiştirmeye/geri almaya devam edebilir. Bilinen sınırlama (karar #6'da zaten öngörülmüştü): paylaşılan IP'ler (CGNAT, ofis/okul ağı) gerçek farklı kişileri de bloklayabilir — kesin bir çözüm değil, çerez temizleyip tekrar oy vermeyi zorlaştıran ek bir katman. 5 yeni test, sunucuda curl ile iki ayrı çerez kimliğiyle uçtan uca doğrulandı.
-- Hata izleme (Sentry vb.), analitik
+- Analitik (Sentry sadece hata izliyor, kullanım/ürün analitiği ayrı bir konu — henüz ele alınmadı)
 
 **Deneyim**
 - Karanlık mod
