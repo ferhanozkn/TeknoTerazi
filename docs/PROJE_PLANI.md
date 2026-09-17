@@ -831,7 +831,7 @@ app = application  # Vercel giriş noktası
     END LOOP;
   END $$;
   ```
-  Ardından Supabase panelindeki **Security Advisor** uyarılarını kontrol et. Doğrulandı (2026-09-17) — RLS ile ilgili uyarı yok.
+  Ardından Supabase panelindeki **Security Advisor** uyarılarını kontrol et. Doğrulandı (2026-09-17) — RLS ile ilgili tablo uyarısı yok. Ayrıca Supabase'in kendi `public.rls_auto_enable()` event trigger fonksiyonunun `anon`/`authenticated` tarafından çalıştırılabildiğine dair 2 ayrı uyarı çıktı (bizim kodumuzdan kaynaklanmıyor); `EXECUTE` izni bu rollerden geri alınarak giderildi (bkz. Karar Günlüğü #15).
 - [x] Üretimde duman testi: kayıt → anket oluştur → gizli pencerede oy ver → sonuçları kontrol et → admin paneline gir. Tamamlandı (2026-09-17) — tarayıcıdan gerçek akış test edildi: `smoketest_faz8` hesabıyla kayıt olundu, 2 ürünlü anket oluşturuldu, sahibi olarak oy verme denemesi doğru şekilde reddedildi (karar #3), çıkış yapılıp anonim olarak oy verildi (AJAX ile anında %100 sonucu göründü), geçici bir `smoketest_admin` superuser ile `/admin/` girişi ve Türkçe arayüz (HOŞ GELDİNİZ, SİTEYİ GÖSTER, OTURUMU KAPAT) doğrulandı. Test kullanıcıları, anket ve oy testten sonra veritabanından silindi.
 
 **Kabul kriterleri:**
@@ -895,6 +895,7 @@ app = application  # Vercel giriş noktası
 | 12 | Barındırma platformu doğrulaması | Vercel doğrulandı (2026-09-16): zero-config Django desteği çalışıyor, `https://teknoterazi.vercel.app` canlı | Sorun çıksaydı Railway/Render'a geçilecekti — gerek kalmadı |
 | 13 | Test veritabanı yönetimi | `python manage.py test` her zaman `--keepdb` ile çalıştırılır (bkz. Faz 1, 2026-09-16). Bu projede Supabase yalnızca pooler (Supavisor) bağlantısı sunuyor — gerçek "direct connection" IPv6-only ve bu ağda çözülmüyor. Supavisor arka planda bağlantı tuttuğu için normal `DROP DATABASE` teardown'ı güvenilmez şekilde "being accessed by other users" hatası veriyor ve bir sonraki çalıştırmayı da tıkıyor. `--keepdb` bu adımı tamamen atlar. | IPv6 destekleyen bir ağdan gerçek direct connection kullanmak (mümkün olursa) |
 | 14 | "1–15 satır, her satır ≤120 karakter" sınırları aşıldığında hata mesajı | Doküman yalnızca "özellik boş" mesajını tanımlamış; sınır aşımları için "En fazla 15 özellik ekleyebilirsin." ve "Her özellik satırı en fazla 120 karakter olabilir." eklendi (Faz 3, 2026-09-17) | — |
+| 15 | Security Advisor: `public.rls_auto_enable()` SECURITY DEFINER fonksiyonu `anon`/`authenticated` tarafından çalıştırılabiliyor uyarısı | Bu fonksiyon bizim kodumuzdan gelmiyor — Supabase'in platform tarafında sağladığı, yeni tablo oluşturulduğunda otomatik RLS açan bir event trigger fonksiyonu (sahibi `postgres`). Event trigger olarak otomatik tetiklendiği için `anon`/`authenticated`/`PUBLIC` rollerinin `EXECUTE` iznine ihtiyacı yok; `REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM PUBLIC, anon, authenticated;` ile kaldırıldı (Faz 8, 2026-09-17), sadece `postgres` ve `service_role` kaldı. | — |
 
 > Yeni kararlar bu tabloya eklenmelidir.
 
