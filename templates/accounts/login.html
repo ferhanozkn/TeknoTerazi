@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load socialaccount %}
 
 {% block title %}Giriş Yap · TeknoTerazi{% endblock %}
 
@@ -27,6 +28,8 @@
     <button type="submit" class="btn btn--primary">Giriş Yap</button>
   </form>
   <p>Hesabın yok mu? <a href="{% url 'accounts:signup' %}">Kayıt ol</a></p>
+  <div class="auth-divider"><span>veya</span></div>
+  <a href="{% provider_login_url 'google' %}" class="btn btn--google">Google ile giriş yap</a>
 </section>
 <script src="{% static 'js/password_toggle.js' %}" defer></script>
 {% endblock %}

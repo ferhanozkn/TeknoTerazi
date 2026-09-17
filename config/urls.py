@@ -21,5 +21,7 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("hesap/", include("accounts.urls")),
+    path("oauth/", include("allauth.socialaccount.urls")),
+    path("oauth/", include("allauth.socialaccount.providers.google.urls")),
     path("", include("polls.urls")),
 ]

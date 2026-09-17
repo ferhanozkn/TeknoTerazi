@@ -1,7 +1,11 @@
+from allauth.core.exceptions import ImmediateHttpResponse
+from allauth.socialaccount.models import SocialLogin
+from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
+from accounts.adapters import AccountAdapter, SocialAccountAdapter
 from accounts.models import CustomUser
 
 
@@ -123,6 +127,45 @@ class ProfileViewTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.post(reverse("accounts:profile"), {"username": "ahmet"})
         self.assertRedirects(response, reverse("accounts:profile"))
+
+
+class GoogleLoginButtonTests(TestCase):
+    def test_login_page_has_google_button(self):
+        response = self.client.get(reverse("accounts:login"))
+        self.assertContains(response, "Google ile giriş yap")
+
+    def test_signup_page_has_google_button(self):
+        response = self.client.get(reverse("accounts:signup"))
+        self.assertContains(response, "Google ile kayıt ol")
+
+
+class SocialAccountAdapterTests(TestCase):
+    def _request(self):
+        request = RequestFactory().get("/hesap/giris/")
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        return request
+
+    def test_generate_unique_username_strips_disallowed_characters(self):
+        adapter = AccountAdapter()
+        username = adapter.generate_unique_username(["ahmet.yilmaz+test@example.com"])
+        self.assertRegex(username, r"^[a-zA-Z0-9_]{3,30}$")
+
+    def test_pre_social_login_redirects_when_email_already_registered(self):
+        CustomUser.objects.create_user(username="ahmet", email="ahmet@example.com", password="x")
+        adapter = SocialAccountAdapter()
+        sociallogin = SocialLogin(user=CustomUser(email="Ahmet@Example.com"))
+        request = self._request()
+        with self.assertRaises(ImmediateHttpResponse) as ctx:
+            adapter.pre_social_login(request, sociallogin)
+        self.assertEqual(ctx.exception.response.status_code, 302)
+        self.assertIn(reverse("accounts:login"), ctx.exception.response.url)
+
+    def test_pre_social_login_allows_new_email(self):
+        adapter = SocialAccountAdapter()
+        sociallogin = SocialLogin(user=CustomUser(email="yeni@example.com"))
+        request = self._request()
+        adapter.pre_social_login(request, sociallogin)  # raises nothing
 
 
 class LogoutViewTests(TestCase):

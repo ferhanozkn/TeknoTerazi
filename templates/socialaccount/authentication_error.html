@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Google girişi başarısız · TeknoTerazi{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+  <h1>Google girişi başarısız oldu</h1>
+  <p>Google ile giriş sırasında bir sorun oluştu. Lütfen tekrar dene veya e-posta ve parolanla giriş yap.</p>
+  <a href="{% url 'accounts:login' %}" class="btn btn--primary">Giriş sayfasına dön</a>
+</section>
+{% endblock %}

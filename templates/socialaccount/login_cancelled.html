@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Google girişi iptal edildi · TeknoTerazi{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+  <h1>Google girişi iptal edildi</h1>
+  <p>Google ile giriş işlemini iptal ettin. İstersen e-posta ve parolanla giriş yapabilir veya tekrar deneyebilirsin.</p>
+  <a href="{% url 'accounts:login' %}" class="btn btn--primary">Giriş sayfasına dön</a>
+</section>
+{% endblock %}
