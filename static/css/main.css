@@ -270,6 +270,21 @@ a {
   box-shadow: var(--shadow);
 }
 
+.profile-info {
+  margin: 0 0 1.5rem;
+}
+
+.profile-info dt {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.profile-info dd {
+  margin: 0.125rem 0 0;
+  font-weight: 600;
+}
+
 /* Formlar */
 
 .form-row {

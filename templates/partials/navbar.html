@@ -6,7 +6,7 @@
   <nav class="navbar__links" id="navbar-links">
     <a href="{% url 'polls:poll_create' %}" class="btn btn--primary">Anket Oluştur</a>
     {% if user.is_authenticated %}
-      <span class="navbar__user">@{{ user.username }}</span>
+      <a href="{% url 'accounts:profile' %}" class="navbar__user">@{{ user.username }}</a>
       <a href="{% url 'polls:my_polls' %}">Anketlerim</a>
       <form method="post" action="{% url 'accounts:logout' %}" class="navbar__logout">
         {% csrf_token %}

@@ -27,6 +27,27 @@ class SignUpForm(UserCreationForm):
         return email
 
 
+class UsernameChangeForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ["username"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].label = "Kullanıcı adı"
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if (
+            username
+            and CustomUser.objects.filter(username__iexact=username)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
+            raise forms.ValidationError("Bu kullanıcı adı zaten kullanılıyor.")
+        return username
+
+
 class EmailLoginForm(AuthenticationForm):
     error_messages = {
         **AuthenticationForm.error_messages,

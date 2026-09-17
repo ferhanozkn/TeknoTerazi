@@ -852,9 +852,9 @@ app = application  # Vercel giriş noktası
 - Trend anketler, "bugün en çok oy alanlar"
 
 **Hesap**
-- E-posta doğrulama ve şifre sıfırlama (SMTP / transactional e-posta servisi)
+- E-posta doğrulama ve şifre sıfırlama (SMTP / transactional e-posta servisi) — ⏸️ ertelendi, bkz. Karar Günlüğü #16 (domain gerekiyor)
 - Google ile giriş
-- Profil sayfası ve kullanıcı adı değiştirme
+- ✅ Profil sayfası ve kullanıcı adı değiştirme — Tamamlandı (2026-09-17). `accounts:profile` (`/hesap/profil/`), giriş zorunlu. E-posta, katılma tarihi ve anket sayısı salt okunur gösteriliyor; kullanıcı adı `UsernameChangeForm` ile değiştirilebiliyor (kendisi hariç case-insensitive tekillik kontrolü). Navbar'daki `@kullanıcı_adı` artık profile linkliyor. 5 yeni test (`accounts/tests.py::ProfileViewTests`), tüm suite (73 test) geçiyor.
 - Girişte, anonim oyları kullanıcı hesabına birleştirme
 
 **Anket**
@@ -896,6 +896,8 @@ app = application  # Vercel giriş noktası
 | 13 | Test veritabanı yönetimi | `python manage.py test` her zaman `--keepdb` ile çalıştırılır (bkz. Faz 1, 2026-09-16). Bu projede Supabase yalnızca pooler (Supavisor) bağlantısı sunuyor — gerçek "direct connection" IPv6-only ve bu ağda çözülmüyor. Supavisor arka planda bağlantı tuttuğu için normal `DROP DATABASE` teardown'ı güvenilmez şekilde "being accessed by other users" hatası veriyor ve bir sonraki çalıştırmayı da tıkıyor. `--keepdb` bu adımı tamamen atlar. | IPv6 destekleyen bir ağdan gerçek direct connection kullanmak (mümkün olursa) |
 | 14 | "1–15 satır, her satır ≤120 karakter" sınırları aşıldığında hata mesajı | Doküman yalnızca "özellik boş" mesajını tanımlamış; sınır aşımları için "En fazla 15 özellik ekleyebilirsin." ve "Her özellik satırı en fazla 120 karakter olabilir." eklendi (Faz 3, 2026-09-17) | — |
 | 15 | Security Advisor: `public.rls_auto_enable()` SECURITY DEFINER fonksiyonu `anon`/`authenticated` tarafından çalıştırılabiliyor uyarısı | Bu fonksiyon bizim kodumuzdan gelmiyor — Supabase'in platform tarafında sağladığı, yeni tablo oluşturulduğunda otomatik RLS açan bir event trigger fonksiyonu (sahibi `postgres`). Event trigger olarak otomatik tetiklendiği için `anon`/`authenticated`/`PUBLIC` rollerinin `EXECUTE` iznine ihtiyacı yok; `REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM PUBLIC, anon, authenticated;` ile kaldırıldı (Faz 8, 2026-09-17), sadece `postgres` ve `service_role` kaldı. | — |
+
+| 16 | Faz 9: E-posta doğrulama / şifre sıfırlama için Resend entegrasyonu | Ertelendi (2026-09-17) — Vercel Marketplace üzerinden Resend kurulumu, ücretsiz/genel domain'lerle (`teknoterazi.vercel.app` dahil) reddediliyor ("We don't allow free public domains. Please use a domain you own instead."); sahip olunan gerçek bir domain olmadan tamamlanamıyor. Domain kararı verilene kadar bu özellik beklemede. | Gerçek bir domain satın alınınca veya kullanıcı zaten sahip olduğu bir domain'i bağlayınca devam edilecek |
 
 > Yeni kararlar bu tabloya eklenmelidir.
 

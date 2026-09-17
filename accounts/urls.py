@@ -18,4 +18,5 @@ urlpatterns = [
         name="login",
     ),
     path("cikis/", LogoutView.as_view(), name="logout"),
+    path("profil/", views.profile, name="profile"),
 ]

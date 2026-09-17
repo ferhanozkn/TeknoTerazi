@@ -87,6 +87,44 @@ class LoginViewTests(TestCase):
         self.assertRedirects(response, reverse("polls:home"))
 
 
+class ProfileViewTests(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="ahmet", email="ahmet@example.com", password="x"
+        )
+
+    def test_anonymous_user_redirected_to_login(self):
+        response = self.client.get(reverse("accounts:profile"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("accounts:login"), response.url)
+
+    def test_profile_shows_current_username_and_email(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("accounts:profile"))
+        self.assertContains(response, "ahmet")
+        self.assertContains(response, "ahmet@example.com")
+
+    def test_username_can_be_changed(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("accounts:profile"), {"username": "mehmet"})
+        self.assertRedirects(response, reverse("accounts:profile"))
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.username, "mehmet")
+
+    def test_duplicate_username_case_insensitive_is_rejected(self):
+        CustomUser.objects.create_user(username="Mehmet", email="mehmet@example.com", password="x")
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("accounts:profile"), {"username": "mehmet"})
+        self.assertContains(response, "Bu kullanıcı adı zaten kullanılıyor.")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.username, "ahmet")
+
+    def test_keeping_same_username_is_not_rejected_as_duplicate(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("accounts:profile"), {"username": "ahmet"})
+        self.assertRedirects(response, reverse("accounts:profile"))
+
+
 class LogoutViewTests(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(username="ahmet", email="ahmet@example.com", password="x")
