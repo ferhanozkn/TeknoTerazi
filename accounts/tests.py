@@ -34,6 +34,7 @@ VALID_SIGNUP_DATA = {
 }
 
 
+@override_settings(TURNSTILE_SECRET_KEY="")
 class SignUpViewTests(TestCase):
     def test_successful_signup_logs_user_in_and_redirects_home(self):
         response = self.client.post(reverse("accounts:signup"), VALID_SIGNUP_DATA)
@@ -210,6 +211,7 @@ class SignUpTurnstileTests(TestCase):
         self.assertContains(response, "cf-turnstile")
         self.assertContains(response, "test-site-key")
 
+    @override_settings(TURNSTILE_SITE_KEY="")
     def test_signup_page_has_no_widget_when_not_configured(self):
         response = self.client.get(reverse("accounts:signup"))
         self.assertNotContains(response, "cf-turnstile")

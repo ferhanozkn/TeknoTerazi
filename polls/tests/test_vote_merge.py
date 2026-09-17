@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from polls.models import Poll, Product, Vote
@@ -73,6 +73,7 @@ class MergeOnLoginIntegrationTests(TestCase):
         self.assertEqual(anon_vote.user, voter)
         self.assertIsNone(anon_vote.anon_id)
 
+    @override_settings(TURNSTILE_SECRET_KEY="")
     def test_signup_merges_anon_vote(self):
         anon_vote = self._vote_anonymously()
 
