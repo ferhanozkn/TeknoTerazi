@@ -23,6 +23,21 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h]
 CSRF_TRUSTED_ORIGINS = [o for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o]
 
+# Hata izleme (Faz 9) — SENTRY_DSN yalnızca Vercel'de (Sentry entegrasyonu
+# üzerinden) tanımlı; yerelde tanımlı değilse SDK hiç etkinleşmez.
+SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        environment="production" if not DEBUG else "development",
+        send_default_pii=False,
+        traces_sample_rate=0.0,
+    )
+
 
 # Application definition
 
