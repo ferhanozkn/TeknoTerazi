@@ -1,12 +1,16 @@
+from unittest.mock import Mock, patch
+
+import requests
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.models import SocialLogin
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.exceptions import ValidationError
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
 from accounts.adapters import AccountAdapter, SocialAccountAdapter
 from accounts.models import CustomUser
+from accounts.turnstile import verify_turnstile_token
 
 
 class CustomUserTests(TestCase):
@@ -166,6 +170,63 @@ class SocialAccountAdapterTests(TestCase):
         sociallogin = SocialLogin(user=CustomUser(email="yeni@example.com"))
         request = self._request()
         adapter.pre_social_login(request, sociallogin)  # raises nothing
+
+
+class VerifyTurnstileTokenTests(TestCase):
+    @override_settings(TURNSTILE_SECRET_KEY="")
+    def test_returns_true_when_not_configured(self):
+        self.assertTrue(verify_turnstile_token(None))
+        self.assertTrue(verify_turnstile_token(""))
+
+    @override_settings(TURNSTILE_SECRET_KEY="test-secret")
+    def test_returns_false_when_token_missing(self):
+        self.assertFalse(verify_turnstile_token(None))
+        self.assertFalse(verify_turnstile_token(""))
+
+    @override_settings(TURNSTILE_SECRET_KEY="test-secret")
+    @patch("accounts.turnstile.requests.post")
+    def test_returns_true_on_successful_verification(self, mock_post):
+        mock_post.return_value = Mock(json=lambda: {"success": True})
+        self.assertTrue(verify_turnstile_token("gecerli-token"))
+        mock_post.assert_called_once()
+
+    @override_settings(TURNSTILE_SECRET_KEY="test-secret")
+    @patch("accounts.turnstile.requests.post")
+    def test_returns_false_on_failed_verification(self, mock_post):
+        mock_post.return_value = Mock(json=lambda: {"success": False})
+        self.assertFalse(verify_turnstile_token("gecersiz-token"))
+
+    @override_settings(TURNSTILE_SECRET_KEY="test-secret")
+    @patch("accounts.turnstile.requests.post")
+    def test_returns_false_on_network_error(self, mock_post):
+        mock_post.side_effect = requests.RequestException("boom")
+        self.assertFalse(verify_turnstile_token("herhangi-bir-token"))
+
+
+class SignUpTurnstileTests(TestCase):
+    @override_settings(TURNSTILE_SECRET_KEY="test-secret", TURNSTILE_SITE_KEY="test-site-key")
+    def test_signup_page_renders_widget_when_configured(self):
+        response = self.client.get(reverse("accounts:signup"))
+        self.assertContains(response, "cf-turnstile")
+        self.assertContains(response, "test-site-key")
+
+    def test_signup_page_has_no_widget_when_not_configured(self):
+        response = self.client.get(reverse("accounts:signup"))
+        self.assertNotContains(response, "cf-turnstile")
+
+    @override_settings(TURNSTILE_SECRET_KEY="test-secret")
+    @patch("accounts.views.verify_turnstile_token", return_value=False)
+    def test_signup_blocked_when_turnstile_fails(self, mock_verify):
+        response = self.client.post(reverse("accounts:signup"), VALID_SIGNUP_DATA)
+        self.assertContains(response, "Bot koruması doğrulanamadı. Lütfen tekrar dene.")
+        self.assertFalse(CustomUser.objects.filter(username="ahmet").exists())
+
+    @override_settings(TURNSTILE_SECRET_KEY="test-secret")
+    @patch("accounts.views.verify_turnstile_token", return_value=True)
+    def test_signup_allowed_when_turnstile_succeeds(self, mock_verify):
+        response = self.client.post(reverse("accounts:signup"), VALID_SIGNUP_DATA)
+        self.assertRedirects(response, reverse("polls:home"))
+        self.assertTrue(CustomUser.objects.filter(username="ahmet").exists())
 
 
 class LogoutViewTests(TestCase):

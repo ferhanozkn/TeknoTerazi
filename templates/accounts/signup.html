@@ -25,6 +25,9 @@
         {{ field.errors }}
       </div>
     {% endfor %}
+    {% if turnstile_site_key %}
+      <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
+    {% endif %}
     <button type="submit" class="btn btn--primary">Kayıt Ol</button>
   </form>
   <p>Zaten hesabın var mı? <a href="{% url 'accounts:login' %}">Giriş yap</a></p>
@@ -32,4 +35,7 @@
   <a href="{% provider_login_url 'google' %}" class="btn btn--google">Google ile kayıt ol</a>
 </section>
 <script src="{% static 'js/password_toggle.js' %}" defer></script>
+{% if turnstile_site_key %}
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+{% endif %}
 {% endblock %}

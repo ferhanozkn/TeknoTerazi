@@ -23,6 +23,11 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h]
 CSRF_TRUSTED_ORIGINS = [o for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o]
 
+# Bot koruması (Faz 9) — anahtarlar tanımlı değilse (yerel geliştirme)
+# widget hiç gösterilmez ve doğrulama otomatik geçer.
+TURNSTILE_SITE_KEY = os.getenv("TURNSTILE_SITE_KEY", "")
+TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY", "")
+
 # Hata izleme (Faz 9) — SENTRY_DSN yalnızca Vercel'de (Sentry entegrasyonu
 # üzerinden) tanımlı; yerelde tanımlı değilse SDK hiç etkinleşmez.
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")

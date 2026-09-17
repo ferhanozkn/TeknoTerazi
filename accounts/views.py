@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import SignUpForm, UsernameChangeForm
+from .turnstile import verify_turnstile_token
 
 
 def signup(request):
@@ -12,7 +14,11 @@ def signup(request):
 
     if request.method == "POST":
         form = SignUpForm(request.POST)
-        if form.is_valid():
+        form_valid = form.is_valid()
+        turnstile_ok = verify_turnstile_token(request.POST.get("cf-turnstile-response"))
+        if not turnstile_ok:
+            form.add_error(None, "Bot koruması doğrulanamadı. Lütfen tekrar dene.")
+        if form_valid and turnstile_ok:
             user = form.save()
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             messages.success(request, f"Aramıza hoş geldin, @{user.username}! 🎉")
@@ -20,7 +26,11 @@ def signup(request):
     else:
         form = SignUpForm()
 
-    return render(request, "accounts/signup.html", {"form": form})
+    return render(
+        request,
+        "accounts/signup.html",
+        {"form": form, "turnstile_site_key": settings.TURNSTILE_SITE_KEY},
+    )
 
 
 @login_required
