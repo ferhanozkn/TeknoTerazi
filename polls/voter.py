@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 
 from django.conf import settings
@@ -5,6 +6,7 @@ from django.conf import settings
 COOKIE_NAME = "tt_voter"
 COOKIE_SALT = "tt-voter"
 COOKIE_MAX_AGE = 60 * 60 * 24 * 365  # 365 gün
+IP_HASH_SALT = "tt-ip-hash"
 
 
 def read_anon_id(request):
@@ -28,6 +30,23 @@ def get_voter(request):
         return None, anon_id, False
 
     return None, uuid.uuid4(), True
+
+
+def get_client_ip(request):
+    """Vercel'in edge proxy'si gerçek istemci IP'sini X-Forwarded-For'un ilk
+    değeri olarak koyar; bu header dışarıdan sahtelenemez."""
+    forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR", "")
+
+
+def hash_ip(ip):
+    """IP'yi geri döndürülemez şekilde hash'ler (ham IP hiçbir yerde saklanmaz)."""
+    if not ip:
+        return ""
+    digest = hashlib.sha256(f"{IP_HASH_SALT}:{settings.SECRET_KEY}:{ip}".encode()).hexdigest()
+    return digest
 
 
 def attach_voter_cookie(response, anon_id):

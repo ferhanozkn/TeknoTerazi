@@ -56,7 +56,7 @@ def enforce_vote_rate_limit(user, anon_id):
     VoteAttempt.objects.create(**voter_lookup)
 
 
-def cast_vote(product, user, anon_id, value):
+def cast_vote(product, user, anon_id, value, ip_hash=""):
     enforce_vote_rate_limit(user, anon_id)
 
     poll = product.poll
@@ -77,7 +77,15 @@ def cast_vote(product, user, anon_id, value):
         with transaction.atomic():
             existing = Vote.objects.select_for_update().filter(**lookup).first()
             if existing is None:
-                Vote.objects.create(value=value, **lookup)
+                if user is None and ip_hash:
+                    already_voted_from_ip = (
+                        Vote.objects.filter(product=product, ip_hash=ip_hash)
+                        .exclude(anon_id=anon_id)
+                        .exists()
+                    )
+                    if already_voted_from_ip:
+                        raise VoteError(403, "Bu IP adresinden bu ürüne zaten oy verilmiş.")
+                Vote.objects.create(value=value, ip_hash=ip_hash, **lookup)
             elif existing.value == value:
                 existing.delete()
             else:

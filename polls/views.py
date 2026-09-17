@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 from .forms import PollForm, ProductFormSet
 from .models import Category, Poll, Product, Vote, VoteValue
 from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats
-from .voter import attach_voter_cookie, get_voter
+from .voter import attach_voter_cookie, get_client_ip, get_voter, hash_ip
 
 
 def home(request):
@@ -140,9 +140,10 @@ def vote(request, pk):
         return redirect("polls:poll_detail", pk=product.poll_id)
 
     user, anon_id, is_new_anon = get_voter(request)
+    ip_hash = hash_ip(get_client_ip(request)) if user is None else ""
 
     try:
-        result = cast_vote(product, user, anon_id, value)
+        result = cast_vote(product, user, anon_id, value, ip_hash=ip_hash)
     except VoteError as exc:
         if is_ajax:
             return JsonResponse({"error": exc.message}, status=exc.status)

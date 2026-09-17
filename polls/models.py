@@ -94,6 +94,7 @@ class Vote(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
     anon_id = models.UUIDField(null=True, blank=True, db_index=True)
+    ip_hash = models.CharField(max_length=64, blank=True, default="", db_index=True)
     value = models.SmallIntegerField(choices=VoteValue.choices)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

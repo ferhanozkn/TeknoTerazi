@@ -866,7 +866,7 @@ app = application  # Vercel giriş noktası
 
 **Kalite ve güvenlik**
 - Cloudflare Turnstile / hCaptcha ile bot koruması
-- IP-hash tabanlı ek oy tekrarı kontrolü
+- ✅ IP-hash tabanlı ek oy tekrarı kontrolü — Tamamlandı (2026-09-17). `polls/voter.py`: `get_client_ip()` Vercel'in edge proxy'sinin koyduğu `X-Forwarded-For`'un ilk değerini (yoksa `REMOTE_ADDR`) kullanır; `hash_ip()` ham IP'yi hiç saklamadan `SECRET_KEY` + sabit salt ile SHA-256'lar. `Vote.ip_hash` alanı eklendi (migration `polls/0003_vote_ip_hash`, sadece anonim oylarda doldurulur — üyeler zaten hesapla tekil). `cast_vote()`: bir ürüne **yeni** bir anon_id ilk kez oy vermeye çalıştığında, aynı ürüne aynı ip_hash'ten **başka bir anon_id** zaten oy vermişse 403 ile reddedilir; aynı anon_id kendi oyunu değiştirmeye/geri almaya devam edebilir. Bilinen sınırlama (karar #6'da zaten öngörülmüştü): paylaşılan IP'ler (CGNAT, ofis/okul ağı) gerçek farklı kişileri de bloklayabilir — kesin bir çözüm değil, çerez temizleyip tekrar oy vermeyi zorlaştıran ek bir katman. 5 yeni test, sunucuda curl ile iki ayrı çerez kimliğiyle uçtan uca doğrulandı.
 - Hata izleme (Sentry vb.), analitik
 
 **Deneyim**

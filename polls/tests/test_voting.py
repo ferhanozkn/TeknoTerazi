@@ -111,6 +111,73 @@ class PollDetailUserVoteTests(TestCase):
         self.assertContains(response, 'aria-pressed="false"', count=1)
 
 
+class IpHashDuplicateVoteTests(TestCase):
+    def setUp(self):
+        author = User.objects.create_user(username="ahmet", email="ahmet@example.com", password="x")
+        self.poll, self.product = make_poll_with_product(author)
+        self.vote_url = reverse("polls:vote", kwargs={"pk": self.product.pk})
+
+    def test_second_anon_identity_from_same_ip_is_rejected(self):
+        response1 = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response1.status_code, 200)
+
+        other_client = Client()
+        response2 = other_client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response2.status_code, 403)
+        self.assertEqual(response2.json()["error"], "Bu IP adresinden bu ürüne zaten oy verilmiş.")
+        self.assertEqual(Vote.objects.count(), 1)
+
+    def test_same_anon_identity_can_still_change_or_remove_own_vote(self):
+        response1 = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.client.cookies["tt_voter"] = response1.cookies["tt_voter"].value
+
+        response2 = self.client.post(self.vote_url, {"value": "not_worth"}, **AJAX_HEADERS)
+        self.assertEqual(response2.status_code, 200)
+        self.assertEqual(Vote.objects.get().value, -1)
+
+    def test_different_ip_is_not_blocked(self):
+        self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS, REMOTE_ADDR="1.2.3.4")
+
+        other_client = Client()
+        response = other_client.post(
+            self.vote_url, {"value": "worth"}, **AJAX_HEADERS, REMOTE_ADDR="5.6.7.8"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Vote.objects.count(), 2)
+
+    def test_x_forwarded_for_is_preferred_over_remote_addr(self):
+        self.client.post(
+            self.vote_url,
+            {"value": "worth"},
+            **AJAX_HEADERS,
+            REMOTE_ADDR="10.0.0.1",
+            HTTP_X_FORWARDED_FOR="9.9.9.9, 10.0.0.1",
+        )
+        other_client = Client()
+        response = other_client.post(
+            self.vote_url,
+            {"value": "worth"},
+            **AJAX_HEADERS,
+            REMOTE_ADDR="10.0.0.2",
+            HTTP_X_FORWARDED_FOR="9.9.9.9, 10.0.0.2",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_member_votes_are_not_ip_restricted(self):
+        voter1 = User.objects.create_user(username="ece", email="ece@example.com", password="x")
+        voter2 = User.objects.create_user(username="can", email="can@example.com", password="x")
+
+        self.client.force_login(voter1)
+        response1 = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response1.status_code, 200)
+        self.client.logout()
+
+        self.client.force_login(voter2)
+        response2 = self.client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        self.assertEqual(response2.status_code, 200)
+        self.assertEqual(Vote.objects.count(), 2)
+
+
 class VoteRateLimitTests(TestCase):
     def setUp(self):
         author = User.objects.create_user(username="ahmet", email="ahmet@example.com", password="x")
@@ -141,5 +208,7 @@ class VoteRateLimitTests(TestCase):
         VoteAttempt.objects.bulk_create([VoteAttempt(anon_id=anon_id) for _ in range(60)])
 
         other_client = Client()
-        response = other_client.post(self.vote_url, {"value": "worth"}, **AJAX_HEADERS)
+        response = other_client.post(
+            self.vote_url, {"value": "worth"}, **AJAX_HEADERS, REMOTE_ADDR="8.8.8.8"
+        )
         self.assertEqual(response.status_code, 200)
