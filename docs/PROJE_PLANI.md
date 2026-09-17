@@ -28,7 +28,7 @@
 | 5 | Oylama sistemi | ✅ Tamamlandı |
 | 6 | Tasarım sistemi ve arayüz cilası | ✅ Tamamlandı |
 | 7 | Güvenlik, testler, demo verisi | ✅ Tamamlandı |
-| 8 | Vercel'e dağıtım | ⬜ |
+| 8 | Vercel'e dağıtım | ✅ Tamamlandı |
 | 9 | MVP sonrası (backlog) | — |
 
 ---
@@ -818,10 +818,10 @@ app = application  # Vercel giriş noktası
 
 **Görevler:**
 - [x] `wsgi.py` düzenlemesi (`app = application` — Faz 0'da yapıldı). `vercel.json` eklenmeyecek (bkz. yukarıdaki not).
-- [x] Vercel projesi oluşturuldu (`ferhan-oezkan/teknoterazi`, Faz 0'da erken doğrulama için). GitHub deposu henüz bağlanmadı — bu fazda bağla (otomatik deploy için).
-- [ ] Ortam değişkenlerini Vercel paneline **gerçek** değerlerle gir/güncelle: `SECRET_KEY` (yeni ve güçlü), `DEBUG=False`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` (gerçek domain ile), `DATABASE_URL` (6543 pooler). ⚠️ Faz 0'da yalnızca doğrulama amaçlı **placeholder** değerler girildi, bunlar üretime geçmeden önce gerçek değerlerle değiştirilmeli.
-- [ ] Migration'ları **yerelden** üretim veritabanına uygula: `USE_DIRECT_DB=1 python manage.py migrate`. (Dağıtım sırasında migration çalıştırılmaz.)
-- [ ] **Supabase güvenliği:** `public` şemasındaki tüm tablolarda RLS'i aç. Django, tabloların sahibi olan `postgres` rolüyle bağlandığı için etkilenmez; ancak Supabase REST API'si (anon/authenticated anahtarları) üzerinden erişim kapanır. Supabase SQL Editor'da çalıştır (her yeni migration'dan sonra tekrarla):
+- [x] Vercel projesi oluşturuldu (`ferhan-oezkan/teknoterazi`, Faz 0'da erken doğrulama için). GitHub deposu bağlandı (2026-09-17) — Vercel'in GitHub App'i önce GitHub tarafında kurulu değildi, Vercel dashboard'daki proje Git ayarlarından "Connect" akışıyla kurulup `ferhanozkn/TeknoTerazi` reposuna erişim verildi, ardından `vercel git connect` ile bağlantı doğrulandı. Artık `main`'e push otomatik deploy tetikliyor.
+- [x] Ortam değişkenlerini Vercel paneline **gerçek** değerlerle gir/güncelle: `SECRET_KEY` (yeni ve güçlü), `DEBUG=False`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` (gerçek domain ile), `DATABASE_URL` (6543 pooler). Tamamlandı (2026-09-17) — Vercel CLI ile (`npx vercel env rm/add ... production`) Faz 0'daki placeholder değerler kaldırılıp gerçek değerlerle değiştirildi: `SECRET_KEY` yeni üretilmiş güçlü bir değer (yereldeki dev anahtarından farklı), `DEBUG=False`, `ALLOWED_HOSTS=teknoterazi.vercel.app,.vercel.app`, `CSRF_TRUSTED_ORIGINS=https://teknoterazi.vercel.app,https://*.vercel.app`, `DATABASE_URL` yereldeki gerçek Supabase transaction pooler (6543) bağlantısıyla aynı.
+- [x] Migration'ları **yerelden** üretim veritabanına uygula: `USE_DIRECT_DB=1 python manage.py migrate`. (Dağıtım sırasında migration çalıştırılmaz.) Doğrulandı (2026-09-17) — production `DATABASE_URL` geliştirme boyunca kullanılan aynı Supabase projesine işaret ediyor (ayrı bir prod DB yok), `USE_DIRECT_DB=1 python manage.py showmigrations` tüm migration'ların zaten uygulanmış olduğunu gösterdi.
+- [x] **Supabase güvenliği:** `public` şemasındaki tüm tablolarda RLS'i aç. Django, tabloların sahibi olan `postgres` rolüyle bağlandığı için etkilenmez; ancak Supabase REST API'si (anon/authenticated anahtarları) üzerinden erişim kapanır. Tamamlandı (2026-09-17) — aşağıdaki blok, Supabase SQL Editor yerine `DIRECT_DATABASE_URL` ile psycopg üzerinden çalıştırıldı (psql yerelde kurulu değildi); `pg_tables.rowsecurity` sorgusuyla 14 public tablonun tamamında `True` olduğu doğrulandı. Her yeni migration'dan sonra tekrarla:
   ```sql
   DO $$
   DECLARE r record;
@@ -831,8 +831,8 @@ app = application  # Vercel giriş noktası
     END LOOP;
   END $$;
   ```
-  Ardından Supabase panelindeki **Security Advisor** uyarılarını kontrol et.
-- [ ] Üretimde duman testi: kayıt → anket oluştur → gizli pencerede oy ver → sonuçları kontrol et → admin paneline gir.
+  Ardından Supabase panelindeki **Security Advisor** uyarılarını kontrol et. Doğrulandı (2026-09-17) — RLS ile ilgili uyarı yok.
+- [x] Üretimde duman testi: kayıt → anket oluştur → gizli pencerede oy ver → sonuçları kontrol et → admin paneline gir. Tamamlandı (2026-09-17) — tarayıcıdan gerçek akış test edildi: `smoketest_faz8` hesabıyla kayıt olundu, 2 ürünlü anket oluşturuldu, sahibi olarak oy verme denemesi doğru şekilde reddedildi (karar #3), çıkış yapılıp anonim olarak oy verildi (AJAX ile anında %100 sonucu göründü), geçici bir `smoketest_admin` superuser ile `/admin/` girişi ve Türkçe arayüz (HOŞ GELDİNİZ, SİTEYİ GÖSTER, OTURUMU KAPAT) doğrulandı. Test kullanıcıları, anket ve oy testten sonra veritabanından silindi.
 
 **Kabul kriterleri:**
 - Uygulama `*.vercel.app` adresinde HTTPS ile çalışıyor.
