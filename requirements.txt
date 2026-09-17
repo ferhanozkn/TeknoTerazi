@@ -3,5 +3,4 @@ psycopg[binary]>=3.2
 dj-database-url>=2.2
 python-dotenv>=1.0
 whitenoise>=6.7
-django-allauth>=65.0
-PyJWT[crypto]>=2.9
+django-allauth[socialaccount]>=65.0
