@@ -55,6 +55,34 @@
   {% endfor %}
 </div>
 
+{% if attribute_keys %}
+  <section class="comparison-table-wrap">
+    <h2>Karşılaştırma tablosu</h2>
+    <div class="comparison-table-scroll">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Özellik</th>
+            {% for product in products %}
+              <th>{{ product.name }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for key in attribute_keys %}
+            <tr>
+              <th scope="row">{{ key }}</th>
+              {% for product in products %}
+                <td>{{ product.attributes_dict|dict_get:key|default:"—" }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endif %}
+
 <script>
   (function () {
     var button = document.getElementById("share-button");

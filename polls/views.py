@@ -212,6 +212,14 @@ def poll_detail(request, pk):
         for product in products:
             product.show_results = True
 
+    attribute_keys = []
+    seen_keys = set()
+    for product in products:
+        for key in product.attributes_dict:
+            if key not in seen_keys:
+                seen_keys.add(key)
+                attribute_keys.append(key)
+
     return render(
         request,
         "polls/poll_detail.html",
@@ -222,6 +230,7 @@ def poll_detail(request, pk):
             "cheapest_product": cheapest_product,
             "can_vote": can_vote,
             "poll_has_votes": poll_has_votes,
+            "attribute_keys": attribute_keys,
             "comment_form": CommentForm(auto_id=False),
         },
     )

@@ -66,6 +66,7 @@ class Product(models.Model):
     )
     currency = models.CharField(max_length=3, default="TRY")
     features = models.TextField()
+    attributes = models.TextField(blank=True)
     product_url = models.URLField(blank=True, validators=[URLValidator(schemes=["http", "https"])])
     image_url = models.URLField(blank=True, validators=[URLValidator(schemes=["https"])])
     position = models.PositiveSmallIntegerField()
@@ -82,6 +83,20 @@ class Product(models.Model):
     @property
     def features_list(self):
         return [line.strip() for line in self.features.splitlines() if line.strip()]
+
+    @property
+    def attributes_dict(self):
+        result = {}
+        for line in self.attributes.splitlines():
+            line = line.strip()
+            if not line or ":" not in line:
+                continue
+            key, _, value = line.partition(":")
+            key = key.strip()
+            value = value.strip()
+            if key:
+                result[key] = value
+        return result
 
     @property
     def total_votes(self):

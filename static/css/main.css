@@ -840,6 +840,55 @@ a {
   color: var(--text-muted);
 }
 
+/* Karşılaştırma tablosu */
+
+.comparison-table-wrap {
+  margin: 2rem 0;
+}
+
+.comparison-table-wrap h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.comparison-table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 0.65rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.comparison-table thead th {
+  font-family: var(--font-heading);
+  background: var(--surface-tint);
+  color: var(--primary);
+}
+
+.comparison-table tbody th {
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.comparison-table tbody tr:last-child th,
+.comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 /* Anket detay üst kısmı */
 
 .poll-detail__header {

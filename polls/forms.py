@@ -76,10 +76,21 @@ class ProductForm(forms.ModelForm):
             }
         ),
     )
+    attributes = forms.CharField(
+        required=False,
+        label="Karşılaştırma özellikleri (opsiyonel)",
+        widget=forms.Textarea(
+            attrs={
+                "rows": 3,
+                "placeholder": "Diğer ürünlerle yan yana karşılaştırmak için\nRAM: 8 GB\nDepolama: 128 GB",
+            }
+        ),
+        help_text='Her satırı "Anahtar: Değer" biçiminde yaz — anket sayfasında bir karşılaştırma tablosu oluşturur.',
+    )
 
     class Meta:
         model = Product
-        fields = ["name", "price", "features", "product_url", "image_url"]
+        fields = ["name", "price", "features", "product_url", "image_url", "attributes"]
 
     def clean_image(self):
         file = self.cleaned_data.get("image")
@@ -102,6 +113,26 @@ class ProductForm(forms.ModelForm):
             if len(line) > 120:
                 raise ValidationError("Her özellik satırı en fazla 120 karakter olabilir.")
         return "\n".join(lines)
+
+    def clean_attributes(self):
+        raw = self.cleaned_data.get("attributes", "")
+        lines = [line.strip() for line in raw.splitlines() if line.strip()]
+        if len(lines) > 8:
+            raise ValidationError("En fazla 8 karşılaştırma özelliği ekleyebilirsin.")
+        parsed = []
+        for line in lines:
+            if ":" not in line:
+                raise ValidationError('Her satırı "Anahtar: Değer" biçiminde yaz (örn. "RAM: 8 GB").')
+            key, _, value = line.partition(":")
+            key, value = key.strip(), value.strip()
+            if not key or not value:
+                raise ValidationError('Her satırı "Anahtar: Değer" biçiminde yaz (örn. "RAM: 8 GB").')
+            if len(key) > 40:
+                raise ValidationError("Özellik adı en fazla 40 karakter olabilir.")
+            if len(value) > 80:
+                raise ValidationError("Özellik değeri en fazla 80 karakter olabilir.")
+            parsed.append(f"{key}: {value}")
+        return "\n".join(parsed)
 
 
 class BaseProductFormSet(BaseInlineFormSet):
@@ -171,7 +202,7 @@ ProductFormSet = inlineformset_factory(
     Product,
     form=ProductForm,
     formset=BaseProductFormSet,
-    fields=["name", "price", "features", "product_url", "image_url"],
+    fields=["name", "price", "features", "product_url", "image_url", "attributes"],
     extra=0,
     min_num=2,
     max_num=5,

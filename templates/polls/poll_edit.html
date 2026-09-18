@@ -71,6 +71,12 @@
             {{ form.features.errors }}
           </div>
           <div class="form-row">
+            <label for="{{ form.attributes.id_for_label }}">{{ form.attributes.label }}</label>
+            {{ form.attributes }}
+            <p class="field-help">{{ form.attributes.help_text }}</p>
+            {{ form.attributes.errors }}
+          </div>
+          <div class="form-row">
             <label for="{{ form.product_url.id_for_label }}">Ürün linki (opsiyonel)</label>
             {{ form.product_url }}
             {{ form.product_url.errors }}

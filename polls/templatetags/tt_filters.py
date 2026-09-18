@@ -35,3 +35,8 @@ def percent(value):
 @register.filter
 def category_icon(category):
     return CATEGORY_ICONS.get(category, "✨")
+
+
+@register.filter
+def dict_get(mapping, key):
+    return mapping.get(key, "")
