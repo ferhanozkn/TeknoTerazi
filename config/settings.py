@@ -28,6 +28,13 @@ CSRF_TRUSTED_ORIGINS = [o for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split("
 TURNSTILE_SITE_KEY = os.getenv("TURNSTILE_SITE_KEY", "")
 TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY", "")
 
+# Ürün görseli yükleme (Faz 9) — Supabase Storage REST API (bkz. polls/storage.py).
+# Tanımlı değilse (yerel geliştirmede varsayılan) dosya yükleme denemesi Türkçe
+# bir hatayla reddedilir; "Görsel linki" alanı her zaman çalışır.
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+SUPABASE_STORAGE_BUCKET = os.getenv("SUPABASE_STORAGE_BUCKET", "product-images")
+
 # Hata izleme (Faz 9) — SENTRY_DSN yalnızca Vercel'de (Sentry entegrasyonu
 # üzerinden) tanımlı; yerelde tanımlı değilse SDK hiç etkinleşmez.
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")

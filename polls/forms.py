@@ -30,7 +30,16 @@ class CommaDecimalField(forms.DecimalField):
         return super().to_python(value)
 
 
+ALLOWED_IMAGE_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+MAX_IMAGE_SIZE = 5 * 1024 * 1024
+
+
 class ProductForm(forms.ModelForm):
+    image = forms.FileField(
+        required=False,
+        label="Görsel yükle (opsiyonel)",
+        help_text="jpg, png, webp veya gif — en fazla 5 MB. Yüklersen aşağıdaki link yok sayılır.",
+    )
     price = CommaDecimalField(
         max_digits=10,
         decimal_places=2,
@@ -57,6 +66,16 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ["name", "price", "features", "product_url", "image_url"]
+
+    def clean_image(self):
+        file = self.cleaned_data.get("image")
+        if not file:
+            return file
+        if file.content_type not in ALLOWED_IMAGE_CONTENT_TYPES:
+            raise ValidationError("Yalnızca JPG, PNG, WEBP veya GIF dosyası yükleyebilirsin.")
+        if file.size > MAX_IMAGE_SIZE:
+            raise ValidationError("Görsel en fazla 5 MB olabilir.")
+        return file
 
     def clean_features(self):
         raw = self.cleaned_data.get("features", "")

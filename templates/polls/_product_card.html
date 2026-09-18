@@ -26,6 +26,12 @@
     {{ form.product_url.errors }}
   </div>
   <div class="form-row">
+    <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+    {{ form.image }}
+    <p class="field-help">{{ form.image.help_text }}</p>
+    {{ form.image.errors }}
+  </div>
+  <div class="form-row">
     <label for="{{ form.image_url.id_for_label }}">Görsel linki (opsiyonel)</label>
     {{ form.image_url }}
     {{ form.image_url.errors }}

@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 from .forms import CommentForm, PollForm, ProductFormSet, ReportForm
 from .models import Category, Comment, Poll, Product, Report, Vote, VoteValue
 from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats, get_trending_polls
+from .storage import ImageUploadError, upload_product_image
 from .voter import attach_voter_cookie, get_client_ip, get_voter, hash_ip
 
 
@@ -69,22 +70,39 @@ def home(request):
 def poll_create(request):
     if request.method == "POST":
         poll_form = PollForm(request.POST)
-        product_formset = ProductFormSet(request.POST, prefix="products")
+        product_formset = ProductFormSet(request.POST, request.FILES, prefix="products")
         if poll_form.is_valid() and product_formset.is_valid():
-            with transaction.atomic():
-                poll = poll_form.save(commit=False)
-                poll.author = request.user
-                poll.save()
-                products = product_formset.save(commit=False)
-                for position, product in enumerate(products):
-                    product.poll = poll
-                    product.position = position
-                    product.save()
-            messages.success(
-                request,
-                "Anketin yayında! 🎉 Linki paylaşarak daha çok oy toplayabilirsin.",
-            )
-            return redirect("polls:poll_detail", pk=poll.pk)
+            image_urls = []
+            upload_failed = False
+            for form in product_formset.forms:
+                image_file = form.cleaned_data.get("image")
+                if not image_file:
+                    image_urls.append(None)
+                    continue
+                try:
+                    image_urls.append(upload_product_image(image_file))
+                except ImageUploadError as exc:
+                    form.add_error("image", exc.message)
+                    upload_failed = True
+                    image_urls.append(None)
+
+            if not upload_failed:
+                with transaction.atomic():
+                    poll = poll_form.save(commit=False)
+                    poll.author = request.user
+                    poll.save()
+                    products = product_formset.save(commit=False)
+                    for position, (product, image_url) in enumerate(zip(products, image_urls)):
+                        product.poll = poll
+                        product.position = position
+                        if image_url:
+                            product.image_url = image_url
+                        product.save()
+                messages.success(
+                    request,
+                    "Anketin yayında! 🎉 Linki paylaşarak daha çok oy toplayabilirsin.",
+                )
+                return redirect("polls:poll_detail", pk=poll.pk)
     else:
         poll_form = PollForm()
         product_formset = ProductFormSet(prefix="products")
