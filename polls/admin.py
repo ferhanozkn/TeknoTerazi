@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Comment, Poll, Product, Vote
+from .models import Comment, Poll, Product, Report, Vote
 
 
 class ProductInline(admin.TabularInline):
@@ -27,6 +27,26 @@ class VoteAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ("poll", "reporter", "reason", "status", "created_at")
+    list_filter = ("status", "reason", "created_at")
+    search_fields = ("poll__title", "reporter__username", "detail")
+    readonly_fields = ("poll", "reporter", "reason", "detail", "created_at")
+    actions = ["mark_resolved", "mark_dismissed"]
+
+    def has_add_permission(self, request):
+        return False
+
+    @admin.action(description="Seçilenleri 'İncelendi' olarak işaretle")
+    def mark_resolved(self, request, queryset):
+        queryset.update(status="resolved")
+
+    @admin.action(description="Seçilenleri 'Reddedildi' olarak işaretle")
+    def mark_dismissed(self, request, queryset):
+        queryset.update(status="dismissed")
 
 
 @admin.register(Comment)

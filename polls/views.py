@@ -3,15 +3,15 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Count, Max, Min, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .forms import CommentForm, PollForm, ProductFormSet
-from .models import Category, Comment, Poll, Product, Vote, VoteValue
+from .forms import CommentForm, PollForm, ProductFormSet, ReportForm
+from .models import Category, Comment, Poll, Product, Report, Vote, VoteValue
 from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats
 from .voter import attach_voter_cookie, get_client_ip, get_voter, hash_ip
 
@@ -193,6 +193,34 @@ def vote(request, pk):
         attach_voter_cookie(response, anon_id)
 
     return response
+
+
+@login_required
+def report_poll(request, pk):
+    poll = get_object_or_404(Poll, pk=pk)
+
+    if Report.objects.filter(poll=poll, reporter=request.user).exists():
+        messages.error(request, "Bu anketi zaten şikayet ettin.")
+        return redirect("polls:poll_detail", pk=poll.pk)
+
+    if request.method == "POST":
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    report = form.save(commit=False)
+                    report.poll = poll
+                    report.reporter = request.user
+                    report.save()
+            except IntegrityError:
+                messages.error(request, "Bu anketi zaten şikayet ettin.")
+            else:
+                messages.success(request, "Şikayetin alındı, ekibimiz inceleyecek.")
+            return redirect("polls:poll_detail", pk=poll.pk)
+    else:
+        form = ReportForm()
+
+    return render(request, "polls/report_form.html", {"poll": poll, "form": form})
 
 
 @login_required

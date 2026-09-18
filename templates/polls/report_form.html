@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Anketi Şikayet Et · TeknoTerazi{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+  <h1>Anketi şikayet et</h1>
+  <p>"{{ poll.title }}" anketini neden şikayet ediyorsun?</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="form-row">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn--primary">Şikayeti gönder</button>
+    <a href="{% url 'polls:poll_detail' poll.pk %}" class="btn">Vazgeç</a>
+  </form>
+</section>
+{% endblock %}

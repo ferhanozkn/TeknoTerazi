@@ -4,7 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet, inlineformset_factory
 
-from .models import Category, Comment, Poll, Product
+from .models import Category, Comment, Poll, Product, Report, ReportReason
 
 
 class PollForm(forms.ModelForm):
@@ -105,6 +105,26 @@ class CommentForm(forms.ModelForm):
                 "max_length": "Yorumun en fazla 500 karakter olabilir.",
             }
         }
+
+
+class ReportForm(forms.ModelForm):
+    reason = forms.ChoiceField(
+        label="Şikayet nedeni",
+        choices=ReportReason.choices,
+        error_messages={"required": "Bir şikayet nedeni seçmelisin."},
+    )
+    detail = forms.CharField(
+        label="Detay (opsiyonel)",
+        required=False,
+        max_length=500,
+        widget=forms.Textarea(
+            attrs={"rows": 3, "placeholder": "İstersen kısaca açıkla (opsiyonel)…"}
+        ),
+    )
+
+    class Meta:
+        model = Report
+        fields = ["reason", "detail"]
 
 
 ProductFormSet = inlineformset_factory(

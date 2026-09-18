@@ -26,6 +26,9 @@
   {% endif %}
 
   <button type="button" id="share-button" class="btn" data-url="{{ request.build_absolute_uri }}">Bu anketi paylaş</button>
+  {% if request.user.is_authenticated and request.user != poll.author %}
+    <a href="{% url 'polls:report_poll' poll.pk %}" class="btn btn--ghost">Şikayet et</a>
+  {% endif %}
 </header>
 
 <div class="product-grid">

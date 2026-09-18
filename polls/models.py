@@ -139,6 +139,41 @@ class Comment(models.Model):
         return f"{self.author} → {self.product}"
 
 
+class ReportReason(models.TextChoices):
+    INAPPROPRIATE = "inappropriate", "Uygunsuz içerik"
+    SPAM = "spam", "Spam veya tanıtım"
+    MISLEADING = "misleading", "Yanıltıcı bilgi"
+    OTHER = "other", "Diğer"
+
+
+class ReportStatus(models.TextChoices):
+    PENDING = "pending", "Bekliyor"
+    RESOLVED = "resolved", "İncelendi"
+    DISMISSED = "dismissed", "Reddedildi"
+
+
+class Report(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="reports")
+    reporter = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reports"
+    )
+    reason = models.CharField(max_length=20, choices=ReportReason.choices)
+    detail = models.TextField(max_length=500, blank=True)
+    status = models.CharField(
+        max_length=20, choices=ReportStatus.choices, default=ReportStatus.PENDING
+    )
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["poll", "reporter"], name="unique_report_per_user"),
+        ]
+
+    def __str__(self):
+        return f"{self.poll} — {self.get_reason_display()}"
+
+
 class VoteAttempt(models.Model):
     """Hız sınırlama için oy isteklerinin (başarılı/başarısız) kaydı."""
 
