@@ -846,6 +846,11 @@ a {
   margin-bottom: 2rem;
 }
 
+.poll-detail__expiry {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
 .poll-detail__owner-actions {
   display: flex;
   gap: 0.5rem;

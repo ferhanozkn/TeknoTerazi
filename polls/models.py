@@ -8,6 +8,7 @@ from django.core.validators import (
     URLValidator,
 )
 from django.db import models
+from django.utils import timezone
 
 
 class Category(models.TextChoices):
@@ -37,6 +38,7 @@ class Poll(models.Model):
     category = models.CharField(max_length=20, choices=Category.choices)
     is_active = models.BooleanField(default=True)
     hide_results_until_vote = models.BooleanField(default=False)
+    expires_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -45,6 +47,10 @@ class Poll(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def is_expired(self):
+        return self.expires_at is not None and self.expires_at <= timezone.now()
 
 
 class Product(models.Model):

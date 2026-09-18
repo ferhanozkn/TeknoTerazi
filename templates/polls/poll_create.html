@@ -42,6 +42,12 @@
         <p class="field-help">{{ poll_form.hide_results_until_vote.help_text }}</p>
         {{ poll_form.hide_results_until_vote.errors }}
       </div>
+      <div class="form-row">
+        <label for="{{ poll_form.expires_at.id_for_label }}">{{ poll_form.expires_at.label }}</label>
+        {{ poll_form.expires_at }}
+        <p class="field-help">{{ poll_form.expires_at.help_text }}</p>
+        {{ poll_form.expires_at.errors }}
+      </div>
     </fieldset>
 
     <fieldset class="card">

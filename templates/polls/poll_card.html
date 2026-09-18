@@ -2,7 +2,11 @@
 <article class="poll-card">
   <div class="poll-card__badges">
     <span class="badge badge--category">{{ poll.category|category_icon }} {{ poll.get_category_display }}</span>
-    {% if not poll.is_active %}<span class="badge badge--closed">Kapandı</span>{% endif %}
+    {% if poll.is_expired %}
+      <span class="badge badge--closed">Süresi doldu</span>
+    {% elif not poll.is_active %}
+      <span class="badge badge--closed">Kapandı</span>
+    {% endif %}
     {% if poll.today_votes %}<span class="badge badge--trending">🔥 Bugün {{ poll.today_votes }} oy</span>{% endif %}
   </div>
   <h3><a href="{% url 'polls:poll_detail' poll.pk %}">{{ poll.title }}</a></h3>

@@ -8,6 +8,7 @@ from django.db.models import Count, Max, Min, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import CommentForm, PollForm, ProductFormSet, ReportForm
@@ -38,7 +39,7 @@ def home(request):
 
     status = request.GET.get("durum", "")
     if status == "acik":
-        polls = polls.filter(is_active=True)
+        polls = polls.filter(is_active=True).exclude(expires_at__lte=timezone.now())
 
     sort = request.GET.get("sirala", "yeni")
     if sort == "populer":
@@ -136,9 +137,9 @@ def poll_detail(request, pk):
             product.user_vote = user_votes.get(product.pk)
 
     is_owner = user is not None and user.pk == poll.author_id
-    can_vote = poll.is_active and not is_owner
+    can_vote = poll.is_active and not poll.is_expired and not is_owner
 
-    if poll.hide_results_until_vote and poll.is_active and not is_owner:
+    if poll.hide_results_until_vote and poll.is_active and not poll.is_expired and not is_owner:
         for product in products:
             product.show_results = product.user_vote is not None
     else:

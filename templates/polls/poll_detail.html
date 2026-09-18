@@ -9,18 +9,33 @@
 <header class="poll-detail__header">
   <div class="poll-card__badges">
     <span class="badge badge--category">{{ poll.category|category_icon }} {{ poll.get_category_display }}</span>
-    {% if not poll.is_active %}<span class="badge badge--closed">Kapandı</span>{% endif %}
+    {% if poll.is_expired %}
+      <span class="badge badge--closed">Süresi doldu</span>
+    {% elif not poll.is_active %}
+      <span class="badge badge--closed">Kapandı</span>
+    {% endif %}
   </div>
   <h1>{{ poll.title }}</h1>
   <p>@{{ poll.author.username }} · {{ poll.created_at|timesince }} önce</p>
   {% if poll.description %}<p>{{ poll.description }}</p>{% endif %}
+  {% if poll.expires_at %}
+    <p class="poll-detail__expiry">
+      {% if poll.is_expired %}
+        ⏳ Süresi doldu ({{ poll.expires_at|date:"d.m.Y H:i" }})
+      {% else %}
+        ⏳ Bitiş: {{ poll.expires_at|date:"d.m.Y H:i" }} ({{ poll.expires_at|timeuntil }} kaldı)
+      {% endif %}
+    </p>
+  {% endif %}
 
   {% if request.user == poll.author %}
     <div class="poll-detail__owner-actions">
-      <form method="post" action="{% url 'polls:poll_toggle_active' poll.pk %}">
-        {% csrf_token %}
-        <button type="submit" class="btn">{% if poll.is_active %}Kapat{% else %}Yeniden Aç{% endif %}</button>
-      </form>
+      {% if not poll.is_expired %}
+        <form method="post" action="{% url 'polls:poll_toggle_active' poll.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn">{% if poll.is_active %}Kapat{% else %}Yeniden Aç{% endif %}</button>
+        </form>
+      {% endif %}
       <a href="{% url 'polls:poll_delete' poll.pk %}" class="btn btn--ghost">Sil</a>
     </div>
   {% endif %}

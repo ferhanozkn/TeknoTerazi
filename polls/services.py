@@ -37,6 +37,7 @@ def get_trending_polls(limit=TRENDING_POLL_LIMIT):
     start_of_today = timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
     return (
         Poll.objects.filter(is_active=True)
+        .exclude(expires_at__lte=timezone.now())
         .select_related("author")
         .prefetch_related("products")
         .annotate(
@@ -83,6 +84,9 @@ def cast_vote(product, user, anon_id, value, ip_hash=""):
     enforce_vote_rate_limit(user, anon_id)
 
     poll = product.poll
+
+    if poll.is_expired:
+        raise VoteError(403, "Bu anketin süresi doldu.")
 
     if not poll.is_active:
         raise VoteError(403, "Bu anket oylamaya kapalı.")

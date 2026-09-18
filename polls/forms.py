@@ -3,6 +3,7 @@ from decimal import Decimal
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet, inlineformset_factory
+from django.utils import timezone
 
 from .models import Category, Comment, Poll, Product, Report, ReportReason
 
@@ -13,14 +14,27 @@ class PollForm(forms.ModelForm):
         required=False,
         help_text="Önyargıyı azaltmak için: bir ürüne oy verene kadar o ürünün oy sayıları gizli kalır.",
     )
+    expires_at = forms.DateTimeField(
+        required=False,
+        label="Bitiş tarihi (opsiyonel)",
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        help_text="Belirlersen bu tarihten sonra anket otomatik olarak kapanır.",
+        error_messages={"invalid": "Geçerli bir tarih ve saat gir."},
+    )
 
     class Meta:
         model = Poll
-        fields = ["title", "category", "description", "hide_results_until_vote"]
+        fields = ["title", "category", "description", "hide_results_until_vote", "expires_at"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["category"].choices = [("", "Kategori seç")] + list(Category.choices)
+
+    def clean_expires_at(self):
+        value = self.cleaned_data.get("expires_at")
+        if value and value <= timezone.now():
+            raise ValidationError("Bitiş tarihi gelecekte bir zaman olmalı.")
+        return value
 
 
 class CommaDecimalField(forms.DecimalField):
