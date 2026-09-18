@@ -18,10 +18,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from . import views
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("hesap/", include("accounts.urls")),
     path("oauth/", include("allauth.socialaccount.urls")),
     path("oauth/", include("allauth.socialaccount.providers.google.urls")),
+    path("sw.js", views.service_worker, name="service_worker"),
     path("", include("polls.urls")),
 ]

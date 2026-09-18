@@ -20,6 +20,13 @@
   {% block og_image %}{% endblock %}
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
+  <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+  <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+  <meta name="theme-color" content="#6c3bff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TeknoTerazi">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -34,5 +41,6 @@
   {% include "partials/footer.html" %}
   <script src="{% static 'js/nav.js' %}" defer></script>
   <script src="{% static 'js/theme.js' %}" defer></script>
+  <script src="{% static 'js/register_sw.js' %}" defer></script>
 </body>
 </html>
