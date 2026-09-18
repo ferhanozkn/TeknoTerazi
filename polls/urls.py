@@ -8,6 +8,7 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("anket/yeni/", views.poll_create, name="poll_create"),
     path("anket/<int:pk>/", views.poll_detail, name="poll_detail"),
+    path("anket/<int:pk>/duzenle/", views.poll_edit, name="poll_edit"),
     path("anket/<int:pk>/durum/", views.poll_toggle_active, name="poll_toggle_active"),
     path("anket/<int:pk>/sil/", views.poll_delete, name="poll_delete"),
     path("anket/<int:pk>/sikayet/", views.report_poll, name="report_poll"),

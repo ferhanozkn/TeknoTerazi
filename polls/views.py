@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .forms import CommentForm, PollForm, ProductFormSet, ReportForm
+from .forms import CommentForm, PollForm, ProductForm, ProductFormSet, ReportForm
 from .models import Category, Comment, Poll, Product, Report, Vote, VoteValue
 from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats, get_trending_polls
 from .storage import ImageUploadError, upload_product_image
@@ -115,6 +115,71 @@ def poll_create(request):
     )
 
 
+@login_required
+def poll_edit(request, pk):
+    poll = get_object_or_404(
+        Poll.objects.annotate(vote_count=Count("products__votes")),
+        pk=pk,
+        author=request.user,
+    )
+    if poll.vote_count > 0:
+        messages.error(request, "Bu anket oy almış, artık düzenlenemez.")
+        return redirect("polls:poll_detail", pk=poll.pk)
+
+    products = list(poll.products.all())
+
+    if request.method == "POST":
+        poll_form = PollForm(request.POST, instance=poll)
+        product_forms = [
+            ProductForm(request.POST, request.FILES, instance=product, prefix=f"products-{product.pk}")
+            for product in products
+        ]
+        forms_valid = poll_form.is_valid()
+        for form in product_forms:
+            forms_valid = form.is_valid() and forms_valid
+
+        if forms_valid:
+            names = [form.cleaned_data["name"].strip().lower() for form in product_forms]
+            if len(names) != len(set(names)):
+                messages.error(request, "Aynı ürünü iki kez ekleyemezsin.")
+                forms_valid = False
+
+        upload_failed = False
+        image_urls = {}
+        if forms_valid:
+            for form in product_forms:
+                image_file = form.cleaned_data.get("image")
+                if not image_file:
+                    continue
+                try:
+                    image_urls[form.instance.pk] = upload_product_image(image_file)
+                except ImageUploadError as exc:
+                    form.add_error("image", exc.message)
+                    upload_failed = True
+
+        if forms_valid and not upload_failed:
+            with transaction.atomic():
+                poll_form.save()
+                for form in product_forms:
+                    product = form.save(commit=False)
+                    if product.pk in image_urls:
+                        product.image_url = image_urls[product.pk]
+                    product.save()
+            messages.success(request, "Anket güncellendi.")
+            return redirect("polls:poll_detail", pk=poll.pk)
+    else:
+        poll_form = PollForm(instance=poll)
+        product_forms = [
+            ProductForm(instance=product, prefix=f"products-{product.pk}") for product in products
+        ]
+
+    return render(
+        request,
+        "polls/poll_edit.html",
+        {"poll": poll, "poll_form": poll_form, "product_forms": product_forms},
+    )
+
+
 def poll_detail(request, pk):
     poll = get_poll_with_stats(pk)
     products = list(poll.products.all())
@@ -138,6 +203,7 @@ def poll_detail(request, pk):
 
     is_owner = user is not None and user.pk == poll.author_id
     can_vote = poll.is_active and not poll.is_expired and not is_owner
+    poll_has_votes = any(p.worth_count + p.not_worth_count for p in products)
 
     if poll.hide_results_until_vote and poll.is_active and not poll.is_expired and not is_owner:
         for product in products:
@@ -155,6 +221,7 @@ def poll_detail(request, pk):
             "favorite_product": favorite_product,
             "cheapest_product": cheapest_product,
             "can_vote": can_vote,
+            "poll_has_votes": poll_has_votes,
             "comment_form": CommentForm(auto_id=False),
         },
     )

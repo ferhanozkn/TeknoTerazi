@@ -30,6 +30,9 @@
 
   {% if request.user == poll.author %}
     <div class="poll-detail__owner-actions">
+      {% if not poll_has_votes %}
+        <a href="{% url 'polls:poll_edit' poll.pk %}" class="btn">Düzenle</a>
+      {% endif %}
       {% if not poll.is_expired %}
         <form method="post" action="{% url 'polls:poll_toggle_active' poll.pk %}">
           {% csrf_token %}
