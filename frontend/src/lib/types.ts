@@ -1,13 +1,18 @@
 export type PollCategory =
-  | "telefon"
+  | "phone"
   | "laptop"
-  | "kulaklik"
-  | "beyaz_esya"
-  | "diger";
+  | "tablet"
+  | "headphone"
+  | "smartwatch"
+  | "gaming"
+  | "camera"
+  | "tv"
+  | "pc_part"
+  | "other";
 
-export type UsagePurpose = "gunluk" | "oyun" | "is" | "fotografcilik";
+export type UsagePurpose = "gaming" | "school" | "work" | "daily" | "other";
 
-export type BudgetTier = "ekonomik" | "orta" | "premium";
+export type BudgetTier = "economic" | "mid" | "premium";
 
 export type VoteValue = "worth" | "not_worth";
 
@@ -23,6 +28,7 @@ export interface Product {
   id: number;
   name: string;
   price: number;
+  currency: string;
   imageUrl: string | null;
   productUrl: string | null;
   features: string[];
@@ -45,6 +51,7 @@ export interface Poll {
   usagePurpose: UsagePurpose | null;
   budgetTier: BudgetTier | null;
   authorUsername: string;
+  isOwner: boolean;
   createdAt: string;
   expiresAt: string | null;
   isActive: boolean;
@@ -52,31 +59,56 @@ export interface Poll {
   hideResultsUntilVote: boolean;
   viewCount: number;
   totalVotes: number;
-  todayVotes: number;
-  minPrice: number | null;
-  maxPrice: number | null;
+  canVote: boolean;
+  pollHasVotes: boolean;
+  attributeKeys: string[];
   products: Product[];
 }
 
+export interface PollSummary {
+  id: number;
+  title: string;
+  category: PollCategory;
+  usagePurpose: UsagePurpose | null;
+  budgetTier: BudgetTier | null;
+  authorUsername: string;
+  createdAt: string;
+  expiresAt: string | null;
+  isActive: boolean;
+  isExpired: boolean;
+  totalVotes: number;
+  todayVotes: number;
+  minPrice: number | null;
+  maxPrice: number | null;
+  productNames: string[];
+  productCount: number;
+}
+
 export const CATEGORY_LABELS: Record<PollCategory, string> = {
-  telefon: "📱 Telefon",
-  laptop: "💻 Laptop",
-  kulaklik: "🎧 Kulaklık",
-  beyaz_esya: "🧺 Beyaz Eşya",
-  diger: "🔧 Diğer",
+  phone: "📱 Akıllı Telefon",
+  laptop: "💻 Dizüstü Bilgisayar",
+  tablet: "📱 Tablet",
+  headphone: "🎧 Kulaklık",
+  smartwatch: "⌚ Akıllı Saat",
+  gaming: "🎮 Oyun & Konsol",
+  camera: "📷 Kamera",
+  tv: "📺 TV & Monitör",
+  pc_part: "🖥️ Bilgisayar Parçası",
+  other: "🔧 Diğer",
 };
 
 export const USAGE_PURPOSE_LABELS: Record<UsagePurpose, string> = {
-  gunluk: "Günlük kullanım",
-  oyun: "Oyun",
-  is: "İş",
-  fotografcilik: "Fotoğrafçılık",
+  gaming: "Oyun",
+  school: "Okul",
+  work: "İş",
+  daily: "Günlük kullanım",
+  other: "Diğer",
 };
 
 export const BUDGET_TIER_LABELS: Record<BudgetTier, string> = {
-  ekonomik: "Ekonomik",
-  orta: "Orta segment",
-  premium: "Premium",
+  economic: "Ekonomik",
+  mid: "Orta segment",
+  premium: "Üst segment",
 };
 
 export function formatTl(amount: number): string {

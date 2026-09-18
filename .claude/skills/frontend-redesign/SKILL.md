@@ -18,6 +18,19 @@ Do not port this decision back to `main` (rule #5, CLAUDE.md) until the experime
 - The existing design system tokens in `static/css/main.css` (colors, spacing, type scale already validated in Faz 6) are the starting brand reference, not a blank slate — ground new design decisions in what already exists unless there's a specific reason to change it.
 - Django remains the backend. This experiment is about the *rendering layer*; it does not by itself decide whether Django starts serving JSON from DRF-style endpoints, stays template-based with an API layer bolted on, or something else — that's still open and should be logged in the Karar Günlüğü when decided, not silently assumed.
 
+## Current architecture (resolved — see Karar Günlüğü #31)
+
+- **No DRF.** `polls/api.py` + `polls/api_urls.py` (mounted at `/api/` in `config/urls.py`) are plain `JsonResponse` views that call the exact same functions `views.py` uses (`get_poll_with_stats`, `get_trending_polls`, `cast_vote`, `get_voter`/`attach_voter_cookie`, etc.). Keep it that way — never duplicate business logic into `api.py`; import and reuse from `services.py`/`voter.py`.
+- **Proxy, not CORS.** `frontend/next.config.ts` rewrites `/api/:path*` to Django (`BACKEND_URL`, default `http://127.0.0.1:8000`) so the browser only ever talks to the Next.js origin — this is what makes the anon voter cookie (`tt_voter`) and Django's `csrftoken` work with zero CORS/`SameSite` configuration. Server Components fetch Django directly (`frontend/src/lib/api.ts`, forwarding the incoming request's cookies via `next/headers`); the vote button is a Client Component that calls the relative `/api/...` path (`frontend/src/lib/vote-client.ts`) so the real browser cookie jar is used.
+- The rewrite destination has `/` appended manually after `:path*` — Next's route-segment reconstruction drops the trailing slash Django's URLconf requires, which otherwise causes an infinite `APPEND_SLASH` redirect loop. `skipTrailingSlashRedirect: true` is also required, or Next's own slash redirect fires before the rewrite ever runs.
+
+## Two silent-failure environment gotchas (don't relearn these)
+
+Both of these break voting/interactivity with **no error in the browser console** — the only symptom is "nothing happens when I click."
+
+1. **Always open the app at `http://localhost:3000`, never `http://127.0.0.1:3000`.** Next's dev server blocks HMR/RSC dev-resource requests from origins other than `localhost` by default (visible only in the `next dev` terminal log as `⚠ Blocked cross-origin request to Next.js dev resource /_next/hmr`), which silently breaks all client-side hydration — every `onClick` becomes a no-op. `allowedDevOrigins: ["127.0.0.1", "localhost"]` is already set in `next.config.ts` as a second line of defense, but prefer `localhost` in the browser regardless. (Curling the Django backend directly via `127.0.0.1:8000` is fine and unrelated — that's only to dodge an unrelated Docker container also listening on `*:8000`.)
+2. **`CSRF_TRUSTED_ORIGINS` in `.env`/`.env.example` must include `http://localhost:3000`.** Django's CSRF middleware checks the browser's `Origin` header (sent on every fetch/XHR POST, but never sent by curl — which is why curl-based testing of the vote endpoint can pass while the real browser flow 403s) against this list, not against `request.get_host()`. Without it every vote silently 403s with Django's default HTML CSRF-failure page; since `vote-client.ts` does `res.json()` on the response, this surfaces as a confusing `Unexpected token '<'` error rather than anything CSRF-shaped.
+
 ## Installed skills and when to use each
 
 Three skills are installed under `.claude/skills/` for this effort:

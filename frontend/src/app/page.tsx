@@ -1,18 +1,35 @@
 import Link from "next/link";
 import { FilterBar } from "@/components/filter-bar";
+import { Pagination } from "@/components/pagination";
 import { PollCard } from "@/components/poll-card";
-import { mockPolls } from "@/lib/mock-data";
+import { fetchPollList, fetchTrendingPolls } from "@/lib/api";
+import { CATEGORY_LABELS, type PollCategory } from "@/lib/types";
 
-const CATEGORY_CHIPS = [
+const CATEGORY_CHIPS: { value: PollCategory | ""; label: string }[] = [
   { value: "", label: "Tümü" },
-  { value: "telefon", label: "📱 Telefon" },
-  { value: "laptop", label: "💻 Laptop" },
-  { value: "kulaklik", label: "🎧 Kulaklık" },
-  { value: "beyaz_esya", label: "🧺 Beyaz Eşya" },
+  ...(Object.entries(CATEGORY_LABELS) as [PollCategory, string][]).map(([value, label]) => ({
+    value,
+    label,
+  })),
 ];
 
-export default function Home() {
-  const trending = mockPolls.filter((poll) => poll.todayVotes > 0);
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const params = await searchParams;
+  const filters = {
+    q: params.q,
+    kategori: params.kategori,
+    amac: params.amac,
+    butce: params.butce,
+    durum: params.durum,
+    sirala: params.sirala,
+    sayfa: params.sayfa,
+  };
+
+  const [pollList, trending] = await Promise.all([fetchPollList(filters), fetchTrendingPolls()]);
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-10">
@@ -47,24 +64,44 @@ export default function Home() {
 
       <div className="flex flex-wrap gap-2">
         {CATEGORY_CHIPS.map((chip) => (
-          <button
+          <Link
             key={chip.value}
-            type="button"
-            className="rounded-full border border-border px-4 py-1.5 text-sm text-text-muted transition hover:border-primary hover:text-primary first:border-primary first:text-primary"
+            href={chip.value ? `?kategori=${chip.value}` : "/"}
+            className={`rounded-full border px-4 py-1.5 text-sm transition ${
+              (params.kategori ?? "") === chip.value
+                ? "border-primary text-primary"
+                : "border-border text-text-muted hover:border-primary hover:text-primary"
+            }`}
           >
             {chip.label}
-          </button>
+          </Link>
         ))}
       </div>
 
-      <FilterBar />
+      <FilterBar
+        query={params.q}
+        category={params.kategori}
+        usagePurpose={params.amac}
+        budgetTier={params.butce}
+        sort={params.sirala}
+        onlyOpen={params.durum === "acik"}
+      />
 
-      {mockPolls.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {mockPolls.map((poll) => (
-            <PollCard key={poll.id} poll={poll} />
-          ))}
-        </div>
+      {pollList.results.length > 0 ? (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {pollList.results.map((poll) => (
+              <PollCard key={poll.id} poll={poll} />
+            ))}
+          </div>
+          <Pagination
+            currentPage={pollList.currentPage}
+            numPages={pollList.numPages}
+            hasNext={pollList.hasNext}
+            hasPrevious={pollList.hasPrevious}
+            querystringPrefix={pollList.querystringPrefix}
+          />
+        </>
       ) : (
         <p className="text-center text-text-muted">
           Henüz anket yok. İlk anketi sen oluştur! 🚀

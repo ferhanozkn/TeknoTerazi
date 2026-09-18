@@ -4,13 +4,13 @@ import {
   CATEGORY_LABELS,
   USAGE_PURPOSE_LABELS,
   formatTl,
-  type Poll,
+  type PollSummary,
 } from "@/lib/types";
 import { timeAgo } from "@/lib/format";
 
-export function PollCard({ poll }: { poll: Poll }) {
-  const visibleProducts = poll.products.slice(0, 3);
-  const remaining = poll.products.length - visibleProducts.length;
+export function PollCard({ poll }: { poll: PollSummary }) {
+  const visibleProducts = poll.productNames.slice(0, 3);
+  const remaining = poll.productCount - visibleProducts.length;
 
   return (
     <article className="flex flex-col gap-3 rounded-3xl border border-border bg-surface p-5 shadow-[var(--shadow-card)] transition hover:shadow-[var(--shadow-card-hover)]">
@@ -50,11 +50,11 @@ export function PollCard({ poll }: { poll: Poll }) {
         </Link>
       </h3>
 
-      <p className="text-sm text-text-muted">{poll.products.length} ürün</p>
+      <p className="text-sm text-text-muted">{poll.productCount} ürün</p>
 
       <ul className="flex flex-wrap gap-x-2 text-sm text-text-muted">
-        {visibleProducts.map((product) => (
-          <li key={product.id}>{product.name}</li>
+        {visibleProducts.map((name) => (
+          <li key={name}>{name}</li>
         ))}
         {remaining > 0 && <li>+{remaining}</li>}
       </ul>

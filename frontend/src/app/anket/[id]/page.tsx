@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/product-card";
-import { getPollById } from "@/lib/mock-data";
+import { fetchPoll } from "@/lib/api";
 import {
   BUDGET_TIER_LABELS,
   CATEGORY_LABELS,
@@ -15,12 +15,8 @@ export default async function PollDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const poll = getPollById(Number(id));
+  const poll = await fetchPoll(Number(id));
   if (!poll) notFound();
-
-  const attributeKeys = Array.from(
-    new Set(poll.products.flatMap((product) => Object.keys(product.attributes))),
-  );
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-10">
@@ -63,6 +59,13 @@ export default async function PollDetailPage({
           </p>
         )}
 
+        {poll.isOwner && (
+          <p className="text-sm text-text-muted">
+            📊 {poll.viewCount} görüntülenme · {poll.totalVotes} oy
+            <span className="ml-1 text-xs">(yalnızca sana görünür)</span>
+          </p>
+        )}
+
         <button
           type="button"
           className="w-fit rounded-full border border-border px-4 py-2 text-sm font-medium transition hover:border-primary hover:text-primary"
@@ -76,12 +79,13 @@ export default async function PollDetailPage({
           <ProductCard
             key={product.id}
             product={product}
+            canVote={poll.canVote}
             hideResultsUntilVote={poll.hideResultsUntilVote}
           />
         ))}
       </div>
 
-      {attributeKeys.length > 0 && (
+      {poll.attributeKeys.length > 0 && (
         <section className="flex flex-col gap-3">
           <h2 className="font-heading text-xl font-semibold">Karşılaştırma tablosu</h2>
           <div className="overflow-x-auto rounded-2xl border border-border">
@@ -97,7 +101,7 @@ export default async function PollDetailPage({
                 </tr>
               </thead>
               <tbody>
-                {attributeKeys.map((key) => (
+                {poll.attributeKeys.map((key) => (
                   <tr key={key} className="border-b border-border last:border-0">
                     <th scope="row" className="px-4 py-3 text-left font-medium text-text-muted">
                       {key}

@@ -2,30 +2,46 @@
 
 import { useState } from "react";
 import { formatTl, type Product, type VoteValue } from "@/lib/types";
+import { castVote } from "@/lib/vote-client";
 
 export function ProductCard({
   product,
+  canVote,
   hideResultsUntilVote,
 }: {
   product: Product;
+  canVote: boolean;
   hideResultsUntilVote: boolean;
 }) {
   const [userVote, setUserVote] = useState<VoteValue | null>(product.userVote);
   const [worthCount, setWorthCount] = useState(product.worthCount);
   const [notWorthCount, setNotWorthCount] = useState(product.notWorthCount);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
 
   const hasVoted = userVote !== null;
-  const showResults = product.showResults || hasVoted || !hideResultsUntilVote;
+  const showResults = !hideResultsUntilVote || hasVoted || !canVote;
   const totalVotes = worthCount + notWorthCount;
   const worthRatio = totalVotes > 0 ? Math.round((worthCount / totalVotes) * 100) : 0;
 
-  function castVote(value: VoteValue) {
-    if (userVote === value) return;
-    if (userVote === "worth") setWorthCount((count) => count - 1);
-    if (userVote === "not_worth") setNotWorthCount((count) => count - 1);
-    if (value === "worth") setWorthCount((count) => count + 1);
-    if (value === "not_worth") setNotWorthCount((count) => count + 1);
-    setUserVote(value);
+  async function handleVote(value: VoteValue) {
+    if (pending || !canVote) return;
+    setPending(true);
+    setError(null);
+    const previous = { userVote, worthCount, notWorthCount };
+    try {
+      const result = await castVote(product.id, value);
+      setUserVote(result.user_vote);
+      setWorthCount(result.worth_count);
+      setNotWorthCount(result.not_worth_count);
+    } catch (err) {
+      setUserVote(previous.userVote);
+      setWorthCount(previous.worthCount);
+      setNotWorthCount(previous.notWorthCount);
+      setError(err instanceof Error ? err.message : "Oy verilemedi.");
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -85,9 +101,10 @@ export function ProductCard({
       <div className="mt-1 flex gap-2">
         <button
           type="button"
-          onClick={() => castVote("worth")}
+          onClick={() => handleVote("worth")}
+          disabled={!canVote || pending}
           aria-pressed={userVote === "worth"}
-          className={`flex-1 rounded-full border px-3 py-2 text-sm font-medium transition ${
+          className={`flex-1 rounded-full border px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
             userVote === "worth"
               ? "border-worth bg-worth-tint text-worth"
               : "border-border text-text-muted hover:border-worth hover:text-worth"
@@ -97,9 +114,10 @@ export function ProductCard({
         </button>
         <button
           type="button"
-          onClick={() => castVote("not_worth")}
+          onClick={() => handleVote("not_worth")}
+          disabled={!canVote || pending}
           aria-pressed={userVote === "not_worth"}
-          className={`flex-1 rounded-full border px-3 py-2 text-sm font-medium transition ${
+          className={`flex-1 rounded-full border px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
             userVote === "not_worth"
               ? "border-not-worth bg-not-worth-tint text-not-worth"
               : "border-border text-text-muted hover:border-not-worth hover:text-not-worth"
@@ -108,6 +126,7 @@ export function ProductCard({
           👎 Buna değmez
         </button>
       </div>
+      {error && <p className="text-sm text-not-worth">{error}</p>}
 
       <section className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
         <h4 className="text-sm font-medium">Yorumlar ({product.comments.length})</h4>
