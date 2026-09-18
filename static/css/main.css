@@ -250,6 +250,17 @@ a {
   box-shadow: none;
 }
 
+/* Trend anketler */
+
+.trending {
+  margin-bottom: 2rem;
+}
+
+.trending h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
 /* Kategori çipleri */
 
 .category-chips {
@@ -588,6 +599,11 @@ a {
 .badge--cheap {
   background: rgba(0, 184, 240, 0.12);
   color: var(--secondary);
+}
+
+.badge--trending {
+  background: rgba(255, 176, 32, 0.15);
+  color: var(--warning);
 }
 
 .poll-card__products {

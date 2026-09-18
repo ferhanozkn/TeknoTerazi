@@ -10,6 +10,17 @@
   <a href="{% url 'polls:poll_create' %}" class="btn btn--primary">Anket Oluştur</a>
 </section>
 
+{% if trending_polls %}
+<section class="trending">
+  <h2>🔥 Bugün trend olanlar</h2>
+  <div class="poll-grid">
+    {% for poll in trending_polls %}
+      {% include "polls/poll_card.html" with poll=poll %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <div class="category-chips">
   <a href="{% url 'polls:home' %}" class="chip {% if not selected_category %}chip--active{% endif %}">Tümü</a>
   {% for value, label in categories %}

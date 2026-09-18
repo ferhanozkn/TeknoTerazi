@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.db import IntegrityError, transaction
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count, Max, Min, Prefetch, Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -9,6 +9,7 @@ from .models import Poll, Product, Vote, VoteAttempt, VoteValue
 
 VOTE_RATE_LIMIT = 60
 VOTE_RATE_WINDOW = timedelta(minutes=1)
+TRENDING_POLL_LIMIT = 5
 
 
 class VoteError(Exception):
@@ -28,6 +29,28 @@ def get_poll_with_stats(pk):
             Prefetch("products", queryset=products_qs)
         ),
         pk=pk,
+    )
+
+
+def get_trending_polls(limit=TRENDING_POLL_LIMIT):
+    """Bugün (yerel saatle) en çok oy alan açık anketler."""
+    start_of_today = timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
+    return (
+        Poll.objects.filter(is_active=True)
+        .select_related("author")
+        .prefetch_related("products")
+        .annotate(
+            today_votes=Count(
+                "products__votes",
+                filter=Q(products__votes__created_at__gte=start_of_today),
+                distinct=True,
+            ),
+            total_votes=Count("products__votes", distinct=True),
+            min_price=Min("products__price"),
+            max_price=Max("products__price"),
+        )
+        .filter(today_votes__gt=0)
+        .order_by("-today_votes", "-created_at")[:limit]
     )
 
 

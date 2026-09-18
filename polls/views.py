@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import CommentForm, PollForm, ProductFormSet, ReportForm
 from .models import Category, Comment, Poll, Product, Report, Vote, VoteValue
-from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats
+from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats, get_trending_polls
 from .voter import attach_voter_cookie, get_client_ip, get_voter, hash_ip
 
 
@@ -60,6 +60,7 @@ def home(request):
         "sort": sort,
         "status": status,
         "querystring_prefix": querystring_prefix,
+        "trending_polls": get_trending_polls(),
     }
     return render(request, "polls/home.html", context)
 
