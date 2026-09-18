@@ -710,6 +710,92 @@ a {
   display: none;
 }
 
+/* Yorumlar */
+
+.comments {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+.comments__title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  margin: 0 0 0.5rem;
+}
+
+.comments__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.comment {
+  background: var(--surface-tint);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem;
+}
+
+.comment--empty {
+  background: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.comment__body {
+  margin: 0 0 0.3rem;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.comment__meta {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.comment__delete-form {
+  display: inline;
+}
+
+.comment__delete-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--not-worth);
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.comment-form textarea {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  background: var(--surface);
+  color: var(--text);
+  resize: vertical;
+}
+
+.comment-form__login-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
 /* Anket detay üst kısmı */
 
 .poll-detail__header {

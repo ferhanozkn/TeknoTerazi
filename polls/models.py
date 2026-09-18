@@ -124,6 +124,21 @@ class Vote(models.Model):
         return f"{self.product} — {self.get_value_display()}"
 
 
+class Comment(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comments"
+    )
+    body = models.TextField(max_length=500, validators=[MinLengthValidator(3)])
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.author} → {self.product}"
+
+
 class VoteAttempt(models.Model):
     """Hız sınırlama için oy isteklerinin (başarılı/başarısız) kaydı."""
 

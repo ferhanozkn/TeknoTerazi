@@ -4,7 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet, inlineformset_factory
 
-from .models import Category, Poll, Product
+from .models import Category, Comment, Poll, Product
 
 
 class PollForm(forms.ModelForm):
@@ -83,6 +83,28 @@ class BaseProductFormSet(BaseInlineFormSet):
             if name in names:
                 raise ValidationError("Aynı ürünü iki kez ekleyemezsin.")
             names.append(name)
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["body"]
+        widgets = {
+            "body": forms.Textarea(
+                attrs={
+                    "rows": 3,
+                    "maxlength": 500,
+                    "placeholder": "Neden buna değer ya da değmez? Kısa bir not bırak…",
+                }
+            )
+        }
+        error_messages = {
+            "body": {
+                "required": "Yorum yazmadan gönderemezsin.",
+                "min_length": "Yorumun en az 3 karakter olmalı.",
+                "max_length": "Yorumun en fazla 500 karakter olabilir.",
+            }
+        }
 
 
 ProductFormSet = inlineformset_factory(

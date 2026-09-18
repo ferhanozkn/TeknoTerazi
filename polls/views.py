@@ -7,10 +7,11 @@ from django.db import transaction
 from django.db.models import Count, Max, Min, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .forms import PollForm, ProductFormSet
-from .models import Category, Poll, Product, Vote, VoteValue
+from .forms import CommentForm, PollForm, ProductFormSet
+from .models import Category, Comment, Poll, Product, Vote, VoteValue
 from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats
 from .voter import attach_voter_cookie, get_client_ip, get_voter, hash_ip
 
@@ -97,6 +98,10 @@ def poll_create(request):
 def poll_detail(request, pk):
     poll = get_poll_with_stats(pk)
     products = list(poll.products.all())
+    for product in products:
+        product.comment_list = list(
+            product.comments.select_related("author").order_by("-created_at")
+        )
     favorite_product = get_favorite_product(products)
     cheapest_product = min(products, key=lambda p: p.price) if products else None
 
@@ -122,8 +127,37 @@ def poll_detail(request, pk):
             "favorite_product": favorite_product,
             "cheapest_product": cheapest_product,
             "can_vote": can_vote,
+            "comment_form": CommentForm(auto_id=False),
         },
     )
+
+
+@login_required
+@require_POST
+def comment_add(request, pk):
+    product = get_object_or_404(Product.objects.select_related("poll"), pk=pk)
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.product = product
+        comment.author = request.user
+        comment.save()
+        messages.success(request, "Yorumun eklendi.")
+    else:
+        for error in form.errors.get("body", []):
+            messages.error(request, error)
+    return redirect(f"{reverse('polls:poll_detail', args=[product.poll_id])}#urun-{product.pk}")
+
+
+@login_required
+@require_POST
+def comment_delete(request, pk):
+    comment = get_object_or_404(Comment, pk=pk, author=request.user)
+    product_id = comment.product_id
+    poll_id = comment.product.poll_id
+    comment.delete()
+    messages.success(request, "Yorumun silindi.")
+    return redirect(f"{reverse('polls:poll_detail', args=[poll_id])}#urun-{product_id}")
 
 
 @require_POST
