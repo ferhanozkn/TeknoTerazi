@@ -65,3 +65,10 @@ def budget_tier_icon(budget_tier):
 @register.filter
 def dict_get(mapping, key):
     return mapping.get(key, "")
+
+
+@register.filter
+def conversion_rate(poll):
+    if not poll.view_count:
+        return None
+    return round(poll.total_votes / poll.view_count * 100)

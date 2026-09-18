@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.db import IntegrityError, transaction
-from django.db.models import Count, Max, Min, Prefetch, Q
+from django.db.models import Count, F, Max, Min, Prefetch, Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -26,11 +26,17 @@ def get_poll_with_stats(pk):
         not_worth_count=Count("votes", filter=Q(votes__value=-1)),
     ).order_by("position")
     return get_object_or_404(
-        Poll.objects.select_related("author").prefetch_related(
-            Prefetch("products", queryset=products_qs)
-        ),
+        Poll.objects.select_related("author")
+        .annotate(total_votes=Count("products__votes", distinct=True))
+        .prefetch_related(Prefetch("products", queryset=products_qs)),
         pk=pk,
     )
+
+
+def record_poll_view(poll):
+    """Basit dahili analitik: sayaç, F() ile yarış koşuluna karşı korunur."""
+    Poll.objects.filter(pk=poll.pk).update(view_count=F("view_count") + 1)
+    poll.view_count += 1
 
 
 def get_trending_polls(limit=TRENDING_POLL_LIMIT):

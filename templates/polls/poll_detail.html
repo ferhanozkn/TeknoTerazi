@@ -42,6 +42,12 @@
   {% endif %}
 
   {% if request.user == poll.author %}
+    <p class="poll-detail__analytics">
+      📊 {% blocktrans count counter=poll.view_count %}{{ counter }} görüntülenme{% plural %}{{ counter }} görüntülenme{% endblocktrans %}
+      · {% blocktrans count counter=poll.total_votes %}{{ counter }} oy{% plural %}{{ counter }} oy{% endblocktrans %}
+      {% with rate=poll|conversion_rate %}{% if rate is not None %}· %{{ rate }} {% trans "dönüşüm" %}{% endif %}{% endwith %}
+      <span class="poll-detail__analytics-hint">({% trans "yalnızca sana görünür" %})</span>
+    </p>
     <div class="poll-detail__owner-actions">
       {% if not poll_has_votes %}
         <a href="{% url 'polls:poll_edit' poll.pk %}" class="btn">{% trans "Düzenle" %}</a>

@@ -15,7 +15,14 @@ from django.views.decorators.http import require_POST
 from .forms import CommentForm, PollForm, ProductForm, ProductFormSet, ReportForm
 from .models import BudgetTier, Category, Comment, Poll, Product, Report, UsagePurpose, Vote, VoteValue
 from .og_image import render_poll_og_image
-from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats, get_trending_polls
+from .services import (
+    VoteError,
+    cast_vote,
+    get_favorite_product,
+    get_poll_with_stats,
+    get_trending_polls,
+    record_poll_view,
+)
 from .storage import ImageUploadError, upload_product_image
 from .voter import attach_voter_cookie, get_client_ip, get_voter, hash_ip
 
@@ -196,6 +203,7 @@ def poll_edit(request, pk):
 
 def poll_detail(request, pk):
     poll = get_poll_with_stats(pk)
+    record_poll_view(poll)
     products = list(poll.products.all())
     for product in products:
         product.comment_list = list(
@@ -217,7 +225,7 @@ def poll_detail(request, pk):
 
     is_owner = user is not None and user.pk == poll.author_id
     can_vote = poll.is_active and not poll.is_expired and not is_owner
-    poll_has_votes = any(p.worth_count + p.not_worth_count for p in products)
+    poll_has_votes = poll.total_votes > 0
 
     if poll.hide_results_until_vote and poll.is_active and not poll.is_expired and not is_owner:
         for product in products:

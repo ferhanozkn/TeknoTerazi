@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n tt_filters %}
 
 {% block title %}{% trans "Anketlerim" %} · TeknoTerazi{% endblock %}
 
@@ -11,6 +11,8 @@
       <div class="my-poll-row">
         <a href="{% url 'polls:poll_detail' poll.pk %}">{{ poll.title }}</a>
         <span>{% blocktrans count counter=poll.total_votes %}{{ counter }} oy{% plural %}{{ counter }} oy{% endblocktrans %}</span>
+        <span>{% blocktrans count counter=poll.view_count %}{{ counter }} görüntülenme{% plural %}{{ counter }} görüntülenme{% endblocktrans %}</span>
+        {% with rate=poll|conversion_rate %}{% if rate is not None %}<span>%{{ rate }} {% trans "dönüşüm" %}</span>{% endif %}{% endwith %}
         <span>{% if poll.is_active %}{% trans "Açık" %}{% else %}{% trans "Kapalı" %}{% endif %}</span>
         <a href="{% url 'polls:poll_detail' poll.pk %}" class="btn">{% trans "Görüntüle" %}</a>
         <form method="post" action="{% url 'polls:poll_toggle_active' poll.pk %}">

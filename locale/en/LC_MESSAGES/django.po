@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TeknoTerazi\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 16:58+0300\n"
+"POT-Creation-Date: 2026-09-18 19:27+0300\n"
 "PO-Revision-Date: 2026-09-18 16:58+0300\n"
 "Last-Translator: TeknoTerazi\n"
 "Language-Team: English\n"
@@ -17,7 +17,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Bu e-posta ile zaten bir hesabın var. E-posta ve parolanla giriş yap."
-msgstr "You already have an account with this email. Log in with your email and password."
+msgstr ""
+"You already have an account with this email. Log in with your email and "
+"password."
 
 msgid "Parolalar eşleşmiyor."
 msgstr "Passwords don't match."
@@ -300,6 +302,9 @@ msgstr "The image couldn't be uploaded, please try again."
 msgid "Henüz oy yok"
 msgstr "No votes yet"
 
+msgid "Kaydet"
+msgstr "Save"
+
 msgid "Anketin yayında! 🎉 Linki paylaşarak daha çok oy toplayabilirsin."
 msgstr "Your poll is live! 🎉 Share the link to collect more votes."
 
@@ -370,9 +375,6 @@ msgstr "Joined on"
 msgid "Oluşturduğun anket sayısı"
 msgstr "Polls created"
 
-msgid "Kaydet"
-msgstr "Save"
-
 msgid "Anketlerime dön"
 msgstr "Back to my polls"
 
@@ -395,7 +397,8 @@ msgid "TeknoTerazi — teknoloji ürünleri hakkında topluluğun fikrini al."
 msgstr "TeknoTerazi — get the community's take on tech products."
 
 msgid "Oy verirken tarayıcına anonim bir kimlik çerezi kaydedebiliriz."
-msgstr "When you vote, we may save an anonymous identity cookie in your browser."
+msgstr ""
+"When you vote, we may save an anonymous identity cookie in your browser."
 
 msgid "Karanlık/aydınlık mod değiştir"
 msgstr "Toggle dark/light mode"
@@ -487,6 +490,15 @@ msgid "%(counter)s oy"
 msgid_plural "%(counter)s oy"
 msgstr[0] "%(counter)s vote"
 msgstr[1] "%(counter)s votes"
+
+#, python-format
+msgid "%(counter)s görüntülenme"
+msgid_plural "%(counter)s görüntülenme"
+msgstr[0] "%(counter)s view"
+msgstr[1] "%(counter)s views"
+
+msgid "dönüşüm"
+msgstr "conversion"
 
 msgid "Açık"
 msgstr "Open"
@@ -597,6 +609,9 @@ msgstr "Expired (%(expiry_date)s)"
 msgid "Bitiş: %(expiry_date)s (%(time_left)s kaldı)"
 msgstr "Ends: %(expiry_date)s (%(time_left)s left)"
 
+msgid "yalnızca sana görünür"
+msgstr "only visible to you"
+
 msgid "Düzenle"
 msgstr "Edit"
 
@@ -688,8 +703,8 @@ msgid ""
 "Google ile giriş sırasında bir sorun oluştu. Lütfen tekrar dene veya e-posta "
 "ve parolanla giriş yap."
 msgstr ""
-"Something went wrong while signing in with Google. Please try again, or "
-"log in with your email and password."
+"Something went wrong while signing in with Google. Please try again, or log "
+"in with your email and password."
 
 msgid "Giriş sayfasına dön"
 msgstr "Back to login"

@@ -56,6 +56,7 @@ class Poll(models.Model):
     is_active = models.BooleanField(default=True)
     hide_results_until_vote = models.BooleanField(default=False)
     expires_at = models.DateTimeField(null=True, blank=True)
+    view_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
