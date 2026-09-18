@@ -22,6 +22,21 @@
     }, 4000);
   }
 
+  function updateResultsVisibility(card, form, data) {
+    if (!form.hasAttribute("data-reveal-results-on-vote")) {
+      return;
+    }
+    var resultsBlock = card.querySelector("[data-results-block]");
+    var hint = card.querySelector("[data-results-hint]");
+    var revealed = Boolean(data.user_vote);
+    if (resultsBlock) {
+      resultsBlock.hidden = !revealed;
+    }
+    if (hint) {
+      hint.hidden = revealed;
+    }
+  }
+
   function updateCard(card, data) {
     var worthCountEl = card.querySelector("[data-worth-count]");
     var notWorthCountEl = card.querySelector("[data-not-worth-count]");
@@ -84,6 +99,7 @@
         })
         .then(function (data) {
           updateCard(card, data);
+          updateResultsVisibility(card, form, data);
         })
         .catch(function (error) {
           showError(card, error.message);

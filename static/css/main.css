@@ -329,6 +329,23 @@ a {
   color: var(--text);
 }
 
+.form-row--checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.form-row--checkbox input[type="checkbox"] {
+  width: auto;
+}
+
+.field-help {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 .password-field {
   position: relative;
   display: flex;
@@ -707,6 +724,17 @@ a {
 }
 
 .vote-error[hidden] {
+  display: none;
+}
+
+.results-hint {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.results-hint[hidden],
+.results-block[hidden] {
   display: none;
 }
 

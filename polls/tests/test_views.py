@@ -93,6 +93,19 @@ class PollCreateViewTests(TestCase):
         poll = Poll.objects.get()
         self.assertEqual(poll.products.count(), 5)
 
+    def test_hide_results_until_vote_checkbox_is_saved(self):
+        self.client.post(
+            reverse("polls:poll_create"),
+            build_post_data(2, poll_overrides={"hide_results_until_vote": "on"}),
+        )
+        poll = Poll.objects.get()
+        self.assertTrue(poll.hide_results_until_vote)
+
+    def test_hide_results_until_vote_defaults_to_false(self):
+        self.client.post(reverse("polls:poll_create"), build_post_data(2))
+        poll = Poll.objects.get()
+        self.assertFalse(poll.hide_results_until_vote)
+
     def test_invalid_submission_preserves_entered_data(self):
         data = build_post_data(1, poll_overrides={"title": "Kaybolmamalı başlık"})
         response = self.client.post(reverse("polls:poll_create"), data)

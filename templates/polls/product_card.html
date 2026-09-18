@@ -1,6 +1,6 @@
 {% load tt_filters %}
 <article class="product-card-view" id="urun-{{ product.pk }}" data-product-id="{{ product.pk }}">
-  {% if product == favorite_product %}<span class="badge badge--favorite">🏆 Topluluğun Favorisi</span>{% endif %}
+  {% if product == favorite_product and product.show_results %}<span class="badge badge--favorite">🏆 Topluluğun Favorisi</span>{% endif %}
   {% if product.image_url %}
     <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
   {% endif %}
@@ -17,15 +17,23 @@
   {% if product.product_url %}
     <a href="{{ product.product_url }}" target="_blank" rel="noopener noreferrer nofollow">Ürüne git ↗</a>
   {% endif %}
-  <div class="vote-bar">
-    <div class="vote-bar__worth" data-vote-bar style="width: {{ product.worth_ratio|default:0 }}%"></div>
+  <div class="results-block" data-results-block {% if not product.show_results %}hidden{% endif %}>
+    <div class="vote-bar">
+      <div class="vote-bar__worth" data-vote-bar style="width: {{ product.worth_ratio|default:0 }}%"></div>
+    </div>
+    <p class="vote-percent">{{ product.worth_ratio|percent }}</p>
+    <p class="vote-counts">
+      <span data-worth-count>👍 {{ product.worth_count }}</span>
+      <span data-not-worth-count>👎 {{ product.not_worth_count }}</span>
+    </p>
   </div>
-  <p class="vote-percent">{{ product.worth_ratio|percent }}</p>
-  <p class="vote-counts">
-    <span data-worth-count>👍 {{ product.worth_count }}</span>
-    <span data-not-worth-count>👎 {{ product.not_worth_count }}</span>
-  </p>
-  <form method="post" action="{% url 'polls:vote' product.pk %}" class="vote-buttons">
+  {% if poll.hide_results_until_vote %}
+    <p class="results-hint" data-results-hint {% if product.show_results %}hidden{% endif %}>Sonuçları görmek için önce oy ver.</p>
+  {% endif %}
+  <form
+    method="post" action="{% url 'polls:vote' product.pk %}" class="vote-buttons"
+    {% if poll.hide_results_until_vote %}data-reveal-results-on-vote{% endif %}
+  >
     {% csrf_token %}
     <button
       type="submit" name="value" value="worth" class="btn vote-btn"

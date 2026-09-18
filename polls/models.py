@@ -36,6 +36,7 @@ class Poll(models.Model):
     description = models.TextField(max_length=1000, blank=True)
     category = models.CharField(max_length=20, choices=Category.choices)
     is_active = models.BooleanField(default=True)
+    hide_results_until_vote = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 

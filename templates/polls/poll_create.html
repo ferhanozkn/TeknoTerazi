@@ -34,6 +34,14 @@
         <span class="char-counter" data-counter-for="{{ poll_form.description.id_for_label }}" data-max="1000"></span>
         {{ poll_form.description.errors }}
       </div>
+      <div class="form-row form-row--checkbox">
+        <label>
+          {{ poll_form.hide_results_until_vote }}
+          {{ poll_form.hide_results_until_vote.label }}
+        </label>
+        <p class="field-help">{{ poll_form.hide_results_until_vote.help_text }}</p>
+        {{ poll_form.hide_results_until_vote.errors }}
+      </div>
     </fieldset>
 
     <fieldset class="card">

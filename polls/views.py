@@ -116,7 +116,15 @@ def poll_detail(request, pk):
         for product in products:
             product.user_vote = user_votes.get(product.pk)
 
-    can_vote = poll.is_active and not (user is not None and user.pk == poll.author_id)
+    is_owner = user is not None and user.pk == poll.author_id
+    can_vote = poll.is_active and not is_owner
+
+    if poll.hide_results_until_vote and poll.is_active and not is_owner:
+        for product in products:
+            product.show_results = product.user_vote is not None
+    else:
+        for product in products:
+            product.show_results = True
 
     return render(
         request,

@@ -8,9 +8,15 @@ from .models import Category, Comment, Poll, Product, Report, ReportReason
 
 
 class PollForm(forms.ModelForm):
+    hide_results_until_vote = forms.BooleanField(
+        label="Sonuçları oy vermeden gizle",
+        required=False,
+        help_text="Önyargıyı azaltmak için: bir ürüne oy verene kadar o ürünün oy sayıları gizli kalır.",
+    )
+
     class Meta:
         model = Poll
-        fields = ["title", "category", "description"]
+        fields = ["title", "category", "description", "hide_results_until_vote"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
