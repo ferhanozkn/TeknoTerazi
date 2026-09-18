@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.utils import timezone
 
-from .models import Category, Comment, Poll, Product, Report, ReportReason
+from .models import BudgetTier, Category, Comment, Poll, Product, Report, ReportReason, UsagePurpose
 
 
 class PollForm(forms.ModelForm):
@@ -24,11 +24,25 @@ class PollForm(forms.ModelForm):
 
     class Meta:
         model = Poll
-        fields = ["title", "category", "description", "hide_results_until_vote", "expires_at"]
+        fields = [
+            "title",
+            "category",
+            "description",
+            "usage_purpose",
+            "budget_tier",
+            "hide_results_until_vote",
+            "expires_at",
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["category"].choices = [("", "Kategori seç")] + list(Category.choices)
+        self.fields["usage_purpose"].required = False
+        self.fields["usage_purpose"].choices = [("", "Kullanım amacı seç (opsiyonel)")] + list(
+            UsagePurpose.choices
+        )
+        self.fields["budget_tier"].required = False
+        self.fields["budget_tier"].choices = [("", "Bütçe seç (opsiyonel)")] + list(BudgetTier.choices)
 
     def clean_expires_at(self):
         value = self.cleaned_data.get("expires_at")

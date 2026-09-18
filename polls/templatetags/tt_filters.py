@@ -15,6 +15,20 @@ CATEGORY_ICONS = {
     "other": "✨",
 }
 
+USAGE_PURPOSE_ICONS = {
+    "gaming": "🎮",
+    "school": "📚",
+    "work": "💼",
+    "daily": "☀️",
+    "other": "✨",
+}
+
+BUDGET_TIER_ICONS = {
+    "economic": "💵",
+    "mid": "💰",
+    "premium": "💎",
+}
+
 
 @register.filter
 def tl(value):
@@ -35,6 +49,16 @@ def percent(value):
 @register.filter
 def category_icon(category):
     return CATEGORY_ICONS.get(category, "✨")
+
+
+@register.filter
+def usage_purpose_icon(usage_purpose):
+    return USAGE_PURPOSE_ICONS.get(usage_purpose, "")
+
+
+@register.filter
+def budget_tier_icon(budget_tier):
+    return BUDGET_TIER_ICONS.get(budget_tier, "")
 
 
 @register.filter

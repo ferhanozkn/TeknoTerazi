@@ -9,6 +9,12 @@
 <header class="poll-detail__header">
   <div class="poll-card__badges">
     <span class="badge badge--category">{{ poll.category|category_icon }} {{ poll.get_category_display }}</span>
+    {% if poll.usage_purpose %}
+      <span class="badge badge--tag">{{ poll.usage_purpose|usage_purpose_icon }} {{ poll.get_usage_purpose_display }}</span>
+    {% endif %}
+    {% if poll.budget_tier %}
+      <span class="badge badge--tag">{{ poll.budget_tier|budget_tier_icon }} {{ poll.get_budget_tier_display }}</span>
+    {% endif %}
     {% if poll.is_expired %}
       <span class="badge badge--closed">Süresi doldu</span>
     {% elif not poll.is_active %}

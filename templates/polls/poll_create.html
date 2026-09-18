@@ -29,6 +29,16 @@
         {{ poll_form.category.errors }}
       </div>
       <div class="form-row">
+        <label for="{{ poll_form.usage_purpose.id_for_label }}">Kullanım amacı (opsiyonel)</label>
+        {{ poll_form.usage_purpose }}
+        {{ poll_form.usage_purpose.errors }}
+      </div>
+      <div class="form-row">
+        <label for="{{ poll_form.budget_tier.id_for_label }}">Bütçe (opsiyonel)</label>
+        {{ poll_form.budget_tier }}
+        {{ poll_form.budget_tier.errors }}
+      </div>
+      <div class="form-row">
         <label for="{{ poll_form.description.id_for_label }}">Açıklama (opsiyonel)</label>
         {{ poll_form.description }}
         <span class="char-counter" data-counter-for="{{ poll_form.description.id_for_label }}" data-max="1000"></span>

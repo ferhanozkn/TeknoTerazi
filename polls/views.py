@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import CommentForm, PollForm, ProductForm, ProductFormSet, ReportForm
-from .models import Category, Comment, Poll, Product, Report, Vote, VoteValue
+from .models import BudgetTier, Category, Comment, Poll, Product, Report, UsagePurpose, Vote, VoteValue
 from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats, get_trending_polls
 from .storage import ImageUploadError, upload_product_image
 from .voter import attach_voter_cookie, get_client_ip, get_voter, hash_ip
@@ -37,6 +37,14 @@ def home(request):
     if selected_category:
         polls = polls.filter(category=selected_category)
 
+    selected_usage_purpose = request.GET.get("amac", "")
+    if selected_usage_purpose:
+        polls = polls.filter(usage_purpose=selected_usage_purpose)
+
+    selected_budget_tier = request.GET.get("butce", "")
+    if selected_budget_tier:
+        polls = polls.filter(budget_tier=selected_budget_tier)
+
     status = request.GET.get("durum", "")
     if status == "acik":
         polls = polls.filter(is_active=True).exclude(expires_at__lte=timezone.now())
@@ -57,8 +65,12 @@ def home(request):
     context = {
         "page_obj": page_obj,
         "categories": Category.choices,
+        "usage_purposes": UsagePurpose.choices,
+        "budget_tiers": BudgetTier.choices,
         "query": query,
         "selected_category": selected_category,
+        "selected_usage_purpose": selected_usage_purpose,
+        "selected_budget_tier": selected_budget_tier,
         "sort": sort,
         "status": status,
         "querystring_prefix": querystring_prefix,

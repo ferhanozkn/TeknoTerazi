@@ -29,6 +29,20 @@ class VoteValue(models.IntegerChoices):
     NOT_WORTH = -1, "Buna değmez"
 
 
+class UsagePurpose(models.TextChoices):
+    GAMING = "gaming", "Oyun"
+    SCHOOL = "school", "Okul"
+    WORK = "work", "İş"
+    DAILY = "daily", "Günlük kullanım"
+    OTHER = "other", "Diğer"
+
+
+class BudgetTier(models.TextChoices):
+    ECONOMIC = "economic", "Ekonomik"
+    MID = "mid", "Orta segment"
+    PREMIUM = "premium", "Üst segment"
+
+
 class Poll(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="polls"
@@ -36,6 +50,8 @@ class Poll(models.Model):
     title = models.CharField(max_length=120, validators=[MinLengthValidator(5)])
     description = models.TextField(max_length=1000, blank=True)
     category = models.CharField(max_length=20, choices=Category.choices)
+    usage_purpose = models.CharField(max_length=20, choices=UsagePurpose.choices, blank=True)
+    budget_tier = models.CharField(max_length=20, choices=BudgetTier.choices, blank=True)
     is_active = models.BooleanField(default=True)
     hide_results_until_vote = models.BooleanField(default=False)
     expires_at = models.DateTimeField(null=True, blank=True)

@@ -606,6 +606,11 @@ a {
   color: var(--warning);
 }
 
+.badge--tag {
+  background: var(--border);
+  color: var(--text-muted);
+}
+
 .poll-card__products {
   list-style: none;
   padding: 0;

@@ -36,6 +36,18 @@
       <option value="{{ value }}" {% if value == selected_category %}selected{% endif %}>{{ label }}</option>
     {% endfor %}
   </select>
+  <select name="amac">
+    <option value="">Tüm kullanım amaçları</option>
+    {% for value, label in usage_purposes %}
+      <option value="{{ value }}" {% if value == selected_usage_purpose %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="butce">
+    <option value="">Tüm bütçeler</option>
+    {% for value, label in budget_tiers %}
+      <option value="{{ value }}" {% if value == selected_budget_tier %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
   <select name="sirala">
     <option value="yeni" {% if sort == "yeni" %}selected{% endif %}>Yeni</option>
     <option value="populer" {% if sort == "populer" %}selected{% endif %}>Popüler</option>
