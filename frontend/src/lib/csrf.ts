@@ -25,3 +25,15 @@ export async function postJson(path: string, body: unknown): Promise<Response> {
     body: JSON.stringify(body),
   });
 }
+
+/** Same as postJson but for multipart form data (file uploads) — no
+ * Content-Type header, the browser sets the multipart boundary itself. */
+export async function postFormData(path: string, body: FormData): Promise<Response> {
+  await ensureCsrfCookie();
+  return fetch(path, {
+    method: "POST",
+    credentials: "include",
+    headers: { "X-CSRFToken": readCsrfCookie() },
+    body,
+  });
+}

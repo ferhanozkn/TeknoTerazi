@@ -9,6 +9,7 @@ import json
 from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Count, Max, Min, Q
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -17,6 +18,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
+from .forms import PollForm, ProductFormSet
 from .models import BudgetTier, Category, Poll, Product, UsagePurpose, Vote, VoteValue
 from .services import (
     VoteError,
@@ -26,6 +28,7 @@ from .services import (
     get_trending_polls,
     record_poll_view,
 )
+from .storage import ImageUploadError, upload_product_image
 from .voter import attach_voter_cookie, get_client_ip, get_voter, hash_ip
 
 
@@ -255,6 +258,59 @@ def _conversion_rate(poll):
     if not poll.view_count:
         return None
     return round(poll.total_votes / poll.view_count * 100)
+
+
+def _form_errors(form):
+    return {field: [str(e) for e in errors] for field, errors in form.errors.items()}
+
+
+@require_POST
+def poll_create(request):
+    if not request.user.is_authenticated:
+        return _unauthenticated()
+
+    poll_form = PollForm(request.POST)
+    product_formset = ProductFormSet(request.POST, request.FILES, prefix="products")
+
+    if not (poll_form.is_valid() and product_formset.is_valid()):
+        return JsonResponse(
+            {
+                "poll_errors": _form_errors(poll_form),
+                "product_errors": [_form_errors(form) for form in product_formset.forms],
+                "non_form_errors": list(product_formset.non_form_errors()),
+            },
+            status=400,
+        )
+
+    image_urls = []
+    upload_errors = {}
+    for index, form in enumerate(product_formset.forms):
+        image_file = form.cleaned_data.get("image")
+        if not image_file:
+            image_urls.append(None)
+            continue
+        try:
+            image_urls.append(upload_product_image(image_file))
+        except ImageUploadError as exc:
+            upload_errors[index] = exc.message
+            image_urls.append(None)
+
+    if upload_errors:
+        return JsonResponse({"product_upload_errors": upload_errors}, status=400)
+
+    with transaction.atomic():
+        poll = poll_form.save(commit=False)
+        poll.author = request.user
+        poll.save()
+        products = product_formset.save(commit=False)
+        for position, (product, image_url) in enumerate(zip(products, image_urls)):
+            product.poll = poll
+            product.position = position
+            if image_url:
+                product.image_url = image_url
+            product.save()
+
+    return JsonResponse({"id": poll.pk}, status=201)
 
 
 @require_GET
