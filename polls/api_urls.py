@@ -12,6 +12,10 @@ urlpatterns = [
     path("polls/<int:pk>/", api.poll_detail, name="poll_detail"),
     path("polls/<int:pk>/durum/", api.poll_toggle_active, name="poll_toggle_active"),
     path("polls/<int:pk>/sil/", api.poll_delete, name="poll_delete"),
+    path("polls/<int:pk>/sikayet/", api.report_poll, name="report_poll"),
     path("anketlerim/", api.my_polls, name="my_polls"),
+    path("report-reasons/", api.report_reasons, name="report_reasons"),
     path("products/<int:pk>/vote/", api.vote, name="vote"),
+    path("products/<int:pk>/yorum/", api.comment_add, name="comment_add"),
+    path("yorum/<int:pk>/sil/", api.comment_delete, name="comment_delete"),
 ]

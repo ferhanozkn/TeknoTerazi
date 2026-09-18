@@ -3,15 +3,18 @@
 import { useState } from "react";
 import { formatTl, type Product, type VoteValue } from "@/lib/types";
 import { castVote } from "@/lib/vote-client";
+import { CommentSection } from "./comment-section";
 
 export function ProductCard({
   product,
   canVote,
   hideResultsUntilVote,
+  isAuthenticated,
 }: {
   product: Product;
   canVote: boolean;
   hideResultsUntilVote: boolean;
+  isAuthenticated: boolean;
 }) {
   const [userVote, setUserVote] = useState<VoteValue | null>(product.userVote);
   const [worthCount, setWorthCount] = useState(product.worthCount);
@@ -128,21 +131,11 @@ export function ProductCard({
       </div>
       {error && <p className="text-sm text-not-worth">{error}</p>}
 
-      <section className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
-        <h4 className="text-sm font-medium">Yorumlar ({product.comments.length})</h4>
-        <ul className="flex flex-col gap-2">
-          {product.comments.length === 0 ? (
-            <li className="text-sm text-text-muted">Henüz yorum yok. İlk yorumu sen yaz!</li>
-          ) : (
-            product.comments.map((comment) => (
-              <li key={comment.id} className="text-sm">
-                <p>{comment.body}</p>
-                <p className="text-xs text-text-muted">@{comment.authorUsername}</p>
-              </li>
-            ))
-          )}
-        </ul>
-      </section>
+      <CommentSection
+        productId={product.id}
+        initialComments={product.comments}
+        isAuthenticated={isAuthenticated}
+      />
     </article>
   );
 }

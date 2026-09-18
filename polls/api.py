@@ -9,7 +9,7 @@ import json
 from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Count, Max, Min, Q
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -18,8 +18,19 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .forms import PollForm, ProductFormSet
-from .models import BudgetTier, Category, Poll, Product, UsagePurpose, Vote, VoteValue
+from .forms import CommentForm, PollForm, ProductFormSet, ReportForm
+from .models import (
+    BudgetTier,
+    Category,
+    Comment,
+    Poll,
+    Product,
+    Report,
+    ReportReason,
+    UsagePurpose,
+    Vote,
+    VoteValue,
+)
 from .services import (
     VoteError,
     cast_vote,
@@ -357,3 +368,68 @@ def poll_delete(request, pk):
     poll = get_object_or_404(Poll, pk=pk, author=request.user)
     poll.delete()
     return JsonResponse({"ok": True})
+
+
+@require_POST
+def comment_add(request, pk):
+    if not request.user.is_authenticated:
+        return _unauthenticated()
+    product = get_object_or_404(Product.objects.select_related("poll"), pk=pk)
+    body = json.loads(request.body or b"{}")
+    form = CommentForm(body)
+    if not form.is_valid():
+        return JsonResponse({"errors": _form_errors(form)}, status=400)
+    comment = form.save(commit=False)
+    comment.product = product
+    comment.author = request.user
+    comment.save()
+    return JsonResponse(
+        {
+            "id": comment.pk,
+            "body": comment.body,
+            "author_username": comment.author.username,
+            "created_at": comment.created_at.isoformat(),
+            "can_delete": True,
+        },
+        status=201,
+    )
+
+
+@require_POST
+def comment_delete(request, pk):
+    if not request.user.is_authenticated:
+        return _unauthenticated()
+    comment = get_object_or_404(Comment, pk=pk, author=request.user)
+    comment.delete()
+    return JsonResponse({"ok": True})
+
+
+@require_GET
+def report_reasons(request):
+    return JsonResponse({"reasons": list(ReportReason.choices)})
+
+
+@require_POST
+def report_poll(request, pk):
+    if not request.user.is_authenticated:
+        return _unauthenticated()
+    poll = get_object_or_404(Poll, pk=pk)
+
+    if Report.objects.filter(poll=poll, reporter=request.user).exists():
+        return JsonResponse({"error": _("Bu anketi zaten şikayet ettin.")}, status=400)
+
+    body = json.loads(request.body or b"{}")
+    form = ReportForm(body)
+    if not form.is_valid():
+        return JsonResponse({"errors": _form_errors(form)}, status=400)
+
+    try:
+        with transaction.atomic():
+            report = form.save(commit=False)
+            report.poll = poll
+            report.reporter = request.user
+            report.save()
+    except IntegrityError:
+        return JsonResponse({"error": _("Bu anketi zaten şikayet ettin.")}, status=400)
+
+    return JsonResponse({"ok": True}, status=201)

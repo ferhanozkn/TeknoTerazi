@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/product-card";
-import { fetchPoll } from "@/lib/api";
+import { ShareButton } from "@/components/share-button";
+import { fetchCurrentUser, fetchPoll } from "@/lib/api";
 import {
   BUDGET_TIER_LABELS,
   CATEGORY_LABELS,
@@ -15,7 +16,7 @@ export default async function PollDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const poll = await fetchPoll(Number(id));
+  const [poll, user] = await Promise.all([fetchPoll(Number(id)), fetchCurrentUser()]);
   if (!poll) notFound();
 
   return (
@@ -66,12 +67,17 @@ export default async function PollDetailPage({
           </p>
         )}
 
-        <button
-          type="button"
-          className="w-fit rounded-full border border-border px-4 py-2 text-sm font-medium transition hover:border-primary hover:text-primary"
-        >
-          Bu anketi paylaş
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <ShareButton />
+          {user.authenticated && !poll.isOwner && (
+            <Link
+              href={`/anket/${poll.id}/sikayet`}
+              className="w-fit rounded-full border border-border px-4 py-2 text-sm font-medium transition hover:border-not-worth hover:text-not-worth"
+            >
+              Şikayet et
+            </Link>
+          )}
+        </div>
       </header>
 
       <div className="grid gap-6 sm:grid-cols-2">
@@ -81,6 +87,7 @@ export default async function PollDetailPage({
             product={product}
             canVote={poll.canVote}
             hideResultsUntilVote={poll.hideResultsUntilVote}
+            isAuthenticated={user.authenticated}
           />
         ))}
       </div>

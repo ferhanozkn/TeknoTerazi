@@ -16,6 +16,15 @@ export type BudgetTier = "economic" | "mid" | "premium";
 
 export type VoteValue = "worth" | "not_worth";
 
+export type ReportReason = "inappropriate" | "spam" | "misleading" | "other";
+
+export const REPORT_REASON_LABELS: Record<ReportReason, string> = {
+  inappropriate: "Uygunsuz içerik",
+  spam: "Spam veya tanıtım",
+  misleading: "Yanıltıcı bilgi",
+  other: "Diğer",
+};
+
 export interface Comment {
   id: number;
   body: string;
