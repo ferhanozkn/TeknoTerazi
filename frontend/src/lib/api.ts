@@ -156,12 +156,23 @@ function toPoll(raw: RawPollDetail): Poll {
 }
 
 /** Forwards the visitor's cookies (anon voter id, session) so the backend can
- * personalize `user_vote`/`show_results` on the very first server render. */
+ * personalize `user_vote`/`show_results` on the very first server render.
+ *
+ * Also forwards a Vercel Protection Bypass secret when configured — Preview
+ * deployments of the Django project are gated behind Vercel's SSO wall by
+ * default, which would otherwise make this server-to-server call receive an
+ * HTML login page instead of JSON. Production is public, so this is a no-op
+ * there (the env var is unset). */
 async function backendFetch(path: string, init?: RequestInit) {
   const cookieHeader = (await cookies()).toString();
+  const bypassSecret = process.env.VERCEL_PROTECTION_BYPASS_SECRET;
   const res = await fetch(`${BACKEND_URL}${path}`, {
     ...init,
-    headers: { ...init?.headers, cookie: cookieHeader },
+    headers: {
+      ...init?.headers,
+      cookie: cookieHeader,
+      ...(bypassSecret ? { "x-vercel-protection-bypass": bypassSecret } : {}),
+    },
     cache: "no-store",
   });
   if (!res.ok) {
