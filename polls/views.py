@@ -9,6 +9,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from .forms import CommentForm, PollForm, ProductForm, ProductFormSet, ReportForm
@@ -114,7 +115,7 @@ def poll_create(request):
                         product.save()
                 messages.success(
                     request,
-                    "Anketin yayında! 🎉 Linki paylaşarak daha çok oy toplayabilirsin.",
+                    _("Anketin yayında! 🎉 Linki paylaşarak daha çok oy toplayabilirsin."),
                 )
                 return redirect("polls:poll_detail", pk=poll.pk)
     else:
@@ -136,7 +137,7 @@ def poll_edit(request, pk):
         author=request.user,
     )
     if poll.vote_count > 0:
-        messages.error(request, "Bu anket oy almış, artık düzenlenemez.")
+        messages.error(request, _("Bu anket oy almış, artık düzenlenemez."))
         return redirect("polls:poll_detail", pk=poll.pk)
 
     products = list(poll.products.all())
@@ -154,7 +155,7 @@ def poll_edit(request, pk):
         if forms_valid:
             names = [form.cleaned_data["name"].strip().lower() for form in product_forms]
             if len(names) != len(set(names)):
-                messages.error(request, "Aynı ürünü iki kez ekleyemezsin.")
+                messages.error(request, _("Aynı ürünü iki kez ekleyemezsin."))
                 forms_valid = False
 
         upload_failed = False
@@ -178,7 +179,7 @@ def poll_edit(request, pk):
                     if product.pk in image_urls:
                         product.image_url = image_urls[product.pk]
                     product.save()
-            messages.success(request, "Anket güncellendi.")
+            messages.success(request, _("Anket güncellendi."))
             return redirect("polls:poll_detail", pk=poll.pk)
     else:
         poll_form = PollForm(instance=poll)
@@ -203,7 +204,7 @@ def poll_detail(request, pk):
     favorite_product = get_favorite_product(products)
     cheapest_product = min(products, key=lambda p: p.price) if products else None
 
-    user, anon_id, _ = get_voter(request)
+    user, anon_id, __ = get_voter(request)
     if products:
         vote_lookup = {"product__poll_id": poll.pk}
         vote_lookup.update({"user": user} if user is not None else {"anon_id": anon_id})
@@ -269,7 +270,7 @@ def comment_add(request, pk):
         comment.product = product
         comment.author = request.user
         comment.save()
-        messages.success(request, "Yorumun eklendi.")
+        messages.success(request, _("Yorumun eklendi."))
     else:
         for error in form.errors.get("body", []):
             messages.error(request, error)
@@ -283,7 +284,7 @@ def comment_delete(request, pk):
     product_id = comment.product_id
     poll_id = comment.product.poll_id
     comment.delete()
-    messages.success(request, "Yorumun silindi.")
+    messages.success(request, _("Yorumun silindi."))
     return redirect(f"{reverse('polls:poll_detail', args=[poll_id])}#urun-{product_id}")
 
 
@@ -296,8 +297,8 @@ def vote(request, pk):
     value = value_map.get(request.POST.get("value"))
     if value is None:
         if is_ajax:
-            return JsonResponse({"error": "Geçersiz oy değeri."}, status=400)
-        messages.error(request, "Geçersiz oy değeri.")
+            return JsonResponse({"error": _("Geçersiz oy değeri.")}, status=400)
+        messages.error(request, _("Geçersiz oy değeri."))
         return redirect("polls:poll_detail", pk=product.poll_id)
 
     user, anon_id, is_new_anon = get_voter(request)
@@ -327,7 +328,7 @@ def report_poll(request, pk):
     poll = get_object_or_404(Poll, pk=pk)
 
     if Report.objects.filter(poll=poll, reporter=request.user).exists():
-        messages.error(request, "Bu anketi zaten şikayet ettin.")
+        messages.error(request, _("Bu anketi zaten şikayet ettin."))
         return redirect("polls:poll_detail", pk=poll.pk)
 
     if request.method == "POST":
@@ -340,9 +341,9 @@ def report_poll(request, pk):
                     report.reporter = request.user
                     report.save()
             except IntegrityError:
-                messages.error(request, "Bu anketi zaten şikayet ettin.")
+                messages.error(request, _("Bu anketi zaten şikayet ettin."))
             else:
-                messages.success(request, "Şikayetin alındı, ekibimiz inceleyecek.")
+                messages.success(request, _("Şikayetin alındı, ekibimiz inceleyecek."))
             return redirect("polls:poll_detail", pk=poll.pk)
     else:
         form = ReportForm()
@@ -364,7 +365,7 @@ def poll_delete(request, pk):
     poll = get_object_or_404(Poll, pk=pk, author=request.user)
     if request.method == "POST":
         poll.delete()
-        messages.success(request, "Anket silindi.")
+        messages.success(request, _("Anket silindi."))
         return redirect("polls:my_polls")
     return render(request, "polls/poll_confirm_delete.html", {"poll": poll})
 

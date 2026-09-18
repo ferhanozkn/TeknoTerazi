@@ -1,45 +1,45 @@
 {% extends "base.html" %}
-{% load static %}
+{% load i18n static %}
 
-{% block title %}Anket Oluştur · TeknoTerazi{% endblock %}
+{% block title %}{% trans "Anket Oluştur" %} · TeknoTerazi{% endblock %}
 
 {% block content %}
 <section class="poll-create">
   <ol class="steps">
-    <li>1. Anket bilgileri</li>
-    <li>2. Ürünler</li>
-    <li>Yayınla</li>
+    <li>1. {% trans "Anket bilgileri" %}</li>
+    <li>2. {% trans "Ürünler" %}</li>
+    <li>{% trans "Yayınla" %}</li>
   </ol>
 
   <form method="post" novalidate id="poll-create-form" enctype="multipart/form-data">
     {% csrf_token %}
 
     <fieldset class="card">
-      <legend>Anket bilgileri</legend>
+      <legend>{% trans "Anket bilgileri" %}</legend>
       {{ poll_form.non_field_errors }}
       <div class="form-row">
-        <label for="{{ poll_form.title.id_for_label }}">Başlık</label>
+        <label for="{{ poll_form.title.id_for_label }}">{% trans "Başlık" %}</label>
         {{ poll_form.title }}
         <span class="char-counter" data-counter-for="{{ poll_form.title.id_for_label }}" data-max="120"></span>
         {{ poll_form.title.errors }}
       </div>
       <div class="form-row">
-        <label for="{{ poll_form.category.id_for_label }}">Kategori</label>
+        <label for="{{ poll_form.category.id_for_label }}">{% trans "Kategori" %}</label>
         {{ poll_form.category }}
         {{ poll_form.category.errors }}
       </div>
       <div class="form-row">
-        <label for="{{ poll_form.usage_purpose.id_for_label }}">Kullanım amacı (opsiyonel)</label>
+        <label for="{{ poll_form.usage_purpose.id_for_label }}">{% trans "Kullanım amacı (opsiyonel)" %}</label>
         {{ poll_form.usage_purpose }}
         {{ poll_form.usage_purpose.errors }}
       </div>
       <div class="form-row">
-        <label for="{{ poll_form.budget_tier.id_for_label }}">Bütçe (opsiyonel)</label>
+        <label for="{{ poll_form.budget_tier.id_for_label }}">{% trans "Bütçe (opsiyonel)" %}</label>
         {{ poll_form.budget_tier }}
         {{ poll_form.budget_tier.errors }}
       </div>
       <div class="form-row">
-        <label for="{{ poll_form.description.id_for_label }}">Açıklama (opsiyonel)</label>
+        <label for="{{ poll_form.description.id_for_label }}">{% trans "Açıklama (opsiyonel)" %}</label>
         {{ poll_form.description }}
         <span class="char-counter" data-counter-for="{{ poll_form.description.id_for_label }}" data-max="1000"></span>
         {{ poll_form.description.errors }}
@@ -61,7 +61,7 @@
     </fieldset>
 
     <fieldset class="card">
-      <legend>Ürünler</legend>
+      <legend>{% trans "Ürünler" %}</legend>
       {{ product_formset.management_form }}
       {{ product_formset.non_form_errors }}
       <div id="product-cards">
@@ -72,11 +72,11 @@
       <template id="empty-product-form">
         {% include "polls/_product_card.html" with form=product_formset.empty_form display_index="" %}
       </template>
-      <button type="button" class="btn" id="add-product">＋ Ürün Ekle</button>
-      <p id="max-products-hint" hidden>Maksimum 5 ürün</p>
+      <button type="button" class="btn" id="add-product">＋ {% trans "Ürün Ekle" %}</button>
+      <p id="max-products-hint" hidden>{% trans "Maksimum 5 ürün" %}</p>
     </fieldset>
 
-    <button type="submit" class="btn btn--primary">Yayınla</button>
+    <button type="submit" class="btn btn--primary">{% trans "Yayınla" %}</button>
   </form>
 </section>
 <script src="{% static 'js/char_counter.js' %}" defer></script>

@@ -1,16 +1,17 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Profilim · TeknoTerazi{% endblock %}
+{% block title %}{% trans "Profilim" %} · TeknoTerazi{% endblock %}
 
 {% block content %}
 <section class="auth-card">
-  <h1>Profilim</h1>
+  <h1>{% trans "Profilim" %}</h1>
   <dl class="profile-info">
-    <dt>E-posta</dt>
+    <dt>{% trans "E-posta" %}</dt>
     <dd>{{ user.email }}</dd>
-    <dt>Katılma tarihi</dt>
+    <dt>{% trans "Katılma tarihi" %}</dt>
     <dd>{{ user.date_joined|date:"d.m.Y" }}</dd>
-    <dt>Oluşturduğun anket sayısı</dt>
+    <dt>{% trans "Oluşturduğun anket sayısı" %}</dt>
     <dd>{{ poll_count }}</dd>
   </dl>
   <form method="post" novalidate>
@@ -24,8 +25,8 @@
         {{ field.errors }}
       </div>
     {% endfor %}
-    <button type="submit" class="btn btn--primary">Kaydet</button>
+    <button type="submit" class="btn btn--primary">{% trans "Kaydet" %}</button>
   </form>
-  <p><a href="{% url 'polls:my_polls' %}">Anketlerime dön</a></p>
+  <p><a href="{% url 'polls:my_polls' %}">{% trans "Anketlerime dön" %}</a></p>
 </section>
 {% endblock %}

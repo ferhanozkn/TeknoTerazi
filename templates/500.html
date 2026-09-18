@@ -1,9 +1,9 @@
-<!doctype html>
-<html lang="tr">
+{% load i18n %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE|default:'tr' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bir şeyler ters gitti · TeknoTerazi</title>
+  <title>{% trans "Bir şeyler ters gitti" %} · TeknoTerazi</title>
   <style>
     body {
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -18,8 +18,8 @@
   </style>
 </head>
 <body>
-  <h1>Bir şeyler ters gitti ⚖️</h1>
-  <p>Özür dileriz, beklenmedik bir hata oluştu. Lütfen daha sonra tekrar dene.</p>
-  <a href="/">Ana sayfaya dön</a>
+  <h1>{% trans "Bir şeyler ters gitti" %} ⚖️</h1>
+  <p>{% trans "Özür dileriz, beklenmedik bir hata oluştu. Lütfen daha sonra tekrar dene." %}</p>
+  <a href="/">{% trans "Ana sayfaya dön" %}</a>
 </body>
 </html>

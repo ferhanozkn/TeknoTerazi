@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% load static %}
+{% load i18n static %}
 {% load socialaccount %}
 
-{% block title %}Kayıt Ol · TeknoTerazi{% endblock %}
+{% block title %}{% trans "Kayıt Ol" %} · TeknoTerazi{% endblock %}
 
 {% block content %}
 <section class="auth-card">
-  <h1>Kayıt Ol</h1>
+  <h1>{% trans "Kayıt Ol" %}</h1>
   <form method="post" novalidate>
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -16,7 +16,7 @@
         {% if field.field.widget.input_type == "password" %}
           <div class="password-field">
             {{ field }}
-            <button type="button" class="password-toggle" data-target="{{ field.id_for_label }}" aria-label="Parolayı göster">👁</button>
+            <button type="button" class="password-toggle" data-target="{{ field.id_for_label }}" aria-label="{% trans 'Parolayı göster' %}">👁</button>
           </div>
         {% else %}
           {{ field }}
@@ -28,11 +28,11 @@
     {% if turnstile_site_key %}
       <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
     {% endif %}
-    <button type="submit" class="btn btn--primary">Kayıt Ol</button>
+    <button type="submit" class="btn btn--primary">{% trans "Kayıt Ol" %}</button>
   </form>
-  <p>Zaten hesabın var mı? <a href="{% url 'accounts:login' %}">Giriş yap</a></p>
-  <div class="auth-divider"><span>veya</span></div>
-  <a href="{% provider_login_url 'google' %}" class="btn btn--google">Google ile kayıt ol</a>
+  <p>{% trans "Zaten hesabın var mı?" %} <a href="{% url 'accounts:login' %}">{% trans "Giriş yap" %}</a></p>
+  <div class="auth-divider"><span>{% trans "veya" %}</span></div>
+  <a href="{% provider_login_url 'google' %}" class="btn btn--google">{% trans "Google ile kayıt ol" %}</a>
 </section>
 <script src="{% static 'js/password_toggle.js' %}" defer></script>
 {% if turnstile_site_key %}

@@ -9,38 +9,39 @@ from django.core.validators import (
 )
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class Category(models.TextChoices):
-    PHONE = "phone", "Akıllı Telefon"
-    LAPTOP = "laptop", "Dizüstü Bilgisayar"
-    TABLET = "tablet", "Tablet"
-    HEADPHONE = "headphone", "Kulaklık"
-    SMARTWATCH = "smartwatch", "Akıllı Saat"
-    GAMING = "gaming", "Oyun & Konsol"
-    CAMERA = "camera", "Kamera"
-    TV = "tv", "TV & Monitör"
-    PC_PART = "pc_part", "Bilgisayar Parçası"
-    OTHER = "other", "Diğer"
+    PHONE = "phone", _("Akıllı Telefon")
+    LAPTOP = "laptop", _("Dizüstü Bilgisayar")
+    TABLET = "tablet", _("Tablet")
+    HEADPHONE = "headphone", _("Kulaklık")
+    SMARTWATCH = "smartwatch", _("Akıllı Saat")
+    GAMING = "gaming", _("Oyun & Konsol")
+    CAMERA = "camera", _("Kamera")
+    TV = "tv", _("TV & Monitör")
+    PC_PART = "pc_part", _("Bilgisayar Parçası")
+    OTHER = "other", _("Diğer")
 
 
 class VoteValue(models.IntegerChoices):
-    WORTH = 1, "Buna değer"
-    NOT_WORTH = -1, "Buna değmez"
+    WORTH = 1, _("Buna değer")
+    NOT_WORTH = -1, _("Buna değmez")
 
 
 class UsagePurpose(models.TextChoices):
-    GAMING = "gaming", "Oyun"
-    SCHOOL = "school", "Okul"
-    WORK = "work", "İş"
-    DAILY = "daily", "Günlük kullanım"
-    OTHER = "other", "Diğer"
+    GAMING = "gaming", _("Oyun")
+    SCHOOL = "school", _("Okul")
+    WORK = "work", _("İş")
+    DAILY = "daily", _("Günlük kullanım")
+    OTHER = "other", _("Diğer")
 
 
 class BudgetTier(models.TextChoices):
-    ECONOMIC = "economic", "Ekonomik"
-    MID = "mid", "Orta segment"
-    PREMIUM = "premium", "Üst segment"
+    ECONOMIC = "economic", _("Ekonomik")
+    MID = "mid", _("Orta segment")
+    PREMIUM = "premium", _("Üst segment")
 
 
 class Poll(models.Model):
@@ -178,16 +179,16 @@ class Comment(models.Model):
 
 
 class ReportReason(models.TextChoices):
-    INAPPROPRIATE = "inappropriate", "Uygunsuz içerik"
-    SPAM = "spam", "Spam veya tanıtım"
-    MISLEADING = "misleading", "Yanıltıcı bilgi"
-    OTHER = "other", "Diğer"
+    INAPPROPRIATE = "inappropriate", _("Uygunsuz içerik")
+    SPAM = "spam", _("Spam veya tanıtım")
+    MISLEADING = "misleading", _("Yanıltıcı bilgi")
+    OTHER = "other", _("Diğer")
 
 
 class ReportStatus(models.TextChoices):
-    PENDING = "pending", "Bekliyor"
-    RESOLVED = "resolved", "İncelendi"
-    DISMISSED = "dismissed", "Reddedildi"
+    PENDING = "pending", _("Bekliyor")
+    RESOLVED = "resolved", _("İncelendi")
+    DISMISSED = "dismissed", _("Reddedildi")
 
 
 class Report(models.Model):

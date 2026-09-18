@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Sayfa bulunamadı · TeknoTerazi{% endblock %}
+{% block title %}{% trans "Sayfa bulunamadı" %} · TeknoTerazi{% endblock %}
 
 {% block content %}
 <section class="error-page">
-  <h1>Bu sayfa terazide yok ⚖️</h1>
-  <a href="{% url 'polls:home' %}" class="btn btn--primary">Ana sayfaya dön</a>
+  <h1>{% trans "Bu sayfa terazide yok" %} ⚖️</h1>
+  <a href="{% url 'polls:home' %}" class="btn btn--primary">{% trans "Ana sayfaya dön" %}</a>
 </section>
 {% endblock %}

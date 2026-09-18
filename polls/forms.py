@@ -4,22 +4,23 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from .models import BudgetTier, Category, Comment, Poll, Product, Report, ReportReason, UsagePurpose
 
 
 class PollForm(forms.ModelForm):
     hide_results_until_vote = forms.BooleanField(
-        label="Sonuçları oy vermeden gizle",
+        label=_("Sonuçları oy vermeden gizle"),
         required=False,
-        help_text="Önyargıyı azaltmak için: bir ürüne oy verene kadar o ürünün oy sayıları gizli kalır.",
+        help_text=_("Önyargıyı azaltmak için: bir ürüne oy verene kadar o ürünün oy sayıları gizli kalır."),
     )
     expires_at = forms.DateTimeField(
         required=False,
-        label="Bitiş tarihi (opsiyonel)",
+        label=_("Bitiş tarihi (opsiyonel)"),
         widget=forms.DateTimeInput(attrs={"type": "datetime-local"}),
-        help_text="Belirlersen bu tarihten sonra anket otomatik olarak kapanır.",
-        error_messages={"invalid": "Geçerli bir tarih ve saat gir."},
+        help_text=_("Belirlersen bu tarihten sonra anket otomatik olarak kapanır."),
+        error_messages={"invalid": _("Geçerli bir tarih ve saat gir.")},
     )
 
     class Meta:
@@ -36,18 +37,18 @@ class PollForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["category"].choices = [("", "Kategori seç")] + list(Category.choices)
+        self.fields["category"].choices = [("", _("Kategori seç"))] + list(Category.choices)
         self.fields["usage_purpose"].required = False
-        self.fields["usage_purpose"].choices = [("", "Kullanım amacı seç (opsiyonel)")] + list(
+        self.fields["usage_purpose"].choices = [("", _("Kullanım amacı seç (opsiyonel)"))] + list(
             UsagePurpose.choices
         )
         self.fields["budget_tier"].required = False
-        self.fields["budget_tier"].choices = [("", "Bütçe seç (opsiyonel)")] + list(BudgetTier.choices)
+        self.fields["budget_tier"].choices = [("", _("Bütçe seç (opsiyonel)"))] + list(BudgetTier.choices)
 
     def clean_expires_at(self):
         value = self.cleaned_data.get("expires_at")
         if value and value <= timezone.now():
-            raise ValidationError("Bitiş tarihi gelecekte bir zaman olmalı.")
+            raise ValidationError(_("Bitiş tarihi gelecekte bir zaman olmalı."))
         return value
 
 
@@ -65,8 +66,8 @@ MAX_IMAGE_SIZE = 5 * 1024 * 1024
 class ProductForm(forms.ModelForm):
     image = forms.FileField(
         required=False,
-        label="Görsel yükle (opsiyonel)",
-        help_text="jpg, png, webp veya gif — en fazla 5 MB. Yüklersen aşağıdaki link yok sayılır.",
+        label=_("Görsel yükle (opsiyonel)"),
+        help_text=_("jpg, png, webp veya gif — en fazla 5 MB. Yüklersen aşağıdaki link yok sayılır."),
     )
     price = CommaDecimalField(
         max_digits=10,
@@ -75,10 +76,10 @@ class ProductForm(forms.ModelForm):
         max_value=Decimal("10000000"),
         widget=forms.TextInput(attrs={"inputmode": "decimal", "placeholder": "0,00"}),
         error_messages={
-            "invalid": "Geçerli bir fiyat gir.",
-            "required": "Geçerli bir fiyat gir.",
-            "min_value": "Geçerli bir fiyat gir.",
-            "max_value": "Geçerli bir fiyat gir.",
+            "invalid": _("Geçerli bir fiyat gir."),
+            "required": _("Geçerli bir fiyat gir."),
+            "min_value": _("Geçerli bir fiyat gir."),
+            "max_value": _("Geçerli bir fiyat gir."),
         },
     )
     features = forms.CharField(
@@ -86,20 +87,20 @@ class ProductForm(forms.ModelForm):
         widget=forms.Textarea(
             attrs={
                 "rows": 4,
-                "placeholder": "Her satıra bir özellik yaz\n8 GB RAM\n120 Hz ekran",
+                "placeholder": _("Her satıra bir özellik yaz\n8 GB RAM\n120 Hz ekran"),
             }
         ),
     )
     attributes = forms.CharField(
         required=False,
-        label="Karşılaştırma özellikleri (opsiyonel)",
+        label=_("Karşılaştırma özellikleri (opsiyonel)"),
         widget=forms.Textarea(
             attrs={
                 "rows": 3,
-                "placeholder": "Diğer ürünlerle yan yana karşılaştırmak için\nRAM: 8 GB\nDepolama: 128 GB",
+                "placeholder": _("Diğer ürünlerle yan yana karşılaştırmak için\nRAM: 8 GB\nDepolama: 128 GB"),
             }
         ),
-        help_text='Her satırı "Anahtar: Değer" biçiminde yaz — anket sayfasında bir karşılaştırma tablosu oluşturur.',
+        help_text=_('Her satırı "Anahtar: Değer" biçiminde yaz — anket sayfasında bir karşılaştırma tablosu oluşturur.'),
     )
 
     class Meta:
@@ -111,48 +112,48 @@ class ProductForm(forms.ModelForm):
         if not file:
             return file
         if file.content_type not in ALLOWED_IMAGE_CONTENT_TYPES:
-            raise ValidationError("Yalnızca JPG, PNG, WEBP veya GIF dosyası yükleyebilirsin.")
+            raise ValidationError(_("Yalnızca JPG, PNG, WEBP veya GIF dosyası yükleyebilirsin."))
         if file.size > MAX_IMAGE_SIZE:
-            raise ValidationError("Görsel en fazla 5 MB olabilir.")
+            raise ValidationError(_("Görsel en fazla 5 MB olabilir."))
         return file
 
     def clean_features(self):
         raw = self.cleaned_data.get("features", "")
         lines = [line.strip() for line in raw.splitlines() if line.strip()]
         if not lines:
-            raise ValidationError("Ürünün en az bir özelliğini yazmalısın.")
+            raise ValidationError(_("Ürünün en az bir özelliğini yazmalısın."))
         if len(lines) > 15:
-            raise ValidationError("En fazla 15 özellik ekleyebilirsin.")
+            raise ValidationError(_("En fazla 15 özellik ekleyebilirsin."))
         for line in lines:
             if len(line) > 120:
-                raise ValidationError("Her özellik satırı en fazla 120 karakter olabilir.")
+                raise ValidationError(_("Her özellik satırı en fazla 120 karakter olabilir."))
         return "\n".join(lines)
 
     def clean_attributes(self):
         raw = self.cleaned_data.get("attributes", "")
         lines = [line.strip() for line in raw.splitlines() if line.strip()]
         if len(lines) > 8:
-            raise ValidationError("En fazla 8 karşılaştırma özelliği ekleyebilirsin.")
+            raise ValidationError(_("En fazla 8 karşılaştırma özelliği ekleyebilirsin."))
         parsed = []
         for line in lines:
             if ":" not in line:
-                raise ValidationError('Her satırı "Anahtar: Değer" biçiminde yaz (örn. "RAM: 8 GB").')
-            key, _, value = line.partition(":")
+                raise ValidationError(_('Her satırı "Anahtar: Değer" biçiminde yaz (örn. "RAM: 8 GB").'))
+            key, separator, value = line.partition(":")
             key, value = key.strip(), value.strip()
             if not key or not value:
-                raise ValidationError('Her satırı "Anahtar: Değer" biçiminde yaz (örn. "RAM: 8 GB").')
+                raise ValidationError(_('Her satırı "Anahtar: Değer" biçiminde yaz (örn. "RAM: 8 GB").'))
             if len(key) > 40:
-                raise ValidationError("Özellik adı en fazla 40 karakter olabilir.")
+                raise ValidationError(_("Özellik adı en fazla 40 karakter olabilir."))
             if len(value) > 80:
-                raise ValidationError("Özellik değeri en fazla 80 karakter olabilir.")
+                raise ValidationError(_("Özellik değeri en fazla 80 karakter olabilir."))
             parsed.append(f"{key}: {value}")
         return "\n".join(parsed)
 
 
 class BaseProductFormSet(BaseInlineFormSet):
     default_error_messages = {
-        "too_few_forms": "Bir ankete en az %(num)d ürün eklemelisin.",
-        "too_many_forms": "Bir ankete en fazla %(num)d ürün ekleyebilirsin.",
+        "too_few_forms": _("Bir ankete en az %(num)d ürün eklemelisin."),
+        "too_many_forms": _("Bir ankete en fazla %(num)d ürün ekleyebilirsin."),
     }
 
     def clean(self):
@@ -165,7 +166,7 @@ class BaseProductFormSet(BaseInlineFormSet):
             if not name:
                 continue
             if name in names:
-                raise ValidationError("Aynı ürünü iki kez ekleyemezsin.")
+                raise ValidationError(_("Aynı ürünü iki kez ekleyemezsin."))
             names.append(name)
 
 
@@ -178,31 +179,31 @@ class CommentForm(forms.ModelForm):
                 attrs={
                     "rows": 3,
                     "maxlength": 500,
-                    "placeholder": "Neden buna değer ya da değmez? Kısa bir not bırak…",
+                    "placeholder": _("Neden buna değer ya da değmez? Kısa bir not bırak…"),
                 }
             )
         }
         error_messages = {
             "body": {
-                "required": "Yorum yazmadan gönderemezsin.",
-                "min_length": "Yorumun en az 3 karakter olmalı.",
-                "max_length": "Yorumun en fazla 500 karakter olabilir.",
+                "required": _("Yorum yazmadan gönderemezsin."),
+                "min_length": _("Yorumun en az 3 karakter olmalı."),
+                "max_length": _("Yorumun en fazla 500 karakter olabilir."),
             }
         }
 
 
 class ReportForm(forms.ModelForm):
     reason = forms.ChoiceField(
-        label="Şikayet nedeni",
+        label=_("Şikayet nedeni"),
         choices=ReportReason.choices,
-        error_messages={"required": "Bir şikayet nedeni seçmelisin."},
+        error_messages={"required": _("Bir şikayet nedeni seçmelisin.")},
     )
     detail = forms.CharField(
-        label="Detay (opsiyonel)",
+        label=_("Detay (opsiyonel)"),
         required=False,
         max_length=500,
         widget=forms.Textarea(
-            attrs={"rows": 3, "placeholder": "İstersen kısaca açıkla (opsiyonel)…"}
+            attrs={"rows": 3, "placeholder": _("İstersen kısaca açıkla (opsiyonel)…")}
         ),
     )
 

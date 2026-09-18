@@ -1,4 +1,5 @@
 from django import template
+from django.utils.translation import gettext as _
 
 register = template.Library()
 
@@ -42,7 +43,7 @@ def tl(value):
 @register.filter
 def percent(value):
     if value is None:
-        return "Henüz oy yok"
+        return _("Henüz oy yok")
     return f"%{value:.0f}"
 
 

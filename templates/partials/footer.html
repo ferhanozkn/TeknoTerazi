@@ -1,5 +1,6 @@
+{% load i18n %}
 <footer class="footer">
-  <p>TeknoTerazi — teknoloji ürünleri hakkında topluluğun fikrini al.</p>
-  <p class="footer__note">Oy verirken tarayıcına anonim bir kimlik çerezi kaydedebiliriz.</p>
+  <p>{% blocktrans %}TeknoTerazi — teknoloji ürünleri hakkında topluluğun fikrini al.{% endblocktrans %}</p>
+  <p class="footer__note">{% trans "Oy verirken tarayıcına anonim bir kimlik çerezi kaydedebiliriz." %}</p>
   <p>&copy; {% now "Y" %} TeknoTerazi</p>
 </footer>

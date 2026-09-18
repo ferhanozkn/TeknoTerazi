@@ -1,42 +1,42 @@
 {% extends "base.html" %}
-{% load static %}
+{% load i18n static %}
 
-{% block title %}Anketi Düzenle · TeknoTerazi{% endblock %}
+{% block title %}{% trans "Anketi Düzenle" %} · TeknoTerazi{% endblock %}
 
 {% block content %}
 <section class="poll-create">
-  <h1>Anketi düzenle</h1>
-  <p class="field-help">Bu anket henüz oy almadığı için düzenleyebilirsin. Oy alınca düzenleme kapanır.</p>
+  <h1>{% trans "Anketi düzenle" %}</h1>
+  <p class="field-help">{% trans "Bu anket henüz oy almadığı için düzenleyebilirsin. Oy alınca düzenleme kapanır." %}</p>
 
   <form method="post" novalidate enctype="multipart/form-data" id="poll-edit-form">
     {% csrf_token %}
 
     <fieldset class="card">
-      <legend>Anket bilgileri</legend>
+      <legend>{% trans "Anket bilgileri" %}</legend>
       {{ poll_form.non_field_errors }}
       <div class="form-row">
-        <label for="{{ poll_form.title.id_for_label }}">Başlık</label>
+        <label for="{{ poll_form.title.id_for_label }}">{% trans "Başlık" %}</label>
         {{ poll_form.title }}
         <span class="char-counter" data-counter-for="{{ poll_form.title.id_for_label }}" data-max="120"></span>
         {{ poll_form.title.errors }}
       </div>
       <div class="form-row">
-        <label for="{{ poll_form.category.id_for_label }}">Kategori</label>
+        <label for="{{ poll_form.category.id_for_label }}">{% trans "Kategori" %}</label>
         {{ poll_form.category }}
         {{ poll_form.category.errors }}
       </div>
       <div class="form-row">
-        <label for="{{ poll_form.usage_purpose.id_for_label }}">Kullanım amacı (opsiyonel)</label>
+        <label for="{{ poll_form.usage_purpose.id_for_label }}">{% trans "Kullanım amacı (opsiyonel)" %}</label>
         {{ poll_form.usage_purpose }}
         {{ poll_form.usage_purpose.errors }}
       </div>
       <div class="form-row">
-        <label for="{{ poll_form.budget_tier.id_for_label }}">Bütçe (opsiyonel)</label>
+        <label for="{{ poll_form.budget_tier.id_for_label }}">{% trans "Bütçe (opsiyonel)" %}</label>
         {{ poll_form.budget_tier }}
         {{ poll_form.budget_tier.errors }}
       </div>
       <div class="form-row">
-        <label for="{{ poll_form.description.id_for_label }}">Açıklama (opsiyonel)</label>
+        <label for="{{ poll_form.description.id_for_label }}">{% trans "Açıklama (opsiyonel)" %}</label>
         {{ poll_form.description }}
         <span class="char-counter" data-counter-for="{{ poll_form.description.id_for_label }}" data-max="1000"></span>
         {{ poll_form.description.errors }}
@@ -58,25 +58,25 @@
     </fieldset>
 
     <fieldset class="card">
-      <legend>Ürünler</legend>
+      <legend>{% trans "Ürünler" %}</legend>
       {% for form in product_forms %}
         <div class="product-card">
           <div class="product-card__header">
-            <h3>Ürün {{ forloop.counter }} / {{ product_forms|length }}</h3>
+            <h3>{% blocktrans with index=forloop.counter total=product_forms|length %}Ürün {{ index }} / {{ total }}{% endblocktrans %}</h3>
           </div>
           {{ form.non_field_errors }}
           <div class="form-row">
-            <label for="{{ form.name.id_for_label }}">Ürün adı</label>
+            <label for="{{ form.name.id_for_label }}">{% trans "Ürün adı" %}</label>
             {{ form.name }}
             {{ form.name.errors }}
           </div>
           <div class="form-row">
-            <label for="{{ form.price.id_for_label }}">Fiyat (₺)</label>
+            <label for="{{ form.price.id_for_label }}">{% trans "Fiyat (₺)" %}</label>
             {{ form.price }}
             {{ form.price.errors }}
           </div>
           <div class="form-row">
-            <label for="{{ form.features.id_for_label }}">Özellikler</label>
+            <label for="{{ form.features.id_for_label }}">{% trans "Özellikler" %}</label>
             {{ form.features }}
             {{ form.features.errors }}
           </div>
@@ -87,7 +87,7 @@
             {{ form.attributes.errors }}
           </div>
           <div class="form-row">
-            <label for="{{ form.product_url.id_for_label }}">Ürün linki (opsiyonel)</label>
+            <label for="{{ form.product_url.id_for_label }}">{% trans "Ürün linki (opsiyonel)" %}</label>
             {{ form.product_url }}
             {{ form.product_url.errors }}
           </div>
@@ -98,7 +98,7 @@
             {{ form.image.errors }}
           </div>
           <div class="form-row">
-            <label for="{{ form.image_url.id_for_label }}">Görsel linki (opsiyonel)</label>
+            <label for="{{ form.image_url.id_for_label }}">{% trans "Görsel linki (opsiyonel)" %}</label>
             {{ form.image_url }}
             {{ form.image_url.errors }}
           </div>
@@ -106,8 +106,8 @@
       {% endfor %}
     </fieldset>
 
-    <button type="submit" class="btn btn--primary">Kaydet</button>
-    <a href="{% url 'polls:poll_detail' poll.pk %}" class="btn btn--ghost">Vazgeç</a>
+    <button type="submit" class="btn btn--primary">{% trans "Kaydet" %}</button>
+    <a href="{% url 'polls:poll_detail' poll.pk %}" class="btn btn--ghost">{% trans "Vazgeç" %}</a>
   </form>
 </section>
 <script src="{% static 'js/char_counter.js' %}" defer></script>

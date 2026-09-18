@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% load static %}
+{% load i18n static %}
 {% load socialaccount %}
 
-{% block title %}Giriş Yap · TeknoTerazi{% endblock %}
+{% block title %}{% trans "Giriş Yap" %} · TeknoTerazi{% endblock %}
 
 {% block content %}
 <section class="auth-card">
-  <h1>Giriş Yap</h1>
+  <h1>{% trans "Giriş Yap" %}</h1>
   <form method="post" novalidate>
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -16,7 +16,7 @@
         {% if field.field.widget.input_type == "password" %}
           <div class="password-field">
             {{ field }}
-            <button type="button" class="password-toggle" data-target="{{ field.id_for_label }}" aria-label="Parolayı göster">👁</button>
+            <button type="button" class="password-toggle" data-target="{{ field.id_for_label }}" aria-label="{% trans 'Parolayı göster' %}">👁</button>
           </div>
         {% else %}
           {{ field }}
@@ -25,11 +25,11 @@
       </div>
     {% endfor %}
     <input type="hidden" name="next" value="{{ next }}">
-    <button type="submit" class="btn btn--primary">Giriş Yap</button>
+    <button type="submit" class="btn btn--primary">{% trans "Giriş Yap" %}</button>
   </form>
-  <p>Hesabın yok mu? <a href="{% url 'accounts:signup' %}">Kayıt ol</a></p>
-  <div class="auth-divider"><span>veya</span></div>
-  <a href="{% provider_login_url 'google' %}" class="btn btn--google">Google ile giriş yap</a>
+  <p>{% trans "Hesabın yok mu?" %} <a href="{% url 'accounts:signup' %}">{% trans "Kayıt ol" %}</a></p>
+  <div class="auth-divider"><span>{% trans "veya" %}</span></div>
+  <a href="{% provider_login_url 'google' %}" class="btn btn--google">{% trans "Google ile giriş yap" %}</a>
 </section>
 <script src="{% static 'js/password_toggle.js' %}" defer></script>
 {% endblock %}

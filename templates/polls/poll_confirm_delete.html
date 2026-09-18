@@ -1,15 +1,16 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Anketi Sil · TeknoTerazi{% endblock %}
+{% block title %}{% trans "Anketi Sil" %} · TeknoTerazi{% endblock %}
 
 {% block content %}
 <section class="auth-card">
-  <h1>Anketi sil</h1>
-  <p>"{{ poll.title }}" anketini silmek istediğine emin misin? Bu işlem geri alınamaz.</p>
+  <h1>{% trans "Anketi sil" %}</h1>
+  <p>{% blocktrans with title=poll.title %}"{{ title }}" anketini silmek istediğine emin misin? Bu işlem geri alınamaz.{% endblocktrans %}</p>
   <form method="post">
     {% csrf_token %}
-    <button type="submit" class="btn btn--ghost">Evet, sil</button>
-    <a href="{% url 'polls:poll_detail' poll.pk %}" class="btn">Vazgeç</a>
+    <button type="submit" class="btn btn--ghost">{% trans "Evet, sil" %}</button>
+    <a href="{% url 'polls:poll_detail' poll.pk %}" class="btn">{% trans "Vazgeç" %}</a>
   </form>
 </section>
 {% endblock %}

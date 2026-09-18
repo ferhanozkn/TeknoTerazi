@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.utils.translation import gettext_lazy as _
 
 from .models import CustomUser
 
@@ -7,7 +8,7 @@ from .models import CustomUser
 class SignUpForm(UserCreationForm):
     error_messages = {
         **UserCreationForm.error_messages,
-        "password_mismatch": "Parolalar eşleşmiyor.",
+        "password_mismatch": _("Parolalar eşleşmiyor."),
     }
 
     class Meta:
@@ -17,13 +18,13 @@ class SignUpForm(UserCreationForm):
     def clean_username(self):
         username = self.cleaned_data.get("username")
         if username and CustomUser.objects.filter(username__iexact=username).exists():
-            raise forms.ValidationError("Bu kullanıcı adı zaten kullanılıyor.")
+            raise forms.ValidationError(_("Bu kullanıcı adı zaten kullanılıyor."))
         return username
 
     def clean_email(self):
         email = self.cleaned_data.get("email", "").lower()
         if CustomUser.objects.filter(email__iexact=email).exists():
-            raise forms.ValidationError("Bu e-posta adresiyle zaten bir hesap var.")
+            raise forms.ValidationError(_("Bu e-posta adresiyle zaten bir hesap var."))
         return email
 
 
@@ -34,7 +35,7 @@ class UsernameChangeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["username"].label = "Kullanıcı adı"
+        self.fields["username"].label = _("Kullanıcı adı")
 
     def clean_username(self):
         username = self.cleaned_data.get("username")
@@ -44,19 +45,19 @@ class UsernameChangeForm(forms.ModelForm):
             .exclude(pk=self.instance.pk)
             .exists()
         ):
-            raise forms.ValidationError("Bu kullanıcı adı zaten kullanılıyor.")
+            raise forms.ValidationError(_("Bu kullanıcı adı zaten kullanılıyor."))
         return username
 
 
 class EmailLoginForm(AuthenticationForm):
     error_messages = {
         **AuthenticationForm.error_messages,
-        "invalid_login": "E-posta veya parola hatalı.",
+        "invalid_login": _("E-posta veya parola hatalı."),
     }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["username"].label = "E-posta"
+        self.fields["username"].label = _("E-posta")
 
     def clean_username(self):
         return self.cleaned_data.get("username", "").lower()

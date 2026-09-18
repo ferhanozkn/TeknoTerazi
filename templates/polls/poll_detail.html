@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% load static tt_filters %}
+{% load i18n static tt_filters %}
 
 {% block title %}{{ poll.title }} · TeknoTerazi{% endblock %}
 {% block og_title %}{{ poll.title }} · TeknoTerazi{% endblock %}
-{% block og_description %}{% if poll.description %}{{ poll.description|truncatechars:160 }}{% else %}{{ products|length }} ürünü topluluğa sor, oy ver.{% endif %}{% endblock %}
+{% block og_description %}{% if poll.description %}{{ poll.description|truncatechars:160 }}{% else %}{% blocktrans count counter=products|length %}{{ counter }} ürünü topluluğa sor, oy ver.{% plural %}{{ counter }} ürünü topluluğa sor, oy ver.{% endblocktrans %}{% endif %}{% endblock %}
 {% block og_image %}
   <meta property="og:image" content="{{ og_image_url }}">
   <meta property="og:image:width" content="1200">
@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<a href="{% url 'polls:home' %}">← Tüm anketler</a>
+<a href="{% url 'polls:home' %}">← {% trans "Tüm anketler" %}</a>
 
 <header class="poll-detail__header">
   <div class="poll-card__badges">
@@ -23,20 +23,20 @@
       <span class="badge badge--tag">{{ poll.budget_tier|budget_tier_icon }} {{ poll.get_budget_tier_display }}</span>
     {% endif %}
     {% if poll.is_expired %}
-      <span class="badge badge--closed">Süresi doldu</span>
+      <span class="badge badge--closed">{% trans "Süresi doldu" %}</span>
     {% elif not poll.is_active %}
-      <span class="badge badge--closed">Kapandı</span>
+      <span class="badge badge--closed">{% trans "Kapandı" %}</span>
     {% endif %}
   </div>
   <h1>{{ poll.title }}</h1>
-  <p>@{{ poll.author.username }} · {{ poll.created_at|timesince }} önce</p>
+  <p>@{{ poll.author.username }} · {% blocktrans with time_ago=poll.created_at|timesince %}{{ time_ago }} önce{% endblocktrans %}</p>
   {% if poll.description %}<p>{{ poll.description }}</p>{% endif %}
   {% if poll.expires_at %}
     <p class="poll-detail__expiry">
       {% if poll.is_expired %}
-        ⏳ Süresi doldu ({{ poll.expires_at|date:"d.m.Y H:i" }})
+        ⏳ {% blocktrans with expiry_date=poll.expires_at|date:"d.m.Y H:i" %}Süresi doldu ({{ expiry_date }}){% endblocktrans %}
       {% else %}
-        ⏳ Bitiş: {{ poll.expires_at|date:"d.m.Y H:i" }} ({{ poll.expires_at|timeuntil }} kaldı)
+        ⏳ {% blocktrans with expiry_date=poll.expires_at|date:"d.m.Y H:i" time_left=poll.expires_at|timeuntil %}Bitiş: {{ expiry_date }} ({{ time_left }} kaldı){% endblocktrans %}
       {% endif %}
     </p>
   {% endif %}
@@ -44,21 +44,21 @@
   {% if request.user == poll.author %}
     <div class="poll-detail__owner-actions">
       {% if not poll_has_votes %}
-        <a href="{% url 'polls:poll_edit' poll.pk %}" class="btn">Düzenle</a>
+        <a href="{% url 'polls:poll_edit' poll.pk %}" class="btn">{% trans "Düzenle" %}</a>
       {% endif %}
       {% if not poll.is_expired %}
         <form method="post" action="{% url 'polls:poll_toggle_active' poll.pk %}">
           {% csrf_token %}
-          <button type="submit" class="btn">{% if poll.is_active %}Kapat{% else %}Yeniden Aç{% endif %}</button>
+          <button type="submit" class="btn">{% if poll.is_active %}{% trans "Kapat" %}{% else %}{% trans "Yeniden Aç" %}{% endif %}</button>
         </form>
       {% endif %}
-      <a href="{% url 'polls:poll_delete' poll.pk %}" class="btn btn--ghost">Sil</a>
+      <a href="{% url 'polls:poll_delete' poll.pk %}" class="btn btn--ghost">{% trans "Sil" %}</a>
     </div>
   {% endif %}
 
-  <button type="button" id="share-button" class="btn" data-url="{{ request.build_absolute_uri }}">Bu anketi paylaş</button>
+  <button type="button" id="share-button" class="btn" data-url="{{ request.build_absolute_uri }}" data-copied-text="{% trans 'Bağlantı kopyalandı!' %}">{% trans "Bu anketi paylaş" %}</button>
   {% if request.user.is_authenticated and request.user != poll.author %}
-    <a href="{% url 'polls:report_poll' poll.pk %}" class="btn btn--ghost">Şikayet et</a>
+    <a href="{% url 'polls:report_poll' poll.pk %}" class="btn btn--ghost">{% trans "Şikayet et" %}</a>
   {% endif %}
 </header>
 
@@ -70,12 +70,12 @@
 
 {% if attribute_keys %}
   <section class="comparison-table-wrap">
-    <h2>Karşılaştırma tablosu</h2>
+    <h2>{% trans "Karşılaştırma tablosu" %}</h2>
     <div class="comparison-table-scroll">
       <table class="comparison-table">
         <thead>
           <tr>
-            <th>Özellik</th>
+            <th>{% trans "Özellik" %}</th>
             {% for product in products %}
               <th>{{ product.name }}</th>
             {% endfor %}
@@ -102,7 +102,7 @@
     if (!button) return;
     button.addEventListener("click", function () {
       navigator.clipboard.writeText(button.dataset.url);
-      button.textContent = "Bağlantı kopyalandı!";
+      button.textContent = button.dataset.copiedText;
     });
   })();
 </script>

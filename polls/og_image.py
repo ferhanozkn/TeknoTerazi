@@ -1,6 +1,7 @@
 import os
 from io import BytesIO
 
+from django.utils.translation import gettext as _
 from PIL import Image, ImageDraw, ImageFont
 
 WIDTH, HEIGHT = 1200, 630
@@ -68,13 +69,17 @@ def render_poll_og_image(poll, products):
         draw.text((MARGIN, y), line, font=title_font, fill=TEXT_COLOR)
         y += 74
 
-    product_names = " vs ".join(product.name for product in products[:3])
+    vs_separator = f" {_('vs')} "
+    product_names = vs_separator.join(product.name for product in products[:3])
     if product_names:
         product_line = _wrap_and_truncate(draw, product_names, sub_font, max_width, 1)[0]
         draw.text((MARGIN, y + 24), product_line, font=sub_font, fill=MUTED_COLOR)
 
     total_votes = sum(product.total_votes for product in products)
-    meta_text = f"{len(products)} ürün · {total_votes} oy"
+    meta_text = _("%(product_count)d ürün · %(vote_count)d oy") % {
+        "product_count": len(products),
+        "vote_count": total_votes,
+    }
     draw.text((MARGIN, HEIGHT - 160), meta_text, font=meta_font, fill=MUTED_COLOR)
     draw.text((MARGIN, HEIGHT - 100), "TeknoTerazi", font=brand_font, fill=BRAND_COLOR)
 

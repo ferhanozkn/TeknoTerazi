@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Anketi Şikayet Et · TeknoTerazi{% endblock %}
+{% block title %}{% trans "Anketi Şikayet Et" %} · TeknoTerazi{% endblock %}
 
 {% block content %}
 <section class="auth-card">
-  <h1>Anketi şikayet et</h1>
-  <p>"{{ poll.title }}" anketini neden şikayet ediyorsun?</p>
+  <h1>{% trans "Anketi şikayet et" %}</h1>
+  <p>{% blocktrans with title=poll.title %}"{{ title }}" anketini neden şikayet ediyorsun?{% endblocktrans %}</p>
   <form method="post" novalidate>
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -16,8 +17,8 @@
         {{ field.errors }}
       </div>
     {% endfor %}
-    <button type="submit" class="btn btn--primary">Şikayeti gönder</button>
-    <a href="{% url 'polls:poll_detail' poll.pk %}" class="btn">Vazgeç</a>
+    <button type="submit" class="btn btn--primary">{% trans "Şikayeti gönder" %}</button>
+    <a href="{% url 'polls:poll_detail' poll.pk %}" class="btn">{% trans "Vazgeç" %}</a>
   </form>
 </section>
 {% endblock %}

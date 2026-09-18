@@ -3,6 +3,7 @@ from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.utils.translation import gettext as _
 
 from .models import CustomUser
 
@@ -22,6 +23,6 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if email and CustomUser.objects.filter(email__iexact=email).exists():
             messages.info(
                 request,
-                "Bu e-posta ile zaten bir hesabın var. E-posta ve parolanla giriş yap.",
+                _("Bu e-posta ile zaten bir hesabın var. E-posta ve parolanla giriş yap."),
             )
             raise ImmediateHttpResponse(redirect("accounts:login"))

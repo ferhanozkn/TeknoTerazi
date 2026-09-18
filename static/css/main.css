@@ -175,6 +175,22 @@ a {
   padding: 0;
 }
 
+.language-switcher {
+  display: inline-flex;
+}
+
+.language-switcher select {
+  height: 32px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0 0.6rem;
+  cursor: pointer;
+}
+
 .navbar__toggle {
   display: none;
   flex-direction: column;

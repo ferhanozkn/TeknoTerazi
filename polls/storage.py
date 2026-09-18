@@ -2,6 +2,7 @@ import uuid
 
 import requests
 from django.conf import settings
+from django.utils.translation import gettext as _
 
 UPLOAD_TIMEOUT = 15
 
@@ -16,7 +17,7 @@ def upload_product_image(uploaded_file):
     """Verilen dosyayı Supabase Storage'a yükler, herkese açık URL'ini döndürür."""
     if not settings.SUPABASE_URL or not settings.SUPABASE_SERVICE_ROLE_KEY:
         raise ImageUploadError(
-            "Görsel yükleme şu anda yapılandırılmamış. Bunun yerine \"Görsel linki\" alanını kullanabilirsin."
+            _('Görsel yükleme şu anda yapılandırılmamış. Bunun yerine "Görsel linki" alanını kullanabilirsin.')
         )
 
     extension = uploaded_file.name.rsplit(".", 1)[-1].lower()
@@ -38,10 +39,10 @@ def upload_product_image(uploaded_file):
             timeout=UPLOAD_TIMEOUT,
         )
     except requests.RequestException:
-        raise ImageUploadError("Görsel yüklenemedi, lütfen tekrar dene.")
+        raise ImageUploadError(_("Görsel yüklenemedi, lütfen tekrar dene."))
 
     if not response.ok:
-        raise ImageUploadError("Görsel yüklenemedi, lütfen tekrar dene.")
+        raise ImageUploadError(_("Görsel yüklenemedi, lütfen tekrar dene."))
 
     return (
         f"{settings.SUPABASE_URL}/storage/v1/object/public/"

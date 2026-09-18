@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% load tt_filters %}
+{% load i18n tt_filters %}
 
 {% block title %}TeknoTerazi{% endblock %}
 
 {% block content %}
 <section class="hero">
-  <h1>Almadan önce topluluğa sor. ⚖️</h1>
-  <p>Aday ürünleri topluluğa sor, oylarla en değerlisini bul.</p>
-  <a href="{% url 'polls:poll_create' %}" class="btn btn--primary">Anket Oluştur</a>
+  <h1>{% trans "Almadan önce topluluğa sor." %} ⚖️</h1>
+  <p>{% trans "Aday ürünleri topluluğa sor, oylarla en değerlisini bul." %}</p>
+  <a href="{% url 'polls:poll_create' %}" class="btn btn--primary">{% trans "Anket Oluştur" %}</a>
 </section>
 
 {% if trending_polls %}
 <section class="trending">
-  <h2>🔥 Bugün trend olanlar</h2>
+  <h2>🔥 {% trans "Bugün trend olanlar" %}</h2>
   <div class="poll-grid">
     {% for poll in trending_polls %}
       {% include "polls/poll_card.html" with poll=poll %}
@@ -22,41 +22,41 @@
 {% endif %}
 
 <div class="category-chips">
-  <a href="{% url 'polls:home' %}" class="chip {% if not selected_category %}chip--active{% endif %}">Tümü</a>
+  <a href="{% url 'polls:home' %}" class="chip {% if not selected_category %}chip--active{% endif %}">{% trans "Tümü" %}</a>
   {% for value, label in categories %}
     <a href="?kategori={{ value }}" class="chip {% if value == selected_category %}chip--active{% endif %}">{{ value|category_icon }} {{ label }}</a>
   {% endfor %}
 </div>
 
 <form method="get" class="filters">
-  <input type="search" name="q" value="{{ query }}" placeholder="🔍 Ara...">
+  <input type="search" name="q" value="{{ query }}" placeholder="{% trans '🔍 Ara...' %}">
   <select name="kategori">
-    <option value="">Tüm kategoriler</option>
+    <option value="">{% trans "Tüm kategoriler" %}</option>
     {% for value, label in categories %}
       <option value="{{ value }}" {% if value == selected_category %}selected{% endif %}>{{ label }}</option>
     {% endfor %}
   </select>
   <select name="amac">
-    <option value="">Tüm kullanım amaçları</option>
+    <option value="">{% trans "Tüm kullanım amaçları" %}</option>
     {% for value, label in usage_purposes %}
       <option value="{{ value }}" {% if value == selected_usage_purpose %}selected{% endif %}>{{ label }}</option>
     {% endfor %}
   </select>
   <select name="butce">
-    <option value="">Tüm bütçeler</option>
+    <option value="">{% trans "Tüm bütçeler" %}</option>
     {% for value, label in budget_tiers %}
       <option value="{{ value }}" {% if value == selected_budget_tier %}selected{% endif %}>{{ label }}</option>
     {% endfor %}
   </select>
   <select name="sirala">
-    <option value="yeni" {% if sort == "yeni" %}selected{% endif %}>Yeni</option>
-    <option value="populer" {% if sort == "populer" %}selected{% endif %}>Popüler</option>
+    <option value="yeni" {% if sort == "yeni" %}selected{% endif %}>{% trans "Yeni" %}</option>
+    <option value="populer" {% if sort == "populer" %}selected{% endif %}>{% trans "Popüler" %}</option>
   </select>
   <label>
     <input type="checkbox" name="durum" value="acik" {% if status == "acik" %}checked{% endif %}>
-    Yalnızca açık anketler
+    {% trans "Yalnızca açık anketler" %}
   </label>
-  <button type="submit" class="btn">Filtrele</button>
+  <button type="submit" class="btn">{% trans "Filtrele" %}</button>
 </form>
 
 {% if page_obj.object_list %}
@@ -67,6 +67,6 @@
   </div>
   {% include "partials/pagination.html" %}
 {% else %}
-  <p class="empty-state">Henüz anket yok. İlk anketi sen oluştur! 🚀</p>
+  <p class="empty-state">{% trans "Henüz anket yok. İlk anketi sen oluştur!" %} 🚀</p>
 {% endif %}
 {% endblock %}

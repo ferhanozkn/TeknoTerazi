@@ -1,22 +1,23 @@
+{% load i18n %}
 <div class="product-card" data-product-card>
   <div class="product-card__header">
-    <h3>Ürün <span data-product-index>{{ display_index }}</span> / 5</h3>
-    <button type="button" class="btn btn--ghost" data-remove-product>Kaldır</button>
+    <h3>{% blocktrans %}Ürün <span data-product-index>{{ display_index }}</span> / 5{% endblocktrans %}</h3>
+    <button type="button" class="btn btn--ghost" data-remove-product>{% trans "Kaldır" %}</button>
   </div>
   {{ form.id }}
   {{ form.non_field_errors }}
   <div class="form-row">
-    <label for="{{ form.name.id_for_label }}">Ürün adı</label>
+    <label for="{{ form.name.id_for_label }}">{% trans "Ürün adı" %}</label>
     {{ form.name }}
     {{ form.name.errors }}
   </div>
   <div class="form-row">
-    <label for="{{ form.price.id_for_label }}">Fiyat (₺)</label>
+    <label for="{{ form.price.id_for_label }}">{% trans "Fiyat (₺)" %}</label>
     {{ form.price }}
     {{ form.price.errors }}
   </div>
   <div class="form-row">
-    <label for="{{ form.features.id_for_label }}">Özellikler</label>
+    <label for="{{ form.features.id_for_label }}">{% trans "Özellikler" %}</label>
     {{ form.features }}
     {{ form.features.errors }}
   </div>
@@ -27,7 +28,7 @@
     {{ form.attributes.errors }}
   </div>
   <div class="form-row">
-    <label for="{{ form.product_url.id_for_label }}">Ürün linki (opsiyonel)</label>
+    <label for="{{ form.product_url.id_for_label }}">{% trans "Ürün linki (opsiyonel)" %}</label>
     {{ form.product_url }}
     {{ form.product_url.errors }}
   </div>
@@ -38,7 +39,7 @@
     {{ form.image.errors }}
   </div>
   <div class="form-row">
-    <label for="{{ form.image_url.id_for_label }}">Görsel linki (opsiyonel)</label>
+    <label for="{{ form.image_url.id_for_label }}">{% trans "Görsel linki (opsiyonel)" %}</label>
     {{ form.image_url }}
     {{ form.image_url.errors }}
   </div>

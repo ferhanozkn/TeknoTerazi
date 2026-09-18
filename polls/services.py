@@ -4,6 +4,7 @@ from django.db import IntegrityError, transaction
 from django.db.models import Count, Max, Min, Prefetch, Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from .models import Poll, Product, Vote, VoteAttempt, VoteValue
 
@@ -76,7 +77,7 @@ def enforce_vote_rate_limit(user, anon_id):
     window_start = timezone.now() - VOTE_RATE_WINDOW
     recent_count = VoteAttempt.objects.filter(created_at__gte=window_start, **voter_lookup).count()
     if recent_count >= VOTE_RATE_LIMIT:
-        raise VoteError(429, "Çok fazla oy isteği gönderdin. Lütfen biraz bekle.")
+        raise VoteError(429, _("Çok fazla oy isteği gönderdin. Lütfen biraz bekle."))
     VoteAttempt.objects.create(**voter_lookup)
 
 
@@ -86,13 +87,13 @@ def cast_vote(product, user, anon_id, value, ip_hash=""):
     poll = product.poll
 
     if poll.is_expired:
-        raise VoteError(403, "Bu anketin süresi doldu.")
+        raise VoteError(403, _("Bu anketin süresi doldu."))
 
     if not poll.is_active:
-        raise VoteError(403, "Bu anket oylamaya kapalı.")
+        raise VoteError(403, _("Bu anket oylamaya kapalı."))
 
     if user is not None and user.pk == poll.author_id:
-        raise VoteError(403, "Kendi anketine oy veremezsin.")
+        raise VoteError(403, _("Kendi anketine oy veremezsin."))
 
     lookup = {"product": product}
     if user is not None:
@@ -111,7 +112,7 @@ def cast_vote(product, user, anon_id, value, ip_hash=""):
                         .exists()
                     )
                     if already_voted_from_ip:
-                        raise VoteError(403, "Bu IP adresinden bu ürüne zaten oy verilmiş.")
+                        raise VoteError(403, _("Bu IP adresinden bu ürüne zaten oy verilmiş."))
                 Vote.objects.create(value=value, ip_hash=ip_hash, **lookup)
             elif existing.value == value:
                 existing.delete()

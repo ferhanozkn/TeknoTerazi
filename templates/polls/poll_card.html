@@ -1,4 +1,4 @@
-{% load tt_filters %}
+{% load i18n tt_filters %}
 <article class="poll-card">
   <div class="poll-card__badges">
     <span class="badge badge--category">{{ poll.category|category_icon }} {{ poll.get_category_display }}</span>
@@ -9,14 +9,16 @@
       <span class="badge badge--tag">{{ poll.budget_tier|budget_tier_icon }} {{ poll.get_budget_tier_display }}</span>
     {% endif %}
     {% if poll.is_expired %}
-      <span class="badge badge--closed">Süresi doldu</span>
+      <span class="badge badge--closed">{% trans "Süresi doldu" %}</span>
     {% elif not poll.is_active %}
-      <span class="badge badge--closed">Kapandı</span>
+      <span class="badge badge--closed">{% trans "Kapandı" %}</span>
     {% endif %}
-    {% if poll.today_votes %}<span class="badge badge--trending">🔥 Bugün {{ poll.today_votes }} oy</span>{% endif %}
+    {% if poll.today_votes %}
+      <span class="badge badge--trending">🔥 {% blocktrans count counter=poll.today_votes %}Bugün {{ counter }} oy{% plural %}Bugün {{ counter }} oy{% endblocktrans %}</span>
+    {% endif %}
   </div>
   <h3><a href="{% url 'polls:poll_detail' poll.pk %}">{{ poll.title }}</a></h3>
-  <p class="poll-card__meta">{{ poll.products.all|length }} ürün</p>
+  <p class="poll-card__meta">{% blocktrans count counter=poll.products.all|length %}{{ counter }} ürün{% plural %}{{ counter }} ürün{% endblocktrans %}</p>
   <ul class="poll-card__products">
     {% for product in poll.products.all|slice:":3" %}
       <li>{{ product.name }}</li>
@@ -28,6 +30,6 @@
   {% if poll.min_price is not None %}
     <p class="poll-card__price">{{ poll.min_price|tl }} – {{ poll.max_price|tl }}</p>
   {% endif %}
-  <p class="poll-card__votes">{{ poll.total_votes }} oy</p>
-  <p class="poll-card__author">@{{ poll.author.username }} · {{ poll.created_at|timesince }} önce</p>
+  <p class="poll-card__votes">{% blocktrans count counter=poll.total_votes %}{{ counter }} oy{% plural %}{{ counter }} oy{% endblocktrans %}</p>
+  <p class="poll-card__author">@{{ poll.author.username }} · {% blocktrans with time_ago=poll.created_at|timesince %}{{ time_ago }} önce{% endblocktrans %}</p>
 </article>

@@ -1,0 +1,705 @@
+# English translation for TeknoTerazi.
+# Copyright (C) 2026 TeknoTerazi
+# This file is distributed under the same license as the TeknoTerazi package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: TeknoTerazi\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-18 16:58+0300\n"
+"PO-Revision-Date: 2026-09-18 16:58+0300\n"
+"Last-Translator: TeknoTerazi\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Bu e-posta ile zaten bir hesabın var. E-posta ve parolanla giriş yap."
+msgstr "You already have an account with this email. Log in with your email and password."
+
+msgid "Parolalar eşleşmiyor."
+msgstr "Passwords don't match."
+
+msgid "Bu kullanıcı adı zaten kullanılıyor."
+msgstr "This username is already taken."
+
+msgid "Bu e-posta adresiyle zaten bir hesap var."
+msgstr "An account with this email address already exists."
+
+msgid "Kullanıcı adı"
+msgstr "Username"
+
+msgid "E-posta veya parola hatalı."
+msgstr "Incorrect email or password."
+
+msgid "E-posta"
+msgstr "Email"
+
+msgid ""
+"Kullanıcı adı 3–30 karakter olmalı ve yalnızca harf, rakam ve alt çizgi "
+"içermelidir."
+msgstr ""
+"Username must be 3–30 characters and contain only letters, numbers, and "
+"underscores."
+
+msgid "kullanıcı adı"
+msgstr "username"
+
+msgid "e-posta"
+msgstr "email"
+
+msgid "Bot koruması doğrulanamadı. Lütfen tekrar dene."
+msgstr "Bot protection could not be verified. Please try again."
+
+#, python-format
+msgid "Aramıza hoş geldin, @%(username)s! 🎉"
+msgstr "Welcome aboard, @%(username)s! 🎉"
+
+msgid "Kullanıcı adın güncellendi."
+msgstr "Your username has been updated."
+
+msgid "Sonuçları oy vermeden gizle"
+msgstr "Hide results until you vote"
+
+msgid ""
+"Önyargıyı azaltmak için: bir ürüne oy verene kadar o ürünün oy sayıları "
+"gizli kalır."
+msgstr ""
+"To reduce bias: a product's vote counts stay hidden until you vote on it."
+
+msgid "Bitiş tarihi (opsiyonel)"
+msgstr "End date (optional)"
+
+msgid "Belirlersen bu tarihten sonra anket otomatik olarak kapanır."
+msgstr "If you set this, the poll will close automatically after this date."
+
+msgid "Geçerli bir tarih ve saat gir."
+msgstr "Enter a valid date and time."
+
+msgid "Kategori seç"
+msgstr "Choose a category"
+
+msgid "Kullanım amacı seç (opsiyonel)"
+msgstr "Choose a use case (optional)"
+
+msgid "Bütçe seç (opsiyonel)"
+msgstr "Choose a budget (optional)"
+
+msgid "Bitiş tarihi gelecekte bir zaman olmalı."
+msgstr "The end date must be in the future."
+
+msgid "Görsel yükle (opsiyonel)"
+msgstr "Upload an image (optional)"
+
+msgid ""
+"jpg, png, webp veya gif — en fazla 5 MB. Yüklersen aşağıdaki link yok "
+"sayılır."
+msgstr ""
+"jpg, png, webp, or gif — max 5 MB. If you upload a file, the link below is "
+"ignored."
+
+msgid "Geçerli bir fiyat gir."
+msgstr "Enter a valid price."
+
+msgid ""
+"Her satıra bir özellik yaz\n"
+"8 GB RAM\n"
+"120 Hz ekran"
+msgstr ""
+"Write one feature per line\n"
+"8 GB RAM\n"
+"120 Hz display"
+
+msgid "Karşılaştırma özellikleri (opsiyonel)"
+msgstr "Comparison specs (optional)"
+
+msgid ""
+"Diğer ürünlerle yan yana karşılaştırmak için\n"
+"RAM: 8 GB\n"
+"Depolama: 128 GB"
+msgstr ""
+"To compare side by side with other products\n"
+"RAM: 8 GB\n"
+"Storage: 128 GB"
+
+msgid ""
+"Her satırı \"Anahtar: Değer\" biçiminde yaz — anket sayfasında bir "
+"karşılaştırma tablosu oluşturur."
+msgstr ""
+"Write each line as \"Key: Value\" — this builds a comparison table on the "
+"poll page."
+
+msgid "Yalnızca JPG, PNG, WEBP veya GIF dosyası yükleyebilirsin."
+msgstr "You can only upload a JPG, PNG, WEBP, or GIF file."
+
+msgid "Görsel en fazla 5 MB olabilir."
+msgstr "The image can be at most 5 MB."
+
+msgid "Ürünün en az bir özelliğini yazmalısın."
+msgstr "You must write at least one feature for the product."
+
+msgid "En fazla 15 özellik ekleyebilirsin."
+msgstr "You can add at most 15 features."
+
+msgid "Her özellik satırı en fazla 120 karakter olabilir."
+msgstr "Each feature line can be at most 120 characters."
+
+msgid "En fazla 8 karşılaştırma özelliği ekleyebilirsin."
+msgstr "You can add at most 8 comparison specs."
+
+msgid "Her satırı \"Anahtar: Değer\" biçiminde yaz (örn. \"RAM: 8 GB\")."
+msgstr "Write each line as \"Key: Value\" (e.g. \"RAM: 8 GB\")."
+
+msgid "Özellik adı en fazla 40 karakter olabilir."
+msgstr "The spec name can be at most 40 characters."
+
+msgid "Özellik değeri en fazla 80 karakter olabilir."
+msgstr "The spec value can be at most 80 characters."
+
+#, python-format
+msgid "Bir ankete en az %(num)d ürün eklemelisin."
+msgstr "You must add at least %(num)d products to a poll."
+
+#, python-format
+msgid "Bir ankete en fazla %(num)d ürün ekleyebilirsin."
+msgstr "You can add at most %(num)d products to a poll."
+
+msgid "Aynı ürünü iki kez ekleyemezsin."
+msgstr "You can't add the same product twice."
+
+msgid "Neden buna değer ya da değmez? Kısa bir not bırak…"
+msgstr "Why is it worth it or not? Leave a short note…"
+
+msgid "Yorum yazmadan gönderemezsin."
+msgstr "You can't submit without writing a comment."
+
+msgid "Yorumun en az 3 karakter olmalı."
+msgstr "Your comment must be at least 3 characters."
+
+msgid "Yorumun en fazla 500 karakter olabilir."
+msgstr "Your comment can be at most 500 characters."
+
+msgid "Şikayet nedeni"
+msgstr "Reason for reporting"
+
+msgid "Bir şikayet nedeni seçmelisin."
+msgstr "You must choose a reason for reporting."
+
+msgid "Detay (opsiyonel)"
+msgstr "Details (optional)"
+
+msgid "İstersen kısaca açıkla (opsiyonel)…"
+msgstr "Explain briefly if you'd like (optional)…"
+
+msgid "Akıllı Telefon"
+msgstr "Smartphone"
+
+msgid "Dizüstü Bilgisayar"
+msgstr "Laptop"
+
+msgid "Tablet"
+msgstr "Tablet"
+
+msgid "Kulaklık"
+msgstr "Headphones"
+
+msgid "Akıllı Saat"
+msgstr "Smartwatch"
+
+msgid "Oyun & Konsol"
+msgstr "Gaming & Console"
+
+msgid "Kamera"
+msgstr "Camera"
+
+msgid "TV & Monitör"
+msgstr "TV & Monitor"
+
+msgid "Bilgisayar Parçası"
+msgstr "PC Component"
+
+msgid "Diğer"
+msgstr "Other"
+
+msgid "Buna değer"
+msgstr "Worth it"
+
+msgid "Buna değmez"
+msgstr "Not worth it"
+
+msgid "Oyun"
+msgstr "Gaming"
+
+msgid "Okul"
+msgstr "School"
+
+msgid "İş"
+msgstr "Work"
+
+msgid "Günlük kullanım"
+msgstr "Everyday use"
+
+msgid "Ekonomik"
+msgstr "Budget"
+
+msgid "Orta segment"
+msgstr "Mid-range"
+
+msgid "Üst segment"
+msgstr "Premium"
+
+msgid "Uygunsuz içerik"
+msgstr "Inappropriate content"
+
+msgid "Spam veya tanıtım"
+msgstr "Spam or advertising"
+
+msgid "Yanıltıcı bilgi"
+msgstr "Misleading information"
+
+msgid "Bekliyor"
+msgstr "Pending"
+
+msgid "İncelendi"
+msgstr "Reviewed"
+
+msgid "Reddedildi"
+msgstr "Dismissed"
+
+#, python-format
+msgid "%(product_count)d ürün · %(vote_count)d oy"
+msgstr "%(product_count)d products · %(vote_count)d votes"
+
+msgid "Çok fazla oy isteği gönderdin. Lütfen biraz bekle."
+msgstr "You've sent too many vote requests. Please wait a bit."
+
+msgid "Bu anketin süresi doldu."
+msgstr "This poll has expired."
+
+msgid "Bu anket oylamaya kapalı."
+msgstr "This poll is closed for voting."
+
+msgid "Kendi anketine oy veremezsin."
+msgstr "You can't vote on your own poll."
+
+msgid "Bu IP adresinden bu ürüne zaten oy verilmiş."
+msgstr "A vote has already been cast for this product from this IP address."
+
+msgid ""
+"Görsel yükleme şu anda yapılandırılmamış. Bunun yerine \"Görsel linki\" "
+"alanını kullanabilirsin."
+msgstr ""
+"Image upload isn't configured right now. You can use the \"Image link\" "
+"field instead."
+
+msgid "Görsel yüklenemedi, lütfen tekrar dene."
+msgstr "The image couldn't be uploaded, please try again."
+
+msgid "Henüz oy yok"
+msgstr "No votes yet"
+
+msgid "Anketin yayında! 🎉 Linki paylaşarak daha çok oy toplayabilirsin."
+msgstr "Your poll is live! 🎉 Share the link to collect more votes."
+
+msgid "Bu anket oy almış, artık düzenlenemez."
+msgstr "This poll has received votes and can no longer be edited."
+
+msgid "Anket güncellendi."
+msgstr "Poll updated."
+
+msgid "Yorumun eklendi."
+msgstr "Your comment was added."
+
+msgid "Yorumun silindi."
+msgstr "Your comment was deleted."
+
+msgid "Geçersiz oy değeri."
+msgstr "Invalid vote value."
+
+msgid "Bu anketi zaten şikayet ettin."
+msgstr "You've already reported this poll."
+
+msgid "Şikayetin alındı, ekibimiz inceleyecek."
+msgstr "Your report has been received, our team will review it."
+
+msgid "Anket silindi."
+msgstr "Poll deleted."
+
+msgid "Sayfa bulunamadı"
+msgstr "Page not found"
+
+msgid "Bu sayfa terazide yok"
+msgstr "This page isn't on the scale"
+
+msgid "Ana sayfaya dön"
+msgstr "Back to home"
+
+msgid "Bir şeyler ters gitti"
+msgstr "Something went wrong"
+
+msgid ""
+"Özür dileriz, beklenmedik bir hata oluştu. Lütfen daha sonra tekrar dene."
+msgstr "We're sorry, an unexpected error occurred. Please try again later."
+
+msgid "Giriş Yap"
+msgstr "Log In"
+
+msgid "Parolayı göster"
+msgstr "Show password"
+
+msgid "Hesabın yok mu?"
+msgstr "Don't have an account?"
+
+msgid "Kayıt ol"
+msgstr "Sign up"
+
+msgid "veya"
+msgstr "or"
+
+msgid "Google ile giriş yap"
+msgstr "Sign in with Google"
+
+msgid "Profilim"
+msgstr "My Profile"
+
+msgid "Katılma tarihi"
+msgstr "Joined on"
+
+msgid "Oluşturduğun anket sayısı"
+msgstr "Polls created"
+
+msgid "Kaydet"
+msgstr "Save"
+
+msgid "Anketlerime dön"
+msgstr "Back to my polls"
+
+msgid "Kayıt Ol"
+msgstr "Sign Up"
+
+msgid "Zaten hesabın var mı?"
+msgstr "Already have an account?"
+
+msgid "Giriş yap"
+msgstr "Log in"
+
+msgid "Google ile kayıt ol"
+msgstr "Sign up with Google"
+
+msgid "Almadan önce topluluğa sor."
+msgstr "Ask the community before you buy."
+
+msgid "TeknoTerazi — teknoloji ürünleri hakkında topluluğun fikrini al."
+msgstr "TeknoTerazi — get the community's take on tech products."
+
+msgid "Oy verirken tarayıcına anonim bir kimlik çerezi kaydedebiliriz."
+msgstr "When you vote, we may save an anonymous identity cookie in your browser."
+
+msgid "Karanlık/aydınlık mod değiştir"
+msgstr "Toggle dark/light mode"
+
+msgid "Dil seç"
+msgstr "Choose language"
+
+msgid "Menüyü aç/kapat"
+msgstr "Toggle menu"
+
+msgid "Anket Oluştur"
+msgstr "Create Poll"
+
+msgid "Anketlerim"
+msgstr "My Polls"
+
+msgid "Çıkış"
+msgstr "Log Out"
+
+msgid "Sayfalama"
+msgstr "Pagination"
+
+msgid "Önceki"
+msgstr "Previous"
+
+msgid "Sonraki"
+msgstr "Next"
+
+#, python-format
+msgid "Ürün <span data-product-index>%(display_index)s</span> / 5"
+msgstr "Product <span data-product-index>%(display_index)s</span> / 5"
+
+msgid "Kaldır"
+msgstr "Remove"
+
+msgid "Ürün adı"
+msgstr "Product name"
+
+msgid "Fiyat (₺)"
+msgstr "Price (₺)"
+
+msgid "Özellikler"
+msgstr "Features"
+
+msgid "Ürün linki (opsiyonel)"
+msgstr "Product link (optional)"
+
+msgid "Görsel linki (opsiyonel)"
+msgstr "Image link (optional)"
+
+msgid "Aday ürünleri topluluğa sor, oylarla en değerlisini bul."
+msgstr "Ask the community about candidate products, vote to find the best one."
+
+msgid "Bugün trend olanlar"
+msgstr "Trending today"
+
+msgid "Tümü"
+msgstr "All"
+
+msgid "🔍 Ara..."
+msgstr "🔍 Search..."
+
+msgid "Tüm kategoriler"
+msgstr "All categories"
+
+msgid "Tüm kullanım amaçları"
+msgstr "All use cases"
+
+msgid "Tüm bütçeler"
+msgstr "All budgets"
+
+msgid "Yeni"
+msgstr "Newest"
+
+msgid "Popüler"
+msgstr "Popular"
+
+msgid "Yalnızca açık anketler"
+msgstr "Open polls only"
+
+msgid "Filtrele"
+msgstr "Filter"
+
+msgid "Henüz anket yok. İlk anketi sen oluştur!"
+msgstr "No polls yet. Create the first one!"
+
+#, python-format
+msgid "%(counter)s oy"
+msgid_plural "%(counter)s oy"
+msgstr[0] "%(counter)s vote"
+msgstr[1] "%(counter)s votes"
+
+msgid "Açık"
+msgstr "Open"
+
+msgid "Kapalı"
+msgstr "Closed"
+
+msgid "Görüntüle"
+msgstr "View"
+
+msgid "Kapat"
+msgstr "Close"
+
+msgid "Aç"
+msgstr "Open"
+
+msgid "Sil"
+msgstr "Delete"
+
+msgid "Henüz anket oluşturmadın."
+msgstr "You haven't created any polls yet."
+
+msgid "Süresi doldu"
+msgstr "Expired"
+
+msgid "Kapandı"
+msgstr "Closed"
+
+#, python-format
+msgid "Bugün %(counter)s oy"
+msgid_plural "Bugün %(counter)s oy"
+msgstr[0] "%(counter)s vote today"
+msgstr[1] "%(counter)s votes today"
+
+#, python-format
+msgid "%(counter)s ürün"
+msgid_plural "%(counter)s ürün"
+msgstr[0] "%(counter)s product"
+msgstr[1] "%(counter)s products"
+
+#, python-format
+msgid "%(time_ago)s önce"
+msgstr "%(time_ago)s ago"
+
+msgid "Anketi Sil"
+msgstr "Delete Poll"
+
+msgid "Anketi sil"
+msgstr "Delete poll"
+
+#, python-format
+msgid ""
+"\"%(title)s\" anketini silmek istediğine emin misin? Bu işlem geri alınamaz."
+msgstr ""
+"Are you sure you want to delete the poll \"%(title)s\"? This action cannot "
+"be undone."
+
+msgid "Evet, sil"
+msgstr "Yes, delete"
+
+msgid "Vazgeç"
+msgstr "Cancel"
+
+msgid "Anket bilgileri"
+msgstr "Poll details"
+
+msgid "Ürünler"
+msgstr "Products"
+
+msgid "Yayınla"
+msgstr "Publish"
+
+msgid "Başlık"
+msgstr "Title"
+
+msgid "Kategori"
+msgstr "Category"
+
+msgid "Kullanım amacı (opsiyonel)"
+msgstr "Use case (optional)"
+
+msgid "Bütçe (opsiyonel)"
+msgstr "Budget (optional)"
+
+msgid "Açıklama (opsiyonel)"
+msgstr "Description (optional)"
+
+msgid "Ürün Ekle"
+msgstr "Add Product"
+
+msgid "Maksimum 5 ürün"
+msgstr "Maximum 5 products"
+
+#, python-format
+msgid "%(counter)s ürünü topluluğa sor, oy ver."
+msgid_plural "%(counter)s ürünü topluluğa sor, oy ver."
+msgstr[0] "Ask the community about %(counter)s product, cast your vote."
+msgstr[1] "Ask the community about %(counter)s products, cast your vote."
+
+msgid "Tüm anketler"
+msgstr "All polls"
+
+#, python-format
+msgid "Süresi doldu (%(expiry_date)s)"
+msgstr "Expired (%(expiry_date)s)"
+
+#, python-format
+msgid "Bitiş: %(expiry_date)s (%(time_left)s kaldı)"
+msgstr "Ends: %(expiry_date)s (%(time_left)s left)"
+
+msgid "Düzenle"
+msgstr "Edit"
+
+msgid "Yeniden Aç"
+msgstr "Reopen"
+
+msgid "Bağlantı kopyalandı!"
+msgstr "Link copied!"
+
+msgid "Bu anketi paylaş"
+msgstr "Share this poll"
+
+msgid "Şikayet et"
+msgstr "Report"
+
+msgid "Karşılaştırma tablosu"
+msgstr "Comparison table"
+
+msgid "Özellik"
+msgstr "Spec"
+
+msgid "Anketi Düzenle"
+msgstr "Edit Poll"
+
+msgid "Anketi düzenle"
+msgstr "Edit poll"
+
+msgid ""
+"Bu anket henüz oy almadığı için düzenleyebilirsin. Oy alınca düzenleme "
+"kapanır."
+msgstr ""
+"You can edit this poll because it hasn't received any votes yet. Editing "
+"closes once it gets a vote."
+
+#, python-format
+msgid "Ürün %(index)s / %(total)s"
+msgstr "Product %(index)s / %(total)s"
+
+msgid "Topluluğun Favorisi"
+msgstr "Community Favorite"
+
+msgid "En uygun fiyat"
+msgstr "Best price"
+
+msgid "Ürüne git"
+msgstr "Go to product"
+
+msgid "Sonuçları görmek için önce oy ver."
+msgstr "Vote first to see the results."
+
+#, python-format
+msgid "Yorumlar (%(counter)s)"
+msgid_plural "Yorumlar (%(counter)s)"
+msgstr[0] "Comments (%(counter)s)"
+msgstr[1] "Comments (%(counter)s)"
+
+msgid "Henüz yorum yok. İlk yorumu sen yaz!"
+msgstr "No comments yet. Be the first to write one!"
+
+msgid "Yorum yap"
+msgstr "Comment"
+
+msgid "Yorum yapmak için"
+msgstr "To comment,"
+
+msgid "giriş yap"
+msgstr "log in"
+
+msgid "Anketi Şikayet Et"
+msgstr "Report Poll"
+
+msgid "Anketi şikayet et"
+msgstr "Report poll"
+
+#, python-format
+msgid "\"%(title)s\" anketini neden şikayet ediyorsun?"
+msgstr "Why are you reporting the poll \"%(title)s\"?"
+
+msgid "Şikayeti gönder"
+msgstr "Submit report"
+
+msgid "Google girişi başarısız"
+msgstr "Google sign-in failed"
+
+msgid "Google girişi başarısız oldu"
+msgstr "Google sign-in failed"
+
+msgid ""
+"Google ile giriş sırasında bir sorun oluştu. Lütfen tekrar dene veya e-posta "
+"ve parolanla giriş yap."
+msgstr ""
+"Something went wrong while signing in with Google. Please try again, or "
+"log in with your email and password."
+
+msgid "Giriş sayfasına dön"
+msgstr "Back to login"
+
+msgid "Google girişi iptal edildi"
+msgstr "Google sign-in cancelled"
+
+msgid ""
+"Google ile giriş işlemini iptal ettin. İstersen e-posta ve parolanla giriş "
+"yapabilir veya tekrar deneyebilirsin."
+msgstr ""
+"You cancelled signing in with Google. You can log in with your email and "
+"password, or try again."
