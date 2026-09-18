@@ -14,8 +14,11 @@
     })();
   </script>
   <title>{% block title %}TeknoTerazi{% endblock %}</title>
-  <meta property="og:title" content="TeknoTerazi">
-  <meta property="og:description" content="Almadan önce topluluğa sor.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{% block og_title %}TeknoTerazi{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Almadan önce topluluğa sor.{% endblock %}">
+  {% block og_image %}{% endblock %}
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

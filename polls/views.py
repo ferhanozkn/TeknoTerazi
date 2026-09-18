@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Count, Max, Min, Q
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import CommentForm, PollForm, ProductForm, ProductFormSet, ReportForm
 from .models import BudgetTier, Category, Comment, Poll, Product, Report, UsagePurpose, Vote, VoteValue
+from .og_image import render_poll_og_image
 from .services import VoteError, cast_vote, get_favorite_product, get_poll_with_stats, get_trending_polls
 from .storage import ImageUploadError, upload_product_image
 from .voter import attach_voter_cookie, get_client_ip, get_voter, hash_ip
@@ -243,9 +244,19 @@ def poll_detail(request, pk):
             "can_vote": can_vote,
             "poll_has_votes": poll_has_votes,
             "attribute_keys": attribute_keys,
+            "og_image_url": request.build_absolute_uri(reverse("polls:poll_og_image", args=[poll.pk])),
             "comment_form": CommentForm(auto_id=False),
         },
     )
+
+
+def poll_og_image(request, pk):
+    poll = get_poll_with_stats(pk)
+    products = list(poll.products.all())
+    image_bytes = render_poll_og_image(poll, products)
+    response = HttpResponse(image_bytes, content_type="image/png")
+    response["Cache-Control"] = "public, max-age=3600"
+    return response
 
 
 @login_required
