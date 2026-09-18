@@ -27,6 +27,7 @@ urlpatterns = [
     path("oauth/", include("allauth.socialaccount.providers.google.urls")),
     path("sw.js", views.service_worker, name="service_worker"),
     path("i18n/", include("django.conf.urls.i18n")),
+    path("api/auth/", include("accounts.api_urls")),
     path("api/", include("polls.api_urls")),
     path("", include("polls.urls")),
 ]

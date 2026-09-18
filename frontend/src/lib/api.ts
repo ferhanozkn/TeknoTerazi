@@ -219,3 +219,67 @@ export async function fetchPoll(id: number): Promise<Poll | null> {
     return null;
   }
 }
+
+export interface CurrentUser {
+  authenticated: boolean;
+  username: string | null;
+}
+
+export async function fetchCurrentUser(): Promise<CurrentUser> {
+  try {
+    return await backendFetch("/api/auth/me/");
+  } catch {
+    return { authenticated: false, username: null };
+  }
+}
+
+export interface MyPoll {
+  id: number;
+  title: string;
+  totalVotes: number;
+  viewCount: number;
+  conversionRate: number | null;
+  isActive: boolean;
+}
+
+export async function fetchMyPolls(): Promise<MyPoll[]> {
+  const data = await backendFetch("/api/anketlerim/");
+  return data.results.map(
+    (raw: {
+      id: number;
+      title: string;
+      total_votes: number;
+      view_count: number;
+      conversion_rate: number | null;
+      is_active: boolean;
+    }) => ({
+      id: raw.id,
+      title: raw.title,
+      totalVotes: raw.total_votes,
+      viewCount: raw.view_count,
+      conversionRate: raw.conversion_rate,
+      isActive: raw.is_active,
+    }),
+  );
+}
+
+export interface Profile {
+  username: string;
+  email: string;
+  dateJoined: string;
+  pollCount: number;
+}
+
+export async function fetchProfile(): Promise<Profile | null> {
+  try {
+    const data = await backendFetch("/api/auth/profile/");
+    return {
+      username: data.username,
+      email: data.email,
+      dateJoined: data.date_joined,
+      pollCount: data.poll_count,
+    };
+  } catch {
+    return null;
+  }
+}

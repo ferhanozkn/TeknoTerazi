@@ -245,3 +245,59 @@ def vote(request, pk):
     if user is None and is_new_anon:
         attach_voter_cookie(response, anon_id)
     return response
+
+
+def _unauthenticated():
+    return JsonResponse({"error": _("Bu işlem için giriş yapmalısın.")}, status=401)
+
+
+def _conversion_rate(poll):
+    if not poll.view_count:
+        return None
+    return round(poll.total_votes / poll.view_count * 100)
+
+
+@require_GET
+def my_polls(request):
+    if not request.user.is_authenticated:
+        return _unauthenticated()
+
+    polls = (
+        request.user.polls.prefetch_related("products")
+        .annotate(total_votes=Count("products__votes", distinct=True))
+        .order_by("-created_at")
+    )
+    return JsonResponse(
+        {
+            "results": [
+                {
+                    "id": poll.pk,
+                    "title": poll.title,
+                    "total_votes": poll.total_votes,
+                    "view_count": poll.view_count,
+                    "conversion_rate": _conversion_rate(poll),
+                    "is_active": poll.is_active,
+                }
+                for poll in polls
+            ]
+        }
+    )
+
+
+@require_POST
+def poll_toggle_active(request, pk):
+    if not request.user.is_authenticated:
+        return _unauthenticated()
+    poll = get_object_or_404(Poll, pk=pk, author=request.user)
+    poll.is_active = not poll.is_active
+    poll.save(update_fields=["is_active"])
+    return JsonResponse({"id": poll.pk, "is_active": poll.is_active})
+
+
+@require_POST
+def poll_delete(request, pk):
+    if not request.user.is_authenticated:
+        return _unauthenticated()
+    poll = get_object_or_404(Poll, pk=pk, author=request.user)
+    poll.delete()
+    return JsonResponse({"ok": True})
