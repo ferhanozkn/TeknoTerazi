@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #f6f7fb;
+  --color-surface: #ffffff;
+  --color-surface-tint: #f1edff;
+  --color-border: #e4e7f0;
+
+  --color-text: #0e1330;
+  --color-text-muted: #5b6384;
+
+  --color-primary: #6c3bff;
+  --color-primary-600: #5a2be6;
+  --color-secondary: #00b8f0;
+  --color-accent: #ff4fa3;
+  --color-warning: #ffb020;
+
+  --color-worth: #12c98a;
+  --color-worth-tint: #e3faf1;
+  --color-not-worth: #ff4d6d;
+  --color-not-worth-tint: #ffe8ec;
+
+  --gradient-brand: linear-gradient(135deg, #6c3bff 0%, #00b8f0 100%);
+  --gradient-soft: linear-gradient(135deg, rgba(108, 59, 255, 0.1), rgba(0, 184, 240, 0.1));
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-card: 0 6px 24px rgba(40, 30, 120, 0.08);
+  --shadow-card-hover: 0 12px 32px rgba(108, 59, 255, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0f1024;
+    --color-surface: #181a34;
+    --color-surface-tint: #232541;
+    --color-border: #2e3152;
+    --color-text: #f1f2fa;
+    --color-text-muted: #a3a8c9;
+    --color-worth-tint: rgba(18, 201, 138, 0.16);
+    --color-not-worth-tint: rgba(255, 77, 109, 0.16);
+    --gradient-soft: linear-gradient(135deg, rgba(108, 59, 255, 0.25), rgba(0, 184, 240, 0.2));
+    --shadow-card: 0 6px 24px rgba(0, 0, 0, 0.4);
+    --shadow-card-hover: 0 12px 32px rgba(108, 59, 255, 0.3);
+  }
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-tint: var(--color-surface-tint);
+  --color-border: var(--color-border);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-primary: var(--color-primary);
+  --color-primary-600: var(--color-primary-600);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --color-warning: var(--color-warning);
+  --color-worth: var(--color-worth);
+  --color-worth-tint: var(--color-worth-tint);
+  --color-not-worth: var(--color-not-worth);
+  --color-not-worth-tint: var(--color-not-worth-tint);
+  --font-heading: var(--font-space-grotesk);
+  --font-body: var(--font-inter);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
