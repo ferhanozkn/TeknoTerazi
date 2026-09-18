@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/product-card";
+import { PollOwnerActions } from "@/components/poll-owner-actions";
 import { ShareButton } from "@/components/share-button";
 import { fetchCurrentUser, fetchPoll } from "@/lib/api";
 import {
@@ -61,10 +62,19 @@ export default async function PollDetailPage({
         )}
 
         {poll.isOwner && (
-          <p className="text-sm text-text-muted">
-            📊 {poll.viewCount} görüntülenme · {poll.totalVotes} oy
-            <span className="ml-1 text-xs">(yalnızca sana görünür)</span>
-          </p>
+          <>
+            <p className="text-sm text-text-muted">
+              📊 {poll.viewCount} görüntülenme · {poll.totalVotes} oy
+              <span className="ml-1 text-xs">(yalnızca sana görünür)</span>
+            </p>
+            <PollOwnerActions
+              pollId={poll.id}
+              title={poll.title}
+              isActive={poll.isActive}
+              isExpired={poll.isExpired}
+              pollHasVotes={poll.pollHasVotes}
+            />
+          </>
         )}
 
         <div className="flex flex-wrap gap-2">

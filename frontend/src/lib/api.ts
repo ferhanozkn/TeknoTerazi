@@ -283,3 +283,62 @@ export async function fetchProfile(): Promise<Profile | null> {
     return null;
   }
 }
+
+export interface EditableProduct {
+  id: number;
+  name: string;
+  price: number;
+  features: string;
+  attributes: string;
+  productUrl: string;
+  imageUrl: string;
+}
+
+export interface PollEditData {
+  id: number;
+  title: string;
+  category: PollCategory;
+  description: string;
+  usagePurpose: UsagePurpose | null;
+  budgetTier: BudgetTier | null;
+  hideResultsUntilVote: boolean;
+  expiresAt: string | null;
+  products: EditableProduct[];
+}
+
+export async function fetchPollEditData(id: number): Promise<PollEditData | null> {
+  try {
+    const data = await backendFetch(`/api/polls/${id}/duzenle/`);
+    return {
+      id: data.id,
+      title: data.title,
+      category: data.category,
+      description: data.description,
+      usagePurpose: data.usage_purpose,
+      budgetTier: data.budget_tier,
+      hideResultsUntilVote: data.hide_results_until_vote,
+      expiresAt: data.expires_at,
+      products: data.products.map(
+        (p: {
+          id: number;
+          name: string;
+          price: number;
+          features: string;
+          attributes: string;
+          product_url: string;
+          image_url: string;
+        }) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          features: p.features,
+          attributes: p.attributes,
+          productUrl: p.product_url,
+          imageUrl: p.image_url,
+        }),
+      ),
+    };
+  } catch {
+    return null;
+  }
+}

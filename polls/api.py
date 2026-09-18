@@ -16,9 +16,9 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
-from .forms import CommentForm, PollForm, ProductFormSet, ReportForm
+from .forms import CommentForm, PollForm, ProductForm, ProductFormSet, ReportForm
 from .models import (
     BudgetTier,
     Category,
@@ -322,6 +322,98 @@ def poll_create(request):
             product.save()
 
     return JsonResponse({"id": poll.pk}, status=201)
+
+
+@require_http_methods(["GET", "POST"])
+def poll_edit(request, pk):
+    if not request.user.is_authenticated:
+        return _unauthenticated()
+
+    poll = get_object_or_404(
+        Poll.objects.annotate(vote_count=Count("products__votes")),
+        pk=pk,
+        author=request.user,
+    )
+    if poll.vote_count > 0:
+        return JsonResponse({"error": _("Bu anket oy almış, artık düzenlenemez.")}, status=403)
+
+    products = list(poll.products.all())
+
+    if request.method == "GET":
+        return JsonResponse(
+            {
+                "id": poll.pk,
+                "title": poll.title,
+                "category": poll.category,
+                "description": poll.description,
+                "usage_purpose": poll.usage_purpose or None,
+                "budget_tier": poll.budget_tier or None,
+                "hide_results_until_vote": poll.hide_results_until_vote,
+                "expires_at": poll.expires_at.isoformat() if poll.expires_at else None,
+                "products": [
+                    {
+                        "id": product.pk,
+                        "name": product.name,
+                        "price": float(product.price),
+                        "features": product.features,
+                        "attributes": product.attributes,
+                        "product_url": product.product_url,
+                        "image_url": product.image_url,
+                    }
+                    for product in products
+                ],
+            }
+        )
+
+    poll_form = PollForm(request.POST, instance=poll)
+    product_forms = [
+        ProductForm(request.POST, request.FILES, instance=product, prefix=f"products-{product.pk}")
+        for product in products
+    ]
+    forms_valid = poll_form.is_valid()
+    for form in product_forms:
+        forms_valid = form.is_valid() and forms_valid
+
+    non_form_errors = []
+    if forms_valid:
+        names = [form.cleaned_data["name"].strip().lower() for form in product_forms]
+        if len(names) != len(set(names)):
+            forms_valid = False
+            non_form_errors.append(_("Aynı ürünü iki kez ekleyemezsin."))
+
+    if not forms_valid:
+        return JsonResponse(
+            {
+                "poll_errors": _form_errors(poll_form),
+                "product_errors": {form.instance.pk: _form_errors(form) for form in product_forms},
+                "non_form_errors": non_form_errors,
+            },
+            status=400,
+        )
+
+    image_urls = {}
+    upload_errors = {}
+    for form in product_forms:
+        image_file = form.cleaned_data.get("image")
+        if not image_file:
+            continue
+        try:
+            image_urls[form.instance.pk] = upload_product_image(image_file)
+        except ImageUploadError as exc:
+            upload_errors[form.instance.pk] = exc.message
+
+    if upload_errors:
+        return JsonResponse({"product_upload_errors": upload_errors}, status=400)
+
+    with transaction.atomic():
+        poll_form.save()
+        for form in product_forms:
+            product = form.save(commit=False)
+            if product.pk in image_urls:
+                product.image_url = image_urls[product.pk]
+            product.save()
+
+    return JsonResponse({"id": poll.pk})
 
 
 @require_GET
