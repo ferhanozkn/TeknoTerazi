@@ -3,6 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("tt_theme");
+        if (theme === "dark" || theme === "light") {
+          document.documentElement.setAttribute("data-theme", theme);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <title>{% block title %}TeknoTerazi{% endblock %}</title>
   <meta property="og:title" content="TeknoTerazi">
   <meta property="og:description" content="Almadan önce topluluğa sor.">
@@ -20,5 +30,6 @@
   </main>
   {% include "partials/footer.html" %}
   <script src="{% static 'js/nav.js' %}" defer></script>
+  <script src="{% static 'js/theme.js' %}" defer></script>
 </body>
 </html>

@@ -844,7 +844,7 @@ app = application  # Vercel giriş noktası
 
 ### Faz 9 — MVP Sonrası (Backlog — birlikte tartışılacak)
 
-> ⏸️ **Durduruldu (2026-09-18).** Şu ana kadar tamamlanan: **Hesap** kategorisinden Google ile giriş, profil sayfası/kullanıcı adı değiştirme, anonim oyları hesaba birleştirme (e-posta doğrulama/şifre sıfırlama domain bekliyor, bkz. #16); **Kalite ve güvenlik** kategorisinin tamamı (Sentry, Cloudflare Turnstile, IP-hash oy kontrolü); **Topluluk ve etkileşim** kategorisinin tamamı (ürün yorumları, anket şikayet/moderasyon, sonuç gösterme seçeneği, trend anketler); **Anket** kategorisinin tamamı (ürün görseli yükleme — Supabase Storage bucket'ı henüz kurulmadı, bkz. #25; süreli anketler; oy gelmeden düzenleme; yapılandırılmış özellik alanları/karşılaştırma tablosu; bütçe/kullanım amacı etiketleri). Henüz başlanmayan: **Deneyim** (karanlık mod, PWA, çoklu dil vb.); Kalite ve güvenlik'te kalan **Analitik** maddesi — Faz 9'da bunlardan başka madde kalmadı. Devam edilecekse buradan başla.
+> ⏸️ **Durduruldu (2026-09-18).** Şu ana kadar tamamlanan: **Hesap** kategorisinden Google ile giriş, profil sayfası/kullanıcı adı değiştirme, anonim oyları hesaba birleştirme (e-posta doğrulama/şifre sıfırlama domain bekliyor, bkz. #16); **Kalite ve güvenlik** kategorisinin tamamı (Sentry, Cloudflare Turnstile, IP-hash oy kontrolü); **Topluluk ve etkileşim** kategorisinin tamamı (ürün yorumları, anket şikayet/moderasyon, sonuç gösterme seçeneği, trend anketler); **Anket** kategorisinin tamamı (ürün görseli yükleme — Supabase Storage bucket'ı henüz kurulmadı, bkz. #25; süreli anketler; oy gelmeden düzenleme; yapılandırılmış özellik alanları/karşılaştırma tablosu; bütçe/kullanım amacı etiketleri); **Deneyim**'den karanlık mod. Henüz başlanmayan: Deneyim'de kalan paylaşım için dinamik OG görseli, PWA, çoklu dil; Kalite ve güvenlik'te kalan **Analitik** maddesi. Devam edilecekse buradan başla.
 
 Önceliklendirme için aday fikirler:
 
@@ -874,7 +874,7 @@ app = application  # Vercel giriş noktası
 - Analitik (Sentry sadece hata izliyor, kullanım/ürün analitiği ayrı bir konu — henüz ele alınmadı)
 
 **Deneyim**
-- Karanlık mod
+- ✅ Karanlık mod — Tamamlandı (2026-09-18). Mevcut tasarım sistemi zaten CSS custom property'leri (`--bg`, `--surface`, `--text` vb.) üzerine kurulu olduğu için (bkz. `static/css/main.css` `:root`), tek yapılması gereken bu değişkenleri karanlık palet için yeniden tanımlamaktı — tek tek bileşen dosyası değiştirilmedi. İki katman: (a) `@media (prefers-color-scheme: dark)` — sistem karanlık modundaysa ve kullanıcı elle "aydınlık" seçmediyse otomatik devreye girer; (b) `:root[data-theme="dark"]` — navbar'daki 🌙/☀️ düğmesiyle manuel seçilen tema, `localStorage` (`tt_theme`) ile kalıcı. Sayfa yüklenirken temanın bir anlık yanlış renkte görünüp sonra değişmesini (FOUC) önlemek için `base.html`'in `<head>`'ine küçük, senkron bir script eklendi — `localStorage`'ı okuyup `<html>` etiketine `data-theme` özniteliğini CSS/boya işleminden ÖNCE yazıyor. Düğme `static/js/theme.js` ile çalışıyor. 3 yeni test (`polls/tests/test_theme.py`), tüm suite (185 test) geçiyor; tarayıcıdan uçtan uca doğrulandı (sistem karanlık tercihini otomatik yakaladı, düğmeyle aydınlığa geçti, sayfa değiştirince/yenilenince tema korundu).
 - Paylaşım için dinamik Open Graph görseli
 - PWA (ana ekrana ekleme)
 - Çoklu dil
